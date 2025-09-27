@@ -21,8 +21,8 @@
             <div class="theme-card-header d-flex justify-content-between">
                 <h6 class="theme-card-title">{{@$title}}</h6>
                 <div>
-                    <button type="button" class="btn btn-sm w-100 btn-brand-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="openCreateModal()">
-                        <i class="fa fa-plus"></i>Add Category
+                    <button type="button" class="btn btn-sm w-100 btn-brand-secondary" data-bs-toggle="modal" data-bs-target="#unitModal" onclick="openCreateModal()">
+                        <i class="fa fa-plus"></i>Add Unit
                     </button>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                             <th class="width-20-percentage text-center">Options</th>
                         </tr>
                         </thead>
-                        <tbody id="categoryTableBody">
+                        <tbody id="unitTableBody">
                             <!-- Data will be populated via AJAX -->
                         </tbody>
                     </table>
@@ -43,29 +43,29 @@
             </div>
         </div>
 
-        <!-- Category Modal -->
-        <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <!-- Unit Modal -->
+        <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
+                        <h5 class="modal-title" id="unitModalLabel">Add Unit</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="categoryForm">
+                    <form id="unitForm">
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="categoryName" name="name" required>
+                                <label for="unitName" class="form-label">Unit Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="unitName" name="name" required>
                                 <div class="invalid-feedback" id="nameError"></div>
                             </div>
-                            <input type="hidden" id="categoryId" name="category_id">
+                            <input type="hidden" id="unitId" name="unit_id">
                             <input type="hidden" id="formMethod" value="POST">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary" id="saveBtn">
                                 <span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status" aria-hidden="true"></span>
-                                Save Category
+                                Save Unit
                             </button>
                         </div>
                     </form>
@@ -84,5 +84,6 @@
 @push('js')
     <script type="text/javascript" src="{{asset('admin/plugin/datatable/js/jquery.dataTables.js')}}"></script>
     <script type="text/javascript" src="{{asset('admin/plugin/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('admin/partial/js/category.js')}}"></script>
+    <script type="text/javascript" src="{{asset('admin/partial/js/unit.js')}}"></script>
 @endpush
+

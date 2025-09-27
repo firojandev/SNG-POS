@@ -1,11 +1,5 @@
-// $(document).ready(() => {
-//     $('.custom-loader').show(1);
-// });
-//
-// $(window).on("load", function () {
-//     $('.custom-loader').fadeOut(1000);
-// });
-
+"use strict";
+$(document).ready(function() {
 // ====== Dark Mode On Change ==========
 $('#darkMode').on('change', function () {
     if ($(this).is(':checked')){
@@ -26,11 +20,9 @@ if (localStorage.getItem('mode-type') === 'dark-mode')
     $('body').removeClass('dark-mode');
 }
 
-$(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
+
 });
-
-
 
 
 

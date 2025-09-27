@@ -1,21 +1,21 @@
 "use strict";
 
 // Global variables
-let categoryDataTable;
+let unitDataTable;
 let isEditMode = false;
 
 $(document).ready(function() {
     // Initialize DataTable
     initializeDataTable();
 
-    // Load categories data
-    loadCategories();
+    // Load units data
+    loadUnits();
 
     // Form submission handler
-    $('#categoryForm').on('submit', handleFormSubmit);
+    $('#unitForm').on('submit', handleFormSubmit);
 
     // Modal close handler
-    $('#categoryModal').on('hidden.bs.modal', function() {
+    $('#unitModal').on('hidden.bs.modal', function() {
         resetForm();
     });
 });
@@ -24,7 +24,7 @@ $(document).ready(function() {
  * Initialize DataTable
  */
 function initializeDataTable() {
-    categoryDataTable = $('#dataTable').DataTable({
+    unitDataTable = $('#dataTable').DataTable({
         "processing": true,
         "serverSide": false,
         "responsive": true,
@@ -36,18 +36,18 @@ function initializeDataTable() {
             { "orderable": false, "targets": -1 }
         ],
         "language": {
-            "emptyTable": "No categories found",
-            "zeroRecords": "No matching categories found"
+            "emptyTable": "No units found",
+            "zeroRecords": "No matching units found"
         }
     });
 }
 
 /**
- * Load categories data via AJAX
+ * Load units data via AJAX
  */
-function loadCategories() {
+function loadUnits() {
     $.ajax({
-        url: '/admin/category/get-data',
+        url: '/admin/unit/get-data',
         type: 'GET',
         dataType: 'json',
         beforeSend: function() {
@@ -57,12 +57,12 @@ function loadCategories() {
             if (response.success) {
                 populateTable(response.data);
             } else {
-                showToastr('error', 'Failed to load categories');
+                showToastr('error', 'Failed to load units');
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading categories:', error);
-            showToastr('error', 'Failed to load categories');
+            console.error('Error loading units:', error);
+            showToastr('error', 'Failed to load units');
         },
         complete: function() {
             $('#dataTable_processing').hide();
@@ -72,31 +72,31 @@ function loadCategories() {
 
 
 /**
- * Populate DataTable with category data
+ * Populate DataTable with unit data
  */
-function populateTable(categories) {
+function populateTable(units) {
     // Clear existing data
-    categoryDataTable.clear();
+    unitDataTable.clear();
 
     // Add new data
-    categories.forEach(function(category) {
+    units.forEach(function(unit) {
         const actions = `
-            <div class="text-center"><button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditModal(${category.id}, '${category.name.replace(/'/g, "\\'")}')">
+            <div class="text-center"><button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditModal(${unit.id}, '${unit.name.replace(/'/g, "\\'")}')">
                 <i class="fa fa-edit"></i> Edit
             </button>
-            <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteModal(${category.id}, '${category.name.replace(/'/g, "\\'")}')">
+            <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteModal(${unit.id}, '${unit.name.replace(/'/g, "\\'")}')">
                 <i class="fa fa-trash"></i> Delete
             </button></div>
         `;
 
-        categoryDataTable.row.add([
-            category.name,
+        unitDataTable.row.add([
+            unit.name,
             actions
         ]);
     });
 
     // Redraw table
-    categoryDataTable.draw();
+    unitDataTable.draw();
 }
 
 /**
@@ -104,18 +104,18 @@ function populateTable(categories) {
  */
 function openCreateModal() {
     resetForm();
-    $('#categoryModalLabel').text('Add Category');
+    $('#unitModalLabel').text('Add Unit');
     $('#saveBtn').html('<span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status" aria-hidden="true"></span> Save');
 }
 
 /**
  * Open edit modal
  */
-function openEditModal(categoryId, categoryName) {
+function openEditModal(unitId, unitName) {
     isEditMode = true;
-    $('#categoryModalLabel').text('Edit Category');
-    $('#categoryId').val(categoryId);
-    $('#categoryName').val(categoryName);
+    $('#unitModalLabel').text('Edit Unit');
+    $('#unitId').val(unitId);
+    $('#unitName').val(unitName);
     $('#formMethod').val('PUT');
     $('#saveBtn').html('<span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status" aria-hidden="true"></span> Update');
 
@@ -123,16 +123,16 @@ function openEditModal(categoryId, categoryName) {
     clearValidationErrors();
 
     // Show modal
-    $('#categoryModal').modal('show');
+    $('#unitModal').modal('show');
 }
 
 /**
  * Open delete confirmation with SweetAlert
  */
-function openDeleteModal(categoryId, categoryName) {
+function openDeleteModal(unitId, unitName) {
     Swal.fire({
         title: 'Are you sure?',
-        text: `You want to delete "${categoryName}" category? This action cannot be undone.`,
+        text: `You want to delete "${unitName}" unit? This action cannot be undone.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -142,7 +142,7 @@ function openDeleteModal(categoryId, categoryName) {
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            handleDelete(categoryId, categoryName);
+            handleDelete(unitId, unitName);
         }
     });
 }
@@ -154,14 +154,14 @@ function handleFormSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
-    const categoryId = $('#categoryId').val();
+    const unitId = $('#unitId').val();
     const method = $('#formMethod').val();
 
-    let url = '/admin/category';
+    let url = '/admin/unit';
     let ajaxMethod = 'POST';
 
-    if (isEditMode && categoryId) {
-        url += '/' + categoryId;
+    if (isEditMode && unitId) {
+        url += '/' + unitId;
         ajaxMethod = 'POST'; // Always use POST for AJAX
         formData.append('_method', 'PUT'); // Laravel method spoofing
     }
@@ -182,10 +182,10 @@ function handleFormSubmit(e) {
         success: function(response) {
             if (response.success) {
                 showToastr('success', response.message);
-                $('#categoryModal').modal('hide');
+                $('#unitModal').modal('hide');
 
                 // Reload data without page refresh
-                loadCategories();
+                loadUnits();
             } else {
                 showToastr('error', response.message || 'Operation failed');
             }
@@ -211,16 +211,16 @@ function handleFormSubmit(e) {
 /**
  * Handle delete operation
  */
-function handleDelete(categoryId, categoryName) {
-    if (!categoryId) {
-        showToastr('error', 'Invalid category ID');
+function handleDelete(unitId, unitName) {
+    if (!unitId) {
+        showToastr('error', 'Invalid unit ID');
         return;
     }
 
     // Show loading with SweetAlert
     Swal.fire({
         title: 'Deleting...',
-        text: 'Please wait while we delete the category.',
+        text: 'Please wait while we delete the unit.',
         allowOutsideClick: false,
         allowEscapeKey: false,
         showConfirmButton: false,
@@ -230,7 +230,7 @@ function handleDelete(categoryId, categoryName) {
     });
 
     $.ajax({
-        url: '/admin/category/' + categoryId,
+        url: '/admin/unit/' + unitId,
         type: 'POST',
         data: {
             _method: 'DELETE'
@@ -246,7 +246,7 @@ function handleDelete(categoryId, categoryName) {
                     showConfirmButton: false
                 }).then(() => {
                     // Reload data without page refresh
-                    loadCategories();
+                    loadUnits();
                 });
             } else {
                 Swal.fire({
@@ -260,7 +260,7 @@ function handleDelete(categoryId, categoryName) {
             console.error('Delete error:', error);
             Swal.fire({
                 title: 'Error!',
-                text: 'Failed to delete category',
+                text: 'Failed to delete unit',
                 icon: 'error'
             });
         }
@@ -310,9 +310,10 @@ function clearValidationErrors() {
  * Reset form to initial state
  */
 function resetForm() {
-    $('#categoryForm')[0].reset();
-    $('#categoryId').val('');
+    $('#unitForm')[0].reset();
+    $('#unitId').val('');
     $('#formMethod').val('POST');
     isEditMode = false;
     clearValidationErrors();
 }
+

@@ -9,7 +9,7 @@
         </div>
 
 
-        <ul class="list-unstyled aside-nav-list aside-nav-list-slim">
+        <ul class="list-unstyled aside-nav-list toggleable-group aside-nav-list-slim">
 
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
@@ -17,7 +17,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Product</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' || @$menu == 'unit' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('category.index')}}" class="aside-nav-sublink {{@$menu == 'category' ? 'active' : ''}}">
@@ -26,7 +26,7 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('unit.index')}}" class="aside-nav-sublink {{@$menu == 'unit' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Unit</span>
                             </a>
