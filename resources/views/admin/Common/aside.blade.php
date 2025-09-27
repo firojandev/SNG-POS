@@ -2,7 +2,7 @@
 
     <div class="aside-content">
         <div class="mb-3">
-            <a href="{{route('admin.dashboard')}}" class="aside-nav-link active">
+            <a href="{{route('admin.dashboard')}}" class="aside-nav-link {{@$menu == 'dashboard' ? 'active' : ''}}">
                 <span class="aside-nav-icon"><i class="icon-home"></i></span>
                 <span class="aside-nav-text shrink-text-toggleable">Dashboard</span>
             </a>
@@ -17,10 +17,10 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Product</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('category.index')}}" class="aside-nav-sublink {{@$menu == 'category' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Category</span>
                             </a>
