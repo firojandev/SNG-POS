@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\TaxController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -23,4 +24,13 @@ Route::prefix('unit')->group(function () {
     Route::get('/{unit}/edit', [UnitController::class, 'edit'])->name('unit.edit');
     Route::put('/{unit}', [UnitController::class, 'update'])->name('unit.update');
     Route::delete('/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+});
+
+Route::prefix('tax')->group(function () {
+    Route::get('/', [TaxController::class, 'index'])->name('tax.index');
+    Route::get('/get-data', [TaxController::class, 'getData'])->name('tax.getData');
+    Route::post('/', [TaxController::class, 'store'])->name('tax.store');
+    Route::get('/{tax}/edit', [TaxController::class, 'edit'])->name('tax.edit');
+    Route::put('/{tax}', [TaxController::class, 'update'])->name('tax.update');
+    Route::delete('/{tax}', [TaxController::class, 'destroy'])->name('tax.destroy');
 });

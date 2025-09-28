@@ -17,7 +17,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Product</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' || @$menu == 'unit' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' || @$menu == 'unit' || @$menu == 'tax' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('category.index')}}" class="aside-nav-sublink {{@$menu == 'category' ? 'active' : ''}}">
@@ -32,7 +32,7 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('tax.index')}}" class="aside-nav-sublink {{@$menu == 'tax' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Tax</span>
                             </a>
