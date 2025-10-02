@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Admin\ProductController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -33,4 +34,17 @@ Route::prefix('tax')->group(function () {
     Route::get('/{tax}/edit', [TaxController::class, 'edit'])->name('tax.edit');
     Route::put('/{tax}', [TaxController::class, 'update'])->name('tax.update');
     Route::delete('/{tax}', [TaxController::class, 'destroy'])->name('tax.destroy');
+});
+
+Route::prefix('products')->name('admin.products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/create', [ProductController::class, 'create'])->name('create');
+    Route::post('/', [ProductController::class, 'store'])->name('store');
+    Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+    Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+    Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+    Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    Route::get('/export/csv', [ProductController::class, 'export'])->name('export');
+    Route::get('/import/form', [ProductController::class, 'importForm'])->name('import.form');
+    Route::post('/import/csv', [ProductController::class, 'import'])->name('import');
 });

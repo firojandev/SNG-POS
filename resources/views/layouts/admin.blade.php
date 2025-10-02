@@ -13,12 +13,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap">
     <!--============== Global Libraries CSS =================-->
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/toastr.min.css')}}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" type="text/css" href="{{asset('admin/plugin/select2/select2.min.css')}}">
     <!--============== Extra Plugin =================-->
     @stack('css')
+    @stack('styles')
     <!--============== End Extra Plugin =================-->
     <!--======== Custom =============-->
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/custom-helper.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/main.css')}}">
+    
+    @flasher_render
 
 
 
@@ -46,11 +51,16 @@
 <!--============== Global Libraries ===================-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript" src="{{asset('admin/js/toastr.min.js')}}"></script>
+<!-- Select2 JS -->
+<script type="text/javascript" src="{{asset('admin/plugin/select2/select2.min.js')}}"></script>
+<!-- Select2 Global Initialization -->
+<script type="text/javascript" src="{{asset('admin/partial/js/select2-init.js')}}"></script>
 <script type="text/javascript" src="{{asset('admin/partial/js/global.js')}}"></script>
 
 <!--============== Extra Plugin ===================-->
 
 @stack('js')
+@stack('scripts')
 
 <!--============== End Plugin ===================-->
 
