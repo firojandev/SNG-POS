@@ -65,9 +65,18 @@ class ProductManager {
             if (e.target.closest('.generate-barcode')) {
                 e.preventDefault();
                 const button = e.target.closest('.generate-barcode');
+                const productId = button.dataset.productId;
                 const sku = button.dataset.sku;
                 const name = button.dataset.name;
-                this.generateBarcode(sku, name);
+                this.openBarcodeModal(productId, sku, name);
+            }
+        });
+
+        // Barcode download button
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#downloadBarcodeBtn')) {
+                e.preventDefault();
+                this.downloadBarcodePDF();
             }
         });
     }
@@ -277,71 +286,76 @@ class ProductManager {
         });
     }
 
-    generateBarcode(sku, name = '') {
-        const modal = document.getElementById('barcodeModal');
-        const barcodeContainer = document.getElementById('barcodeContainer');
-        const barcodeSku = document.getElementById('barcodeSku');
-        const barcodeProductName = document.getElementById('barcodeProductName');
+    openBarcodeModal(productId, sku, name) {
+        const modal = document.getElementById('barcodeQuantityModal');
+        const modalProductName = document.getElementById('modalProductName');
+        const modalProductSku = document.getElementById('modalProductSku');
+        const productIdInput = document.getElementById('productId');
+        const productSkuInput = document.getElementById('productSku');
+        const productNameInput = document.getElementById('productName');
+        const quantityInput = document.getElementById('barcodeQuantity');
         
-        if (!modal || !barcodeContainer) return;
+        if (!modal) return;
 
-        // Create a simple barcode-like representation
-        let barcodeHtml = '<div class="barcode-display d-flex justify-content-center align-items-end">';
-        for (let i = 0; i < sku.length; i++) {
-            const char = sku.charCodeAt(i);
-            const height = 40 + (char % 30); // Variable height bars
-            const width = 3 + (char % 3); // Variable width bars
-            barcodeHtml += `<div class="barcode-bar" style="width: ${width}px; height: ${height}px; background: #000; margin: 0 1px;"></div>`;
-        }
-        barcodeHtml += '</div>';
-        
-        barcodeContainer.innerHTML = barcodeHtml;
-        
         // Update modal content
-        if (barcodeSku) barcodeSku.textContent = sku;
-        if (barcodeProductName) barcodeProductName.textContent = name;
+        if (modalProductName) modalProductName.textContent = name;
+        if (modalProductSku) modalProductSku.textContent = sku;
+        if (productIdInput) productIdInput.value = productId;
+        if (productSkuInput) productSkuInput.value = sku;
+        if (productNameInput) productNameInput.value = name;
+        
+        // Clear quantity input
+        if (quantityInput) quantityInput.value = '';
         
         // Show modal using Bootstrap
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
     }
 
-    printBarcode() {
-        const barcodeContent = document.getElementById('barcodeContainer').innerHTML;
-        const sku = document.querySelector('#barcodeModal .modal-body p').textContent;
-        const productName = document.querySelector('#barcodeModal .modal-body small').textContent;
+    downloadBarcodePDF() {
+        const form = document.getElementById('barcodeForm');
+        const quantityInput = document.getElementById('barcodeQuantity');
+        const productId = document.getElementById('productId').value;
+        const sku = document.getElementById('productSku').value;
+        const name = document.getElementById('productName').value;
+        const quantity = quantityInput.value;
+
+        // Validate quantity
+        if (!quantity || quantity < 1 || quantity > 100) {
+            this.showNotification('Please enter a valid quantity between 1 and 100', 'error');
+            quantityInput.focus();
+            return;
+        }
+
+        // Show loading
+        const downloadBtn = document.getElementById('downloadBarcodeBtn');
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i>Generating...';
+        downloadBtn.disabled = true;
+
+        // Create download URL
+        const baseUrl = window.location.origin;
+        const downloadUrl = `${baseUrl}/admin/products/barcode/download?product_id=${productId}&sku=${encodeURIComponent(sku)}&name=${encodeURIComponent(name)}&quantity=${quantity}`;
         
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Barcode - ${sku}</title>
-                    <style>
-                        body { 
-                            text-align: center; 
-                            padding: 20px; 
-                            font-family: Arial, sans-serif; 
-                        }
-                        .barcode-display { 
-                            margin: 20px 0; 
-                            display: flex;
-                            justify-content: center;
-                            align-items: end;
-                        }
-                        .barcode-bar {
-                            display: inline-block;
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${barcodeContent}
-                    <p style="font-weight: bold; margin: 10px 0;">${sku}</p>
-                    <small style="color: #666;">${productName}</small>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
+        // Create temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `barcode_${sku}_${quantity}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Reset button after a delay
+        setTimeout(() => {
+            downloadBtn.innerHTML = originalText;
+            downloadBtn.disabled = false;
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('barcodeQuantityModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }, 1500);
     }
 
     downloadSampleCSV() {
@@ -472,12 +486,12 @@ function previewImage(input) {
     productManager.previewImage(input);
 }
 
-function generateBarcode(sku) {
-    productManager.generateBarcode(sku);
+function openBarcodeModal(productId, sku, name) {
+    productManager.openBarcodeModal(productId, sku, name);
 }
 
-function printBarcode() {
-    productManager.printBarcode();
+function downloadBarcodePDF() {
+    productManager.downloadBarcodePDF();
 }
 
 function downloadSampleCSV() {

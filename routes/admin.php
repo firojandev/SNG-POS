@@ -47,4 +47,5 @@ Route::prefix('products')->name('admin.products.')->group(function () {
     Route::get('/export/csv', [ProductController::class, 'export'])->name('export');
     Route::get('/import/form', [ProductController::class, 'importForm'])->name('import.form');
     Route::post('/import/csv', [ProductController::class, 'import'])->name('import');
+    Route::get('/barcode/download', [ProductController::class, 'downloadBarcode'])->name('barcode.download');
 });

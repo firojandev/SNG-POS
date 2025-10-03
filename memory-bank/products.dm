@@ -126,10 +126,17 @@ Comprehensive product management system with full CRUD operations, SweetAlert co
 - **Real-time**: AJAX-based filtering
 - **Clear Filters**: Reset functionality
 
-#### Barcode Generation
-- **Modal**: Bootstrap modal with barcode display
-- **Print**: Dedicated print functionality
-- **Format**: Simple barcode representation
+#### Barcode Generation & PDF Export
+- **Modal**: Bootstrap modal with quantity input (1-100)
+- **PDF Generation**: Professional PDF with multiple barcodes
+- **Layout**: 4 barcodes per row with proper spacing
+- **Format**: CODE-128 barcode standard
+- **Integration**: Available on both product index and details pages
+- **Features**:
+  - Quantity input with validation
+  - Real-time PDF generation
+  - Automatic download
+  - Professional layout with product info
 
 ### 5. Frontend Integration
 - **Select2**: Enhanced dropdowns with search
@@ -239,11 +246,109 @@ public function import(ImportProductRequest $request)
 }
 ```
 
+### Barcode PDF Generation
+```php
+// Controller - Download Barcode PDF
+public function downloadBarcode(Request $request)
+{
+    $request->validate([
+        'product_id' => 'nullable|exists:products,id',
+        'sku' => 'required|string',
+        'name' => 'required|string',
+        'quantity' => 'required|integer|min:1|max:100'
+    ]);
+
+    $sku = $request->sku;
+    $name = $request->name;
+    $quantity = (int) $request->quantity;
+
+    try {
+        // Generate barcode using Picqer library
+        $generator = new BarcodeGeneratorPNG();
+        $barcodeData = $generator->getBarcode($sku, $generator::TYPE_CODE_128, 3, 60);
+        $barcodeBase64 = base64_encode($barcodeData);
+
+        // Prepare data for PDF
+        $data = [
+            'sku' => $sku,
+            'name' => $name,
+            'quantity' => $quantity,
+            'barcode' => $barcodeBase64,
+            'generated_at' => now()->format('Y-m-d H:i:s')
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('admin.products.barcode-pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'barcode_' . Str::slug($sku) . '_' . $quantity . '_' . date('Y-m-d_H-i-s') . '.pdf';
+        return $pdf->download($filename);
+
+    } catch (\Exception $e) {
+        \Log::error('Barcode generation error: ' . $e->getMessage());
+        flash()->error('Failed to generate barcode PDF!');
+        return redirect()->back();
+    }
+}
+```
+
+### Barcode Modal JavaScript
+```javascript
+// Open barcode modal with product data
+openBarcodeModal(productId, sku, name) {
+    const modal = document.getElementById('barcodeQuantityModal');
+    const modalProductName = document.getElementById('modalProductName');
+    const modalProductSku = document.getElementById('modalProductSku');
+    const productIdInput = document.getElementById('productId');
+    const productSkuInput = document.getElementById('productSku');
+    const productNameInput = document.getElementById('productName');
+    const quantityInput = document.getElementById('barcodeQuantity');
+    
+    // Update modal content
+    if (modalProductName) modalProductName.textContent = name;
+    if (modalProductSku) modalProductSku.textContent = sku;
+    if (productIdInput) productIdInput.value = productId;
+    if (productSkuInput) productSkuInput.value = sku;
+    if (productNameInput) productNameInput.value = name;
+    
+    // Clear quantity input
+    if (quantityInput) quantityInput.value = '';
+    
+    // Show modal using Bootstrap
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+// Download barcode PDF
+downloadBarcodePDF() {
+    const quantity = document.getElementById('barcodeQuantity').value;
+    const productId = document.getElementById('productId').value;
+    const sku = document.getElementById('productSku').value;
+    const name = document.getElementById('productName').value;
+
+    // Validate quantity
+    if (!quantity || quantity < 1 || quantity > 100) {
+        this.showNotification('Please enter a valid quantity between 1 and 100', 'error');
+        return;
+    }
+
+    // Create download URL and trigger download
+    const downloadUrl = `${window.location.origin}/admin/products/barcode/download?product_id=${productId}&sku=${encodeURIComponent(sku)}&name=${encodeURIComponent(name)}&quantity=${quantity}`;
+    
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `barcode_${sku}_${quantity}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+```
+
 ## Architecture & File Structure
 
 ### Controllers
 - `app/Http/Controllers/Admin/ProductController.php` - Main CRUD controller
-- Methods: `index`, `create`, `store`, `show`, `edit`, `update`, `destroy`, `export`, `import`
+- Methods: `index`, `create`, `store`, `show`, `edit`, `update`, `destroy`, `export`, `import`, `downloadBarcode`
 
 ### Models
 - `app/Models/Product.php` - Product model with relationships and scopes
@@ -256,11 +361,12 @@ public function import(ImportProductRequest $request)
 - `app/Http/Requests/ImportProductRequest.php` - Import validation
 
 ### Views
-- `resources/views/admin/products/index.blade.php` - Product listing
+- `resources/views/admin/products/index.blade.php` - Product listing with barcode modal
 - `resources/views/admin/products/create.blade.php` - Create form
 - `resources/views/admin/products/edit.blade.php` - Edit form
-- `resources/views/admin/products/show.blade.php` - Product details
+- `resources/views/admin/products/show.blade.php` - Product details with barcode modal
 - `resources/views/admin/products/import.blade.php` - CSV import
+- `resources/views/admin/products/barcode-pdf.blade.php` - PDF template for barcodes
 
 ### Assets
 - `public/admin/partial/css/products.css` - Product-specific styles
@@ -270,6 +376,15 @@ public function import(ImportProductRequest $request)
 ### Migrations
 - `database/migrations/2025_10_02_064522_create_products_table.php` - Main table
 - `database/migrations/2025_10_02_093129_add_soft_deletes_to_products_table.php` - Soft deletes
+
+### Routes
+- `routes/admin.php` - Product routes including barcode download
+- `GET /admin/products/barcode/download` - Barcode PDF generation endpoint
+
+### Dependencies (Composer Packages)
+- `picqer/php-barcode-generator` - Professional barcode generation (CODE-128)
+- `barryvdh/laravel-dompdf` - PDF generation for barcode documents
+- `php-flasher/flasher-notyf-laravel` - User notifications
 
 ## Key Features Summary
 
@@ -282,7 +397,8 @@ public function import(ImportProductRequest $request)
 ### 2. **Advanced Features**
 - ✅ CSV Import/Export functionality
 - ✅ Image upload and management
-- ✅ Barcode generation and printing
+- ✅ Professional barcode PDF generation with quantity input
+- ✅ CODE-128 barcode format with 4-per-row layout
 - ✅ Search and category filtering
 - ✅ Responsive grid layout
 
@@ -306,6 +422,34 @@ public function import(ImportProductRequest $request)
 - ✅ AJAX-based operations
 - ✅ Modular JavaScript architecture
 - ✅ Consistent coding patterns
+- ✅ Professional PDF generation with DomPDF
+- ✅ Industry-standard barcode generation with Picqer
+
+## Barcode Generation Workflow
+
+### User Journey
+1. **Access Point**: Click barcode icon on product index or details page
+2. **Modal Opens**: Medium-sized modal with product information
+3. **Input Quantity**: Enter number of barcodes (1-100) with validation
+4. **Generate PDF**: Click download button to create PDF
+5. **Automatic Download**: PDF file downloads with professional layout
+6. **Modal Closes**: Automatic closure after successful generation
+
+### Technical Flow
+1. **Frontend**: JavaScript captures click event and opens modal
+2. **Validation**: Client-side validation for quantity range
+3. **Request**: AJAX request to `/admin/products/barcode/download`
+4. **Backend**: Controller validates request and generates barcode
+5. **PDF Creation**: DomPDF creates document with 4-column grid layout
+6. **Response**: PDF file streamed as download response
+
+### PDF Features
+- **Layout**: 4 barcodes per row with consistent spacing
+- **Format**: CODE-128 barcode standard (scannable)
+- **Content**: Product name, SKU, and barcode for each item
+- **Header**: Professional header with generation timestamp
+- **Footer**: System branding and document information
+- **Responsive**: Adapts to different quantities while maintaining 4-column layout
 
 ## Benefits
 1. **Professional UI**: Modern, responsive interface
@@ -315,6 +459,8 @@ public function import(ImportProductRequest $request)
 5. **Security**: Comprehensive validation and CSRF protection
 6. **Consistency**: Matches existing system patterns
 7. **User-Friendly**: Intuitive workflows and feedback
+8. **Professional Barcodes**: Industry-standard CODE-128 format
+9. **Efficient Printing**: Optimized 4-per-row layout for label printing
 
 ## Future Enhancements
 - **Restore Functionality**: Recover soft-deleted products

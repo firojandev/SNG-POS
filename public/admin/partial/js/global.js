@@ -262,6 +262,8 @@ function isValidPhone(phone) {
     return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
 }
 
+
+
 /**
  * Debounce function for search inputs
  * @param {function} func - Function to debounce

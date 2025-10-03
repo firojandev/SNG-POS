@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class ProductController extends Controller
 {
@@ -82,7 +84,7 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        flash()->success('Product created successfully!');
+        notyf()->success('Product created successfully!');
         return redirect()->route('admin.products.index');
     }
 
@@ -93,6 +95,7 @@ class ProductController extends Controller
     {
         $product->load(['category', 'unit', 'tax']);
         $data['product'] = $product;
+        $data['title'] = $product->name;
         return view('admin.products.show', $data)
             ->with('menu', 'products');
     }
@@ -106,6 +109,7 @@ class ProductController extends Controller
         $data['units'] = Unit::all();
         $data['taxes'] = Tax::all();
         $data['product'] = $product;
+        $data['title'] = $product->name;
 
         return view('admin.products.edit', $data)
             ->with('menu', 'products');
@@ -134,7 +138,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        flash()->success('Product updated successfully!');
+        notyf()->success('Product updated successfully!');
         return redirect()->route('admin.products.index');
     }
 
@@ -146,7 +150,7 @@ class ProductController extends Controller
         try {
             // Store product name for response
             $productName = $product->name;
-            
+
             // Soft delete the product (image will be kept for potential restore)
             $product->delete();
 
@@ -158,9 +162,9 @@ class ProductController extends Controller
                 ]);
             }
 
-            flash()->success('Product deleted successfully!');
+            notyf()->success('Product deleted successfully!');
             return redirect()->route('admin.products.index');
-            
+
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
@@ -169,7 +173,7 @@ class ProductController extends Controller
                 ], 500);
             }
 
-            flash()->error('Failed to delete product!');
+            notyf()->error('Failed to delete product!');
             return redirect()->route('admin.products.index');
         }
     }
@@ -294,10 +298,64 @@ class ProductController extends Controller
         }
 
         if (!empty($errors)) {
-            flash()->error($message);
+            notyf()->error($message);
         } else {
-            flash()->success($message);
+            notyf()->success($message);
         }
         return redirect()->route('admin.products.index');
+    }
+
+    /**
+     * Download barcode PDF
+     */
+    public function downloadBarcode(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'nullable|exists:products,id',
+            'sku' => 'required|string',
+            'name' => 'required|string',
+            'quantity' => 'required|integer|min:1|max:100'
+        ]);
+
+        $sku = $request->sku;
+        $name = $request->name;
+        $quantity = (int) $request->quantity;
+
+        try {
+            // Generate barcode using Picqer library
+            $generator = new BarcodeGeneratorPNG();
+            $barcodeData = $generator->getBarcode($sku, $generator::TYPE_CODE_128, 3, 60);
+            $barcodeBase64 = base64_encode($barcodeData);
+
+            // Prepare data for PDF
+            $data = [
+                'sku' => $sku,
+                'name' => $name,
+                'quantity' => $quantity,
+                'barcode' => $barcodeBase64,
+                'generated_at' => now()->format('Y-m-d H:i:s')
+            ];
+
+            // Generate PDF
+            $pdf = Pdf::loadView('admin.products.barcode-pdf', $data);
+            $pdf->setPaper('A4', 'portrait');
+
+            $filename = 'barcode_' . Str::slug($sku) . '_' . $quantity . '_' . date('Y-m-d_H-i-s') . '.pdf';
+
+            return $pdf->download($filename);
+
+        } catch (\Exception $e) {
+            \Log::error('Barcode generation error: ' . $e->getMessage());
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to generate barcode PDF: ' . $e->getMessage()
+                ], 500);
+            }
+
+            notyf()->error('Failed to generate barcode PDF!');
+            return redirect()->back();
+        }
     }
 }

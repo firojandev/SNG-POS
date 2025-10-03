@@ -29,16 +29,9 @@
                 <h6 class="theme-card-title">Product Details</h6>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-primary btn-sm">
-                        <i class="fa fa-edit"></i> Edit Product
+                        <i class="fa fa-edit"></i> Edit
                     </a>
-                    <form method="POST" action="{{ route('admin.products.destroy', $product) }}"
-                          class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="fa fa-trash"></i> Delete
-                        </button>
-                    </form>
+
                 </div>
             </div>
             <div class="theme-card-body">
@@ -186,10 +179,11 @@
                                 </a>
                             </div>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="window.print()">
-                                    <i class="fa fa-print"></i> Print
-                                </button>
-                                <button type="button" class="btn btn-info btn-sm" onclick="generateBarcode()">
+                                <button type="button"
+                                        class="btn btn-info btn-sm generate-barcode"
+                                        data-product-id="{{ $product->id }}"
+                                        data-sku="{{ $product->sku }}"
+                                        data-name="{{ $product->name }}">
                                     <i class="fa fa-barcode"></i> Generate Barcode
                                 </button>
                                 <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-primary btn-sm">
@@ -202,24 +196,50 @@
             </div>
         </div>
 
-        <!-- Barcode Modal -->
-        <div class="modal fade" id="barcodeModal" tabindex="-1" aria-labelledby="barcodeModalLabel" aria-hidden="true">
+        <!-- Barcode Quantity Modal -->
+        <div class="modal fade" id="barcodeQuantityModal" tabindex="-1" aria-labelledby="barcodeQuantityModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="barcodeModalLabel">Product Barcode</h5>
+                        <h5 class="modal-title" id="barcodeQuantityModalLabel">
+                            Generate Barcode
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center">
-                        <div id="barcodeContainer">
-                            <!-- Barcode will be generated here -->
-                        </div>
-                        <p class="mt-3 mb-0">{{ $product->sku }}</p>
-                        <small class="text-muted">{{ $product->name }}</small>
+                    <div class="modal-body">
+                        <form id="barcodeForm">
+                            <div class="mb-3">
+                                <div class="product-info">
+                                    <div class="fw-bold" id="modalProductName"></div>
+                                    <small class="text-muted">SKU: <span id="modalProductSku"></span></small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="barcodeQuantity" class="form-label">Quantity</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="barcodeQuantity"
+                                       name="quantity"
+                                       min="1"
+                                       max="100"
+                                       placeholder="Enter quantity"
+                                       required>
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle me-1"></i>Enter quantity between 1 to 100
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="productId" name="product_id">
+                            <input type="hidden" id="productSku" name="sku">
+                            <input type="hidden" id="productName" name="name">
+                        </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="printBarcode()">Print Barcode</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="downloadBarcodeBtn">
+                            <i class="fa fa-download me-1"></i>Download
+                        </button>
                     </div>
                 </div>
             </div>
