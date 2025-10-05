@@ -1,7 +1,12 @@
+
 <div class="wrapping-nav" id="wrappingNav">
     <nav class="navbar navbar-expand nav-aside">
         <div class="px-3">
-            <a class="navbar-brand" href="#"><img src="{{asset('admin/images/logo/logo.png')}}" class="img-fluid" alt="Logo"></a>
+            @if(get_option('app_logo'))
+            <a class="navbar-brand text-center" href="{{route('admin.dashboard')}}">
+                <img src="{{ asset('storage/' . get_option('app_logo')) }}" class="img-fluid" alt="Logo">
+            </a>
+            @endif
         </div>
     </nav>
     <nav class="navbar navbar-expand nav-content">
@@ -26,7 +31,7 @@
                 <li class="nav-item dropdown">
                     <a href="#" data-bs-toggle="dropdown" class="nav-link">
                         <span class="nav-user">
-                            <span class="nav-user-text">Hi, Admin</span>
+                            <span class="nav-user-text">{{auth()->user()->name}}</span>
                             <span class="nav-icon-box rounded-circle">
                                 <!--<i class="icon-user"></i>-->
                                 <img src="images/avatar/avatar1.jpg" class="rounded-circle" alt="Avatar">
@@ -42,8 +47,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="nav-user-name text-white">Admin</div>
-                                    <small class="d-block nav-user-title text-white">Shop Owner</small>
+                                    <div class="nav-user-name text-white">{{auth()->user()->name}}</div>
                                 </div>
                             </div>
                             <div class="dropdown-content-body p-2">

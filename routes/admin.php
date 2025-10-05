@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\CurrencyController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -48,4 +50,18 @@ Route::prefix('products')->name('admin.products.')->group(function () {
     Route::get('/import/form', [ProductController::class, 'importForm'])->name('import.form');
     Route::post('/import/csv', [ProductController::class, 'import'])->name('import');
     Route::get('/barcode/download', [ProductController::class, 'downloadBarcode'])->name('barcode.download');
+});
+
+// Settings Routes
+Route::prefix('settings')->name('admin.settings.')->group(function () {
+    Route::get('/', [SettingsController::class, 'index'])->name('index');
+    Route::put('/', [SettingsController::class, 'update'])->name('update');
+});
+
+// Currency Routes
+Route::prefix('currency')->name('admin.currency.')->group(function () {
+    Route::get('/', [CurrencyController::class, 'index'])->name('index');
+    Route::post('/', [CurrencyController::class, 'store'])->name('store');
+    Route::delete('/{currency}', [CurrencyController::class, 'destroy'])->name('destroy');
+    Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set');
 });

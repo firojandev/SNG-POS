@@ -31,7 +31,7 @@
             <div class="theme-card-body">
                 <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    
+
                     <div class="row">
                         <!-- Left Column -->
                         <div class="col-md-8">
@@ -39,7 +39,7 @@
                                 <!-- Product Name -->
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
                                            id="name" name="name" value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -49,7 +49,7 @@
                                 <!-- SKU -->
                                 <div class="col-md-6 mb-3">
                                     <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('sku') is-invalid @enderror" 
+                                    <input type="text" class="form-control @error('sku') is-invalid @enderror"
                                            id="sku" name="sku" value="{{ old('sku') }}" required>
                                     @error('sku')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -60,9 +60,9 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="purchase_price" class="form-label">Purchase Price <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input type="number" class="form-control @error('purchase_price') is-invalid @enderror" 
-                                               id="purchase_price" name="purchase_price" value="{{ old('purchase_price') }}" 
+                                        <span class="input-group-text">{{get_option('app_currency')}}</span>
+                                        <input type="number" class="form-control @error('purchase_price') is-invalid @enderror"
+                                               id="purchase_price" name="purchase_price" value="{{ old('purchase_price') }}"
                                                step="0.01" min="0" required>
                                     </div>
                                     @error('purchase_price')
@@ -74,9 +74,9 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="sell_price" class="form-label">Sell Price <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input type="number" class="form-control @error('sell_price') is-invalid @enderror" 
-                                               id="sell_price" name="sell_price" value="{{ old('sell_price') }}" 
+                                        <span class="input-group-text">{{get_option('app_currency')}}</span>
+                                        <input type="number" class="form-control @error('sell_price') is-invalid @enderror"
+                                               id="sell_price" name="sell_price" value="{{ old('sell_price') }}"
                                                step="0.01" min="0" required>
                                     </div>
                                     @error('sell_price')
@@ -87,8 +87,8 @@
                                 <!-- Stock Quantity -->
                                 <div class="col-md-6 mb-3">
                                     <label for="stock_quantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('stock_quantity') is-invalid @enderror" 
-                                           id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" 
+                                    <input type="number" class="form-control @error('stock_quantity') is-invalid @enderror"
+                                           id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity', 0) }}"
                                            min="0" required>
                                     @error('stock_quantity')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -98,11 +98,11 @@
                                 <!-- Category -->
                                 <div class="col-md-6 mb-3">
                                     <label for="category_id" class="form-label">Category</label>
-                                    <select class="form-select select2-dropdown @error('category_id') is-invalid @enderror" 
+                                    <select class="form-select select2-dropdown @error('category_id') is-invalid @enderror"
                                             id="category_id" name="category_id">
                                         <option value="">Select Category</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" 
+                                            <option value="{{ $category->id }}"
                                                 {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
@@ -116,11 +116,11 @@
                                 <!-- Unit -->
                                 <div class="col-md-6 mb-3">
                                     <label for="unit_id" class="form-label">Unit</label>
-                                    <select class="form-select select2-dropdown @error('unit_id') is-invalid @enderror" 
+                                    <select class="form-select select2-dropdown @error('unit_id') is-invalid @enderror"
                                             id="unit_id" name="unit_id">
                                         <option value="">Select Unit</option>
                                         @foreach($units as $unit)
-                                            <option value="{{ $unit->id }}" 
+                                            <option value="{{ $unit->id }}"
                                                 {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
                                                 {{ $unit->name }}
                                             </option>
@@ -134,11 +134,11 @@
                                 <!-- Tax -->
                                 <div class="col-md-6 mb-3">
                                     <label for="tax_id" class="form-label">Tax</label>
-                                    <select class="form-select select2-dropdown @error('tax_id') is-invalid @enderror" 
+                                    <select class="form-select select2-dropdown @error('tax_id') is-invalid @enderror"
                                             id="tax_id" name="tax_id">
                                         <option value="">Select Tax</option>
                                         @foreach($taxes as $tax)
-                                            <option value="{{ $tax->id }}" 
+                                            <option value="{{ $tax->id }}"
                                                 {{ old('tax_id') == $tax->id ? 'selected' : '' }}>
                                                 {{ $tax->name }} ({{ $tax->rate }}%)
                                             </option>
@@ -152,8 +152,8 @@
                                 <!-- Description -->
                                 <div class="col-12 mb-3">
                                     <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control @error('description') is-invalid @enderror" 
-                                              id="description" name="description" rows="4" 
+                                    <textarea class="form-control @error('description') is-invalid @enderror"
+                                              id="description" name="description" rows="4"
                                               placeholder="Enter product description...">{{ old('description') }}</textarea>
                                     @error('description')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -173,7 +173,7 @@
                                             <p class="text-muted">Click to upload image</p>
                                         </div>
                                     </div>
-                                    <input type="file" class="form-control @error('image') is-invalid @enderror" 
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
                                            id="image" name="image" accept="image/*" onchange="previewImage(this)">
                                     @error('image')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -186,7 +186,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Status</label>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="is_active" 
+                                    <input class="form-check-input" type="checkbox" id="is_active"
                                            name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="is_active">
                                         Active
