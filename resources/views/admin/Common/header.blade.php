@@ -33,8 +33,11 @@
                         <span class="nav-user">
                             <span class="nav-user-text">{{auth()->user()->name}}</span>
                             <span class="nav-icon-box rounded-circle">
-                                <!--<i class="icon-user"></i>-->
-                                <img src="images/avatar/avatar1.jpg" class="rounded-circle" alt="Avatar">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}" class="rounded-circle" alt="Avatar">
+                                @else
+                                    <img src="{{ asset('admin/images/avatar/default-avatar.png') }}" class="rounded-circle" alt="Avatar">
+                                @endif
                             </span>
                         </span>
                     </a>
@@ -43,7 +46,11 @@
                             <div class="dropdown-content-header d-flex align-items-center bg-info p-2">
                                 <div class="me-3">
                                     <div class="box-50 rounded-circle bg-light">
-                                        <img src="images/avatar/avatar1.jpg" class="rounded-circle img-fit">
+                                        @if(auth()->user()->avatar)
+                                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}" class="rounded-circle img-fit" alt="Avatar">
+                                        @else
+                                            <img src="{{ asset('admin/images/avatar/default-avatar.png') }}" class="rounded-circle img-fit" alt="Avatar">
+                                        @endif
                                     </div>
                                 </div>
                                 <div>
@@ -51,16 +58,14 @@
                                 </div>
                             </div>
                             <div class="dropdown-content-body p-2">
-                                <a href="#" class="d-flex align-items-center dropdown-item">
+                                <a href="{{ route('admin.profile.index') }}" class="d-flex align-items-center dropdown-item">
                                     <span class="me-3 text-info"><i class="icon-user"></i></span>
                                     <span class="text-14">Profile</span>
                                 </a>
-                                <a href="#" class="d-flex align-items-center dropdown-item">
-                                    <span class="me-3 text-info"><i class="icon-envelope"></i></span>
-                                    <span class="text-14">Inbox</span>
-                                    <span class="ms-auto"><span class="new-notify-count message-count">5</span></span>
+                                <a href="{{ route('admin.profile.change-password') }}" class="d-flex align-items-center dropdown-item">
+                                    <span class="me-3 text-info"><i class="fa fa-lock"></i></span>
+                                    <span class="text-14">Change Password</span>
                                 </a>
-
 
                                 <div class="dropdown-divider"></div>
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\Admin\ProfileController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -64,4 +65,12 @@ Route::prefix('currency')->name('admin.currency.')->group(function () {
     Route::post('/', [CurrencyController::class, 'store'])->name('store');
     Route::delete('/{currency}', [CurrencyController::class, 'destroy'])->name('destroy');
     Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set');
+});
+
+// Profile Routes
+Route::prefix('profile')->name('admin.profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::put('/update', [ProfileController::class, 'updateProfile'])->name('update');
+    Route::get('/change-password', [ProfileController::class, 'changePasswordForm'])->name('change-password');
+    Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
 });
