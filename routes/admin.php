@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CurrencyController;
@@ -37,6 +39,25 @@ Route::prefix('tax')->group(function () {
     Route::get('/{tax}/edit', [TaxController::class, 'edit'])->name('tax.edit');
     Route::put('/{tax}', [TaxController::class, 'update'])->name('tax.update');
     Route::delete('/{tax}', [TaxController::class, 'destroy'])->name('tax.destroy');
+});
+
+Route::prefix('store')->group(function () {
+    Route::get('/', [StoreController::class, 'index'])->name('store.index');
+    Route::get('/get-data', [StoreController::class, 'getData'])->name('store.getData');
+    Route::post('/', [StoreController::class, 'store'])->name('store.store');
+    Route::get('/{store}/edit', [StoreController::class, 'edit'])->name('store.edit');
+    Route::put('/{store}', [StoreController::class, 'update'])->name('store.update');
+    Route::delete('/{store}', [StoreController::class, 'destroy'])->name('store.destroy');
+});
+
+Route::prefix('staff')->group(function () {
+    Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/get-data', [StaffController::class, 'getData'])->name('staff.getData');
+    Route::get('/get-stores', [StaffController::class, 'getStores'])->name('staff.getStores');
+    Route::post('/', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/{staff}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/{staff}', [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
 });
 
 Route::prefix('products')->name('admin.products.')->group(function () {

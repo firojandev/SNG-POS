@@ -150,57 +150,6 @@
                     </ul>
                 </div>
             </li>
-
-            <li class="aside-nav-item toggle-item">
-                <a href="#" class="aside-nav-link toggler toggle-icon">
-                    <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Staffs</span>
-                </a>
-
-                <div class="aside-nav-dropdown toggleable-content">
-                    <ul class="list-unstyled aside-nav-list">
-                        <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Departments</span>
-                            </a>
-                        </li>
-                        <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Designations </span>
-                            </a>
-                        </li>
-                        <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Staffs </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="aside-nav-item">
-                <a href="#" class="aside-nav-link aside-nav-link-small">
-                    <span class="aside-nav-icon"><i class="fa fa-shopping-bag"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Store</span>
-                </a>
-            </li>
-
-            <li class="aside-nav-item">
-                <a href="#" class="aside-nav-link aside-nav-link-small">
-                    <span class="aside-nav-icon"><i class="fa fa-user-secret"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Supplier</span>
-                </a>
-            </li>
-            <li class="aside-nav-item">
-                <a href="#" class="aside-nav-link aside-nav-link-small">
-                    <span class="aside-nav-icon"><i class="fa fa-user-secret"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Customer</span>
-                </a>
-            </li>
-
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
                     <span class="aside-nav-icon"><i class="fa fa-line-chart"></i></span>
@@ -261,14 +210,33 @@
                 </div>
             </li>
 
+
             <li class="aside-nav-item">
-                <a href="#" class="aside-nav-link aside-nav-link-small">
-                    <span class="aside-nav-icon"><i class="fa fa-bar-chart-o"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Stock Reports</span>
+                <a href="{{route('store.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'store' ? 'active' : ''}}">
+                    <span class="aside-nav-icon"><i class="fa fa-shopping-bag"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Store</span>
                 </a>
             </li>
 
+            <li class="aside-nav-item">
+                <a href="{{route('staff.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'staff' ? 'active' : ''}}">
+                    <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Staffs</span>
+                </a>
+            </li>
 
+            <li class="aside-nav-item">
+                <a href="#" class="aside-nav-link aside-nav-link-small">
+                    <span class="aside-nav-icon"><i class="fa fa-user-secret"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Supplier</span>
+                </a>
+            </li>
+            <li class="aside-nav-item">
+                <a href="#" class="aside-nav-link aside-nav-link-small">
+                    <span class="aside-nav-icon"><i class="fa fa-user-secret"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Customer</span>
+                </a>
+            </li>
 
 
             <li class="aside-nav-item toggle-item">

@@ -22,10 +22,7 @@
     <!--======== Custom =============-->
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/custom-helper.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/main.css')}}">
-
-
-
-
+    <link rel="stylesheet" type="text/css" href="{{asset('admin/css/modal-select2-fix.css')}}">
 
 </head>
 <body>

@@ -74,6 +74,12 @@ window.initializeSelect2 = function() {
             }
         };
 
+        // If select is inside a modal, attach dropdown to modal
+        const modal = $select.closest('.modal');
+        if (modal.length > 0) {
+            config.dropdownParent = modal;
+        }
+
         // Get placeholder from the first empty option
         const emptyOption = $select.find('option[value=""]').first();
         if (emptyOption.length > 0) {
@@ -139,6 +145,12 @@ window.reinitializeSelect2 = function(container) {
 
         const placeholder = $select.data('placeholder') || $select.find('option[value=""]').text() || config.placeholder;
         config.placeholder = placeholder;
+
+        // If select is inside a modal, attach dropdown to modal
+        const modal = $select.closest('.modal');
+        if (modal.length > 0) {
+            config.dropdownParent = modal;
+        }
 
         try {
             $select.select2(config);

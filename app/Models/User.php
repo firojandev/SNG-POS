@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone',
         'address',
         'avatar',
+        'store_id',
     ];
 
     /**
@@ -47,5 +48,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the store that the user belongs to.
+     */
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    /**
+     * Scope a query to only include users from a specific store.
+     */
+    public function scopeFromStore($query, $storeId)
+    {
+        return $query->where('store_id', $storeId);
+    }
+
+    /**
+     * Get the user's full name with store information.
+     */
+    public function getFullNameWithStoreAttribute(): string
+    {
+        $storeName = $this->store ? $this->store->name : 'No Store';
+        return "{$this->name} ({$storeName})";
     }
 }
