@@ -226,9 +226,9 @@
             </li>
 
             <li class="aside-nav-item">
-                <a href="#" class="aside-nav-link aside-nav-link-small">
+                <a href="{{route('suppliers.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'suppliers' ? 'active' : ''}}">
                     <span class="aside-nav-icon"><i class="fa fa-user-secret"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Supplier</span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Suppliers</span>
                 </a>
             </li>
             <li class="aside-nav-item">

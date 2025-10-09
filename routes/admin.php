@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SupplierController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -86,6 +87,16 @@ Route::prefix('currency')->name('admin.currency.')->group(function () {
     Route::post('/', [CurrencyController::class, 'store'])->name('store');
     Route::delete('/{currency}', [CurrencyController::class, 'destroy'])->name('destroy');
     Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set');
+});
+
+// Supplier Routes
+Route::prefix('suppliers')->group(function () {
+    Route::get('/', [SupplierController::class, 'index'])->name('suppliers.index');
+    Route::get('/get-data', [SupplierController::class, 'getData'])->name('suppliers.getData');
+    Route::post('/', [SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
+    Route::put('/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
 });
 
 // Profile Routes

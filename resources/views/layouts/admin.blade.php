@@ -25,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/modal-select2-fix.css')}}">
 
 </head>
-<body>
+<body data-app-currency="{{ get_option('app_currency') }}">
 <!--========== Navbar ==========-->
 @include('admin.Common.header')
 
@@ -52,6 +52,7 @@
 <script type="text/javascript" src="{{asset('admin/plugin/select2/select2.min.js')}}"></script>
 <!-- Select2 Global Initialization -->
 <script type="text/javascript" src="{{asset('admin/partial/js/select2-init.js')}}"></script>
+<script type="text/javascript" src="{{asset('admin/partial/js/app-config.js')}}"></script>
 <script type="text/javascript" src="{{asset('admin/partial/js/global.js')}}"></script>
 
 <!--============== Extra Plugin ===================-->
