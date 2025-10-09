@@ -41,12 +41,9 @@ window.Select2Config = {
 window.initializeSelect2 = function() {
     // Wait for jQuery and Select2 to be available
     if (typeof $ === 'undefined' || typeof $.fn.select2 === 'undefined') {
-        console.log('jQuery or Select2 not loaded yet, retrying...');
         setTimeout(window.initializeSelect2, 100);
         return;
     }
-
-    console.log('Starting Select2 initialization...');
 
     // Initialize all select elements with select2-dropdown class
     $('.select2-dropdown').each(function() {
@@ -54,7 +51,6 @@ window.initializeSelect2 = function() {
         
         // Skip if already initialized
         if ($select.hasClass('select2-hidden-accessible')) {
-            console.log('Select2 already initialized for:', $select.attr('name'));
             return;
         }
 
@@ -89,7 +85,6 @@ window.initializeSelect2 = function() {
         // Initialize Select2
         try {
             $select.select2(config);
-            console.log('✓ Select2 initialized for:', $select.attr('name') || 'unnamed select');
         } catch (error) {
             console.error('✗ Error initializing Select2:', error, $select);
         }
@@ -124,7 +119,6 @@ window.initializeSelect2 = function() {
 
         try {
             $select.select2(config);
-            console.log('✓ Select2 auto-initialized for:', $select.attr('name') || 'unnamed select');
         } catch (error) {
             console.error('✗ Error auto-initializing Select2:', error);
         }
@@ -171,20 +165,10 @@ window.destroySelect2 = function(selector) {
 
 // Initialize when DOM is ready
 $(document).ready(function() {
-    console.log('DOM ready - Initializing Select2 globally...');
-    
-    // Debug: Check if jQuery and Select2 are available
-    console.log('jQuery available:', typeof $ !== 'undefined');
-    console.log('Select2 available:', typeof $.fn.select2 !== 'undefined');
-    console.log('Select elements found:', $('select').length);
-    console.log('Select2-dropdown elements found:', $('.select2-dropdown').length);
-    
     window.initializeSelect2();
     
     // Double-check after 1 second
     setTimeout(() => {
-        console.log('After 1s - Select2 initialized elements:', $('.select2-hidden-accessible').length);
-        
         // Force reinitialize all select2 dropdowns to ensure search works
         $('.select2-dropdown').each(function() {
             const $select = $(this);
@@ -195,8 +179,6 @@ $(document).ready(function() {
         
         // Reinitialize with search enabled
         window.initializeSelect2();
-        
-        console.log('Force reinitialized all Select2 dropdowns with search enabled');
     }, 1000);
 });
 

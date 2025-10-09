@@ -35,6 +35,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th>Designation</th>
                             <th>Store</th>
                             <th class="width-20-percentage text-center">Options</th>
                         </tr>
@@ -113,11 +114,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter staff address (optional)"></textarea>
-                                <div class="invalid-feedback" id="addressError"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="designation" class="form-label">Designation</label>
+                                        <input type="text" class="form-control" id="designation" name="designation" placeholder="e.g., Cashier, Manager (optional)">
+                                        <div class="invalid-feedback" id="designationError"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter staff address (optional)"></textarea>
+                                        <div class="invalid-feedback" id="addressError"></div>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="mb-3">
                                 <label for="avatar" class="form-label">Profile Image</label>
                                 <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">

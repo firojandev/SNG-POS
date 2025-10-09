@@ -103,8 +103,17 @@ function initializeDataTable() {
         "ordering": true,
         "info": true,
         "autoWidth": false,
+        "columns": [
+            { "title": "Avatar", "orderable": false },
+            { "title": "Name" },
+            { "title": "Email" },
+            { "title": "Phone" },
+            { "title": "Designation" },
+            { "title": "Store" },
+            { "title": "Options", "orderable": false }
+        ],
         "columnDefs": [
-            { "orderable": false, "targets": -1 }
+            { "orderable": false, "targets": [0, 6] } // Avatar and Options columns
         ],
         "language": {
             "emptyTable": "No staff found",
@@ -117,8 +126,6 @@ function initializeDataTable() {
  * Load stores from DOM (populated by controller)
  */
 function loadStoresFromDOM() {
-    console.log('Loading stores from DOM...');
-
     const storeSelect = $('#storeSelect');
     stores = [];
 
@@ -133,25 +140,19 @@ function loadStoresFromDOM() {
             });
         }
     });
-
-    console.log('Stores loaded from DOM:', stores);
 }
 
 /**
  * Load stores for dropdown (AJAX method - kept as fallback)
  */
 function loadStores() {
-    console.log('Loading stores via AJAX...');
-
     $.ajax({
         url: '/admin/staff/get-stores',
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            console.log('Stores response received:', response);
             if (response.success) {
                 stores = response.data;
-                console.log('Stores data:', stores);
                 populateStoreDropdown();
             } else {
                 console.error('Failed to load stores:', response.message);
@@ -181,11 +182,7 @@ function loadStores() {
  * Populate store dropdown
  */
 function populateStoreDropdown() {
-    console.log('Populating store dropdown...');
-    console.log('Stores array:', stores);
-
     const storeSelect = $('#storeSelect');
-    console.log('Store select element found:', storeSelect.length);
 
     if (storeSelect.length === 0) {
         console.error('Store select element not found!');
@@ -197,10 +194,8 @@ function populateStoreDropdown() {
 
     if (stores && stores.length > 0) {
         stores.forEach(function(store) {
-            console.log('Adding store option:', store.id, store.name);
             storeSelect.append(`<option value="${store.id}">${store.name}</option>`);
         });
-        console.log('Total options added:', storeSelect.find('option').length);
     } else {
         console.warn('No stores to populate');
     }
@@ -245,6 +240,7 @@ function populateTable(staff) {
     staff.forEach(function(member) {
         const storeName = member.store ? member.store.name : 'No Store';
         const phone = member.phone || 'N/A';
+        const designation = member.designation || 'N/A';
 
         // Avatar display
         let avatarHtml = '<div class="text-center">';
@@ -271,6 +267,7 @@ function populateTable(staff) {
             member.name,
             member.email,
             phone,
+            designation,
             storeName,
             actions
         ]);
@@ -296,7 +293,6 @@ function openCreateModal() {
     $('#passwordHelp').text('Minimum 8 characters required');
 
     // Stores should already be loaded from DOM
-    console.log('Stores available:', stores.length);
 }
 
 /**
@@ -323,6 +319,7 @@ function openEditModal(staffId) {
                 $('#staffName').val(staff.name);
                 $('#email').val(staff.email);
                 $('#phoneNumber').val(staff.phone || '');
+                $('#designation').val(staff.designation || '');
                 $('#address').val(staff.address || '');
                 $('#storeSelect').val(staff.store_id || '');
                 $('#formMethod').val('PUT');
@@ -521,16 +518,10 @@ function hideLoadingSpinner(spinnerSelector, buttonSelector) {
  * Display validation errors
  */
 function displayValidationErrors(errors) {
-    console.log('Displaying validation errors:', errors);
-    
     for (const field in errors) {
         if (errors.hasOwnProperty(field)) {
             const errorElement = '#' + field + 'Error';
             const inputElement = '[name="' + field + '"]';
-
-            console.log('Setting error for field:', field, 'Error:', errors[field][0]);
-            console.log('Error element:', errorElement, 'Found:', $(errorElement).length);
-            console.log('Input element:', inputElement, 'Found:', $(inputElement).length);
 
             // Set error message
             $(errorElement).text(errors[field][0]);
@@ -555,8 +546,6 @@ function displayValidationErrors(errors) {
  * Clear validation errors
  */
 function clearValidationErrors() {
-    console.log('Clearing validation errors');
-    
     // Remove invalid class from all inputs
     $('.is-invalid').removeClass('is-invalid');
     

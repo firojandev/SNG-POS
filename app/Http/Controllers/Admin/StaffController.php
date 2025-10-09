@@ -93,6 +93,7 @@ class StaffController extends Controller
                 'email' => $request->validated()['email'],
                 'password' => Hash::make($request->validated()['password']),
                 'phone' => $request->validated()['phone'] ?? null,
+                'designation' => $request->validated()['designation'] ?? null,
                 'address' => $request->validated()['address'] ?? null,
                 'store_id' => $request->validated()['store_id'],
                 'avatar' => $avatarPath
@@ -151,6 +152,7 @@ class StaffController extends Controller
                 'name' => $request->validated()['name'],
                 'email' => $request->validated()['email'],
                 'phone' => $request->validated()['phone'] ?? null,
+                'designation' => $request->validated()['designation'] ?? null,
                 'address' => $request->validated()['address'] ?? null,
                 'store_id' => $request->validated()['store_id']
             ];

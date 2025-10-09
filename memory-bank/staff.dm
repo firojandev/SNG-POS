@@ -14,11 +14,13 @@ This document outlines the Staff CRUD (Create, Read, Update, Delete) functionali
 - email_verified_at (timestamp, nullable)
 - password (varchar 255, required, hashed)
 - phone (varchar 255, nullable)
+- designation (varchar 255, nullable) - Job designation/title
 - address (text, nullable)
 - avatar (varchar 255, nullable)
 - remember_token (varchar 100, nullable)
 - created_at (timestamp)
 - updated_at (timestamp)
+- deleted_at (timestamp, nullable) - Soft delete timestamp
 ```
 
 ### Key Features
@@ -27,7 +29,8 @@ This document outlines the Staff CRUD (Create, Read, Update, Delete) functionali
 - Login credentials with email and password
 - Comprehensive validation rules
 - Password hashing for security
-- Optional phone and address fields
+- Optional phone, designation, and address fields
+- Soft delete functionality for data preservation
 
 ## Files Structure
 
@@ -61,11 +64,12 @@ Route::prefix('staff')->group(function () {
 ## Model Details
 
 ### Enhanced User Model Features
-- **Mass Assignable Fields**: name, email, password, phone, address, avatar, store_id
+- **Mass Assignable Fields**: name, email, password, phone, designation, address, avatar, store_id
 - **Relationships**: `store()` - belongsTo Store model
 - **Scopes**: `fromStore($storeId)` - filters users by store
 - **Accessors**: `getFullNameWithStoreAttribute()` - returns name with store info
 - **Password Hashing**: Automatic via Laravel's built-in casting
+- **Soft Deletes**: Uses SoftDeletes trait for data preservation
 
 ### Store Relationship
 ```php
@@ -83,6 +87,7 @@ public function store()
 - email: required, email, max:255, unique:users,email
 - password: required, string, min:8, confirmed
 - phone: nullable, string, max:20, min:10
+- designation: nullable, string, max:255
 - address: nullable, string, max:1000
 - store_id: required, exists:stores,id
 ```
@@ -96,12 +101,12 @@ Same as creation rules but:
 
 ### StaffController
 - `index()`: Returns the main view with title and menu context
-- `getData()`: AJAX endpoint returning all staff with store relationships
+- `getData()`: AJAX endpoint returning all active staff with store relationships
 - `getStores()`: AJAX endpoint returning active stores for dropdown
 - `store()`: Creates new staff with password hashing and store association
 - `edit()`: Returns staff data with store relationship for editing
 - `update()`: Updates existing staff, optionally updates password
-- `destroy()`: Deletes staff (hard delete, not soft delete)
+- `destroy()`: Soft deletes staff (sets deleted_at timestamp)
 
 ### Response Format
 All AJAX endpoints return consistent JSON format:
@@ -151,15 +156,18 @@ All AJAX endpoints return consistent JSON format:
 3. **Password**: Password input with confirmation (required for create, optional for edit)
 4. **Password Confirmation**: Matching password field
 5. **Phone Number**: Optional text input
-6. **Store**: Required dropdown populated with active stores
-7. **Address**: Optional textarea
+6. **Designation**: Optional text input for job title
+7. **Store**: Required dropdown populated with active stores
+8. **Address**: Optional textarea
 
 ### Table Columns
-1. Name
-2. Email
-3. Phone (displays "N/A" if empty)
-4. Store (displays store name or "No Store")
-5. Actions (Edit/Delete buttons)
+1. Avatar (circular image or initials)
+2. Name
+3. Email
+4. Phone (displays "N/A" if empty)
+5. Designation (displays "N/A" if empty)
+6. Store (displays store name or "No Store")
+7. Actions (Edit/Delete buttons)
 
 ### Navigation
 - Added to admin sidebar as "Manage Staffs"
@@ -173,6 +181,12 @@ All AJAX endpoints return consistent JSON format:
 - Password hashing using Laravel's built-in bcrypt
 - Currently allows all authenticated admin users to manage staff
 - Can be extended with role-based permissions
+
+### Data Management
+- Soft delete functionality preserves data integrity
+- Deleted staff records are marked with deleted_at timestamp
+- Soft deleted records are automatically excluded from queries
+- Avatar files are deleted when staff is soft deleted
 
 ### Validation
 - Comprehensive server-side validation
@@ -227,7 +241,7 @@ All AJAX endpoints return consistent JSON format:
 
 ### Potential Enhancements
 1. **Role Management**: Add roles and permissions system
-2. **Profile Pictures**: Avatar upload functionality
+2. **Profile Pictures**: Avatar upload functionality (✅ Implemented)
 3. **Department Assignment**: Add department relationships
 4. **Shift Management**: Staff scheduling system
 5. **Performance Tracking**: Staff metrics and KPIs
@@ -235,6 +249,8 @@ All AJAX endpoints return consistent JSON format:
 7. **Email Verification**: Account activation system
 8. **Two-Factor Authentication**: Enhanced security
 9. **Activity Logging**: Staff action tracking
+10. **Soft Delete Management**: Restore deleted staff functionality
+11. **Designation Management**: Predefined designation options
 
 ### Integration Points
 - Authentication system (login functionality)
@@ -305,9 +321,17 @@ All AJAX endpoints return consistent JSON format:
 - Password hashing and security
 - Store dropdown integration
 
+### v1.1.0 (Designation & Soft Delete Enhancement)
+- Added designation field to users table
+- Implemented soft delete functionality
+- Updated validation rules to include designation
+- Enhanced UI with designation column in table
+- Updated documentation with new features
+- Improved data preservation with soft deletes
+
 ---
 
-**Last Updated**: October 7, 2025
+**Last Updated**: October 9, 2025
 **Author**: AI Assistant
 **Status**: Complete and Ready for Use
 **Dependencies**: Store CRUD module must be implemented first

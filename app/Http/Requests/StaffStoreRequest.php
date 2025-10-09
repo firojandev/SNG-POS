@@ -44,8 +44,12 @@ class StaffStoreRequest extends FormRequest
             'phone' => [
                 'nullable',
                 'string',
-                'max:20',
-                'min:10'
+                'max:20'
+            ],
+            'designation' => [
+                'nullable',
+                'string',
+                'max:255'
             ],
             'address' => [
                 'nullable',
@@ -87,7 +91,8 @@ class StaffStoreRequest extends FormRequest
             'password.confirmed' => 'Password confirmation does not match.',
             'phone.string' => 'Phone number must be a valid string.',
             'phone.max' => 'Phone number cannot exceed 20 characters.',
-            'phone.min' => 'Phone number must be at least 10 characters long.',
+            'designation.string' => 'Designation must be a valid string.',
+            'designation.max' => 'Designation cannot exceed 255 characters.',
             'address.string' => 'Address must be a valid string.',
             'address.max' => 'Address cannot exceed 1000 characters.',
             'store_id.required' => 'Store selection is required.',
@@ -110,6 +115,7 @@ class StaffStoreRequest extends FormRequest
             'email' => 'email address',
             'password' => 'password',
             'phone' => 'phone number',
+            'designation' => 'designation',
             'address' => 'address',
             'store_id' => 'store',
             'avatar' => 'profile image'
