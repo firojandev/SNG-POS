@@ -1,14 +1,2 @@
-============= 05/10/2025=========
+=========== 11/10/2025=============
 1. php artisan migrate
-2. composer update
-3. php artisan db:seed --class=DefaultSettingsSeeder
-4. php artisan optimize:clear
-
-=========== 06/10/2025=============
-1. php artisan migrate
-=========== 07/10/2025=============
-1. php artisan migrate
-
-=========== 09/10/2025=============
-1. php artisan migrate
-

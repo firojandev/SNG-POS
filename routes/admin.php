@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\CustomerController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -97,6 +98,16 @@ Route::prefix('suppliers')->group(function () {
     Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
     Route::put('/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
     Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+});
+
+// Customer Routes
+Route::prefix('customers')->group(function () {
+    Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('/get-data', [CustomerController::class, 'getData'])->name('customers.getData');
+    Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
+    Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::put('/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 });
 
 // Profile Routes
