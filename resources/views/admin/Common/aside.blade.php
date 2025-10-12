@@ -100,13 +100,13 @@
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
                     <span class="aside-nav-icon"><i class="fa fa-dollar"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Expense</span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Expense</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'expense-category' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('expense-category.index')}}" class="aside-nav-sublink {{@$menu == 'expense-category' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Category</span>
                             </a>

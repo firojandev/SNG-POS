@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ExpenseCategoryController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -108,6 +109,16 @@ Route::prefix('customers')->group(function () {
     Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
     Route::put('/{customer}', [CustomerController::class, 'update'])->name('customers.update');
     Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+});
+
+// Expense Category Routes
+Route::prefix('expense-category')->group(function () {
+    Route::get('/', [ExpenseCategoryController::class, 'index'])->name('expense-category.index');
+    Route::get('/get-data', [ExpenseCategoryController::class, 'getData'])->name('expense-category.getData');
+    Route::post('/', [ExpenseCategoryController::class, 'store'])->name('expense-category.store');
+    Route::get('/{expenseCategory}/edit', [ExpenseCategoryController::class, 'edit'])->name('expense-category.edit');
+    Route::put('/{expenseCategory}', [ExpenseCategoryController::class, 'update'])->name('expense-category.update');
+    Route::delete('/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])->name('expense-category.destroy');
 });
 
 // Profile Routes
