@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -81,4 +83,14 @@ class Product extends Model
         }
         return 'In Stock';
     }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        self::creating(function($model){
+            $model->uuid =  Str::uuid()->toString();
+            $model->store_id =  Auth::user()->store_id;
+        });
+    }
+
 }

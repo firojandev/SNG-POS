@@ -1,2 +1,2 @@
-=========== 12/10/2025=============
-1. php artisan migrate
+=========== 15/10/2025=============
+1. Import sng_pos_2025-10-14.sql from database directory
