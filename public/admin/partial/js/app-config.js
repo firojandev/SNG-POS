@@ -6,6 +6,7 @@
 // Global application configuration
 window.appConfig = {
     currency: null, // Will be set dynamically
+    dateFormatPhp: null,
     csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
     baseUrl: window.location.origin
 };
@@ -21,6 +22,13 @@ function initializeAppConfig() {
         window.appConfig.currency = currencyElement.getAttribute('data-app-currency');
     } else {
         window.appConfig.currency = '$'; // Default fallback
+    }
+    // Date format from body
+    const body = document.querySelector('body');
+    if (body && body.getAttribute('data-date-format')) {
+        window.appConfig.dateFormatPhp = body.getAttribute('data-date-format');
+    } else {
+        window.appConfig.dateFormatPhp = 'Y-m-d';
     }
     
     // Make currency available globally for backward compatibility

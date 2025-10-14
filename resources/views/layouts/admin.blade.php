@@ -25,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('admin/css/modal-select2-fix.css')}}">
 
 </head>
-<body data-app-currency="{{ get_option('app_currency') }}">
+<body data-app-currency="{{ get_option('app_currency') }}" data-date-format="{{ get_option('date_format', 'Y-m-d') }}">
 <!--========== Navbar ==========-->
 @include('admin.Common.header')
 
