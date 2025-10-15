@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ExpenseCategoryController;
 use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\IncomeCategoryController;
+use App\Http\Controllers\Admin\IncomeController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -130,6 +132,26 @@ Route::prefix('expenses')->group(function () {
     Route::get('/{expense}/edit', [ExpenseController::class, 'edit'])->name('expenses.edit');
     Route::put('/{expense}', [ExpenseController::class, 'update'])->name('expenses.update');
     Route::delete('/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
+});
+
+// Income Category Routes
+Route::prefix('income-category')->group(function () {
+    Route::get('/', [IncomeCategoryController::class, 'index'])->name('income-category.index');
+    Route::get('/get-data', [IncomeCategoryController::class, 'getData'])->name('income-category.getData');
+    Route::post('/', [IncomeCategoryController::class, 'store'])->name('income-category.store');
+    Route::get('/{incomeCategory}/edit', [IncomeCategoryController::class, 'edit'])->name('income-category.edit');
+    Route::put('/{incomeCategory}', [IncomeCategoryController::class, 'update'])->name('income-category.update');
+    Route::delete('/{incomeCategory}', [IncomeCategoryController::class, 'destroy'])->name('income-category.destroy');
+});
+
+// Income Routes
+Route::prefix('incomes')->group(function () {
+    Route::get('/', [IncomeController::class, 'index'])->name('incomes.index');
+    Route::get('/get-data', [IncomeController::class, 'getData'])->name('incomes.getData');
+    Route::post('/', [IncomeController::class, 'store'])->name('incomes.store');
+    Route::get('/{income}/edit', [IncomeController::class, 'edit'])->name('incomes.edit');
+    Route::put('/{income}', [IncomeController::class, 'update'])->name('incomes.update');
+    Route::delete('/{income}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
 });
 
 // Profile Routes

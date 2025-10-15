@@ -1,0 +1,258 @@
+"use strict";
+
+let incomeDataTable;
+let isEditMode = false;
+
+$(document).ready(function() {
+    initializeDataTable();
+    initializeWidgets();
+    loadIncomes();
+
+    $('#incomeForm').on('submit', handleFormSubmit);
+    $('#incomeModal').on('shown.bs.modal', function() {
+        initializeWidgets();
+    });
+    $('#incomeModal').on('hidden.bs.modal', function() {
+        resetForm();
+    });
+});
+
+function initializeWidgets() {
+    // Initialize select2 for category
+    if (typeof window.initializeSelect2 === 'function') {
+        window.initializeSelect2();
+    }
+    // Initialize jQuery UI datepicker
+    if (typeof $.fn.datepicker !== 'undefined') {
+        const phpFmt = (window.appConfig && window.appConfig.dateFormatPhp) ? window.appConfig.dateFormatPhp : 'Y-m-d';
+        const jqFmt = phpDateFormatToJqueryUI(phpFmt);
+        $('#date').datepicker({
+            dateFormat: jqFmt
+        });
+    }
+}
+
+// Map PHP date format to jQuery UI datepicker format
+function phpDateFormatToJqueryUI(phpFormat) {
+    // Basic mapping for common tokens used in settings
+    const map = {
+        'Y': 'yy',
+        'y': 'y',
+        'm': 'mm',
+        'n': 'm',
+        'd': 'dd',
+        'j': 'd',
+        '/': '/',
+        '-': '-',
+        ' ': ' '
+    };
+    let result = '';
+    for (let i = 0; i < phpFormat.length; i++) {
+        const ch = phpFormat[i];
+        result += (map[ch] !== undefined) ? map[ch] : ch;
+    }
+    return result;
+}
+
+function initializeDataTable() {
+    incomeDataTable = $('#dataTable').DataTable({
+        processing: true,
+        serverSide: false,
+        responsive: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        columnDefs: [
+            { orderable: false, targets: -1 }
+        ],
+        language: {
+            emptyTable: 'No incomes found',
+            zeroRecords: 'No matching incomes found'
+        }
+    });
+}
+
+function loadIncomes() {
+    $.ajax({
+        url: '/admin/incomes/get-data',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                populateTable(response.data);
+            } else {
+                showToastr('error', 'Failed to load incomes');
+            }
+        },
+        error: function() {
+            showToastr('error', 'Failed to load incomes');
+        }
+    });
+}
+
+function populateTable(incomes) {
+    incomeDataTable.clear();
+    incomes.forEach(function(income) {
+        const actions = `
+            <div class="text-center">
+                <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditModal(${income.id})">
+                    <i class="fa fa-edit"></i> Edit
+                </button>
+                <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteModal(${income.id})">
+                    <i class="fa fa-trash"></i> Delete
+                </button>
+            </div>
+        `;
+
+        incomeDataTable.row.add([
+            income.category ? income.category.name : '',
+            (typeof formatCurrency === 'function') ? formatCurrency(income.amount, (window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$', 2) : (((window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$') + parseFloat(income.amount).toFixed(2)),
+            income.date,
+            income.note || '',
+            actions
+        ]);
+    });
+    incomeDataTable.draw();
+}
+
+function openCreateModal() {
+    resetForm();
+    $('#incomeModalLabel').text('Add Income');
+    $('#saveBtn').html('<span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status" aria-hidden="true"></span> Save');
+}
+
+function openEditModal(id) {
+    isEditMode = true;
+    $('#incomeModalLabel').text('Edit Income');
+    $('#incomeId').val(id);
+    $('#formMethod').val('PUT');
+    $('#saveBtn').html('<span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status" aria-hidden="true"></span> Update');
+
+    $.ajax({
+        url: '/admin/incomes/' + id + '/edit',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const e = response.data;
+                $('#income_category_id').val(e.income_category_id).trigger('change');
+                $('#amount').val(e.amount);
+                $('#date').val(e.date);
+                $('#note').val(e.note || '');
+                $('#incomeModal').modal('show');
+            } else {
+                showToastr('error', 'Failed to load income');
+            }
+        },
+        error: function() {
+            showToastr('error', 'Failed to load income');
+        }
+    });
+}
+
+function openDeleteModal(id) {
+    showConfirmDialog('Are you sure?', 'You want to delete this income?', 'Yes, delete it!', 'Cancel', function() {
+        $.ajax({
+            url: '/admin/incomes/' + id,
+            type: 'POST',
+            data: { _method: 'DELETE' },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showSuccessDialog('Deleted!', response.message, 1500, function() {
+                        loadIncomes();
+                    });
+                } else {
+                    showErrorDialog('Error!', response.message || 'Delete operation failed');
+                }
+            },
+            error: function() {
+                showErrorDialog('Error!', 'Failed to delete income');
+            }
+        });
+    });
+}
+
+function handleFormSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const incomeId = $('#incomeId').val();
+    let url = '/admin/incomes';
+    let method = 'POST';
+    if (isEditMode && incomeId) {
+        url += '/' + incomeId;
+        method = 'POST';
+        formData.append('_method', 'PUT');
+    }
+
+    showLoadingSpinner('#saveSpinner', '#saveBtn');
+    clearValidationErrors();
+
+    $.ajax({
+        url: url,
+        type: method,
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                showToastr('success', response.message);
+                $('#incomeModal').modal('hide');
+                loadIncomes();
+            } else {
+                showToastr('error', response.message || 'Operation failed');
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status === 422) {
+                displayValidationErrors(xhr.responseJSON.errors);
+                showToastr('error', 'Please correct the validation errors');
+            } else {
+                showToastr('error', 'An error occurred. Please try again.');
+            }
+        },
+        complete: function() {
+            hideLoadingSpinner('#saveSpinner', '#saveBtn');
+        }
+    });
+}
+
+function clearValidationErrors() {
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').text('');
+}
+
+function displayValidationErrors(errors) {
+    for (const field in errors) {
+        if (errors.hasOwnProperty(field)) {
+            const errorElement = '#' + field + 'Error';
+            const inputElement = '[name="' + field + '"]';
+            $(errorElement).text(errors[field][0]);
+            $(inputElement).addClass('is-invalid');
+        }
+    }
+}
+
+function resetForm() {
+    $('#incomeForm')[0].reset();
+    $('#incomeId').val('');
+    $('#formMethod').val('POST');
+    isEditMode = false;
+    clearValidationErrors();
+    if ($('#income_category_id').hasClass('select2-hidden-accessible')) {
+        $('#income_category_id').val('').trigger('change');
+    }
+}
+
+// Local helpers for button spinner state
+function showLoadingSpinner(spinnerSelector, buttonSelector) {
+    $(spinnerSelector).removeClass('d-none');
+    $(buttonSelector).prop('disabled', true);
+}
+
+function hideLoadingSpinner(spinnerSelector, buttonSelector) {
+    $(spinnerSelector).addClass('d-none');
+    $(buttonSelector).prop('disabled', false);
+}
