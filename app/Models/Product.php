@@ -23,6 +23,7 @@ class Product extends Model
         'category_id',
         'unit_id',
         'tax_id',
+        'vat_id',
         'image',
         'is_active'
     ];
@@ -47,6 +48,11 @@ class Product extends Model
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class);
+    }
+
+    public function vat(): BelongsTo
+    {
+        return $this->belongsTo(Vat::class);
     }
 
     public function user(): BelongsTo

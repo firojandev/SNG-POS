@@ -360,10 +360,10 @@ class ProductManager {
 
     downloadSampleCSV() {
         const csvContent = [
-            ['Name', 'SKU', 'Purchase Price', 'Sell Price', 'Stock Quantity', 'Category', 'Unit', 'Tax', 'Description'],
-            ['Sample Product 1', 'P000001', '100', '150', '50', 'Electronics', 'Piece', 'GST 18%', 'Sample product description'],
-            ['Sample Product 2', 'P000002', '200', '300', '25', 'Clothing', 'Piece', 'GST 12%', 'Another sample product'],
-            ['Sample Product 3', 'P000003', '50', '75', '100', 'Food', 'Kg', 'GST 5%', 'Food item sample']
+            ['Name', 'SKU', 'Purchase Price', 'Sell Price', 'Stock Quantity', 'Category', 'Unit', 'Tax', 'VAT', 'Description'],
+            ['Sample Product 1', 'P000001', '100', '150', '50', 'Electronics', 'Piece', 'GST 18%', 'Standard VAT 20%', 'Sample product description'],
+            ['Sample Product 2', 'P000002', '200', '300', '25', 'Clothing', 'Piece', 'GST 12%', 'Reduced VAT 10%', 'Another sample product'],
+            ['Sample Product 3', 'P000003', '50', '75', '100', 'Food', 'Kg', 'GST 5%', 'Zero VAT 0%', 'Food item sample']
         ];
 
         let csvString = csvContent.map(row => row.join(',')).join('\n');

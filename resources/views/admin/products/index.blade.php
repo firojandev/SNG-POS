@@ -181,8 +181,13 @@
 
                 <!-- Pagination -->
                 @if($products->hasPages())
-                    <div class="d-flex justify-content-center mt-4">
-                        {{ $products->appends(request()->query())->links() }}
+                    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+                        <div class="small text-muted">
+                            Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} results
+                        </div>
+                        <div>
+                            {{ $products->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5-links-only') }}
+                        </div>
                     </div>
                 @endif
             </div>

@@ -140,11 +140,29 @@
                                         @foreach($taxes as $tax)
                                             <option value="{{ $tax->id }}"
                                                 {{ old('tax_id') == $tax->id ? 'selected' : '' }}>
-                                                {{ $tax->name }} ({{ $tax->rate }}%)
+                                                {{ $tax->name }} ({{ $tax->value }}%)
                                             </option>
                                         @endforeach
                                     </select>
                                     @error('tax_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- VAT -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="vat_id" class="form-label">VAT</label>
+                                    <select class="form-select select2-dropdown @error('vat_id') is-invalid @enderror"
+                                            id="vat_id" name="vat_id">
+                                        <option value="">Select VAT</option>
+                                        @foreach($vats as $vat)
+                                            <option value="{{ $vat->id }}"
+                                                {{ old('vat_id') == $vat->id ? 'selected' : '' }}>
+                                                {{ $vat->name }} ({{ $vat->value }}%)
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('vat_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

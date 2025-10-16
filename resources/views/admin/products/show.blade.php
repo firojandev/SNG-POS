@@ -106,9 +106,19 @@
                                                 <td class="fw-bold text-muted">Tax:</td>
                                                 <td>
                                                     @if($product->tax)
-                                                        <span class="badge bg-warning">{{ $product->tax->name }} ({{ $product->tax->rate }}%)</span>
+                                                        <span class="badge bg-warning">{{ $product->tax->name }} ({{ $product->tax->value }}%)</span>
                                                     @else
                                                         <span class="text-muted">No tax</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold text-muted">VAT:</td>
+                                                <td>
+                                                    @if($product->vat)
+                                                        <span class="badge bg-info">{{ $product->vat->name }} ({{ $product->vat->value }}%)</span>
+                                                    @else
+                                                        <span class="text-muted">No VAT</span>
                                                     @endif
                                                 </td>
                                             </tr>

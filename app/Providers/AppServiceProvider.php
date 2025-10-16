@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Option;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Use Bootstrap 5 pagination views globally
+        Paginator::useBootstrapFive();
+
         // Load general settings from database dynamically
         try {
             $connection = DB::connection()->getPdo();

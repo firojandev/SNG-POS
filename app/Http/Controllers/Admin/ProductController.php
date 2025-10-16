@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\Tax;
+use App\Models\Vat;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class ProductController extends Controller
     public function index(Request $request): View
     {
         $data['title'] = 'Products';
-        $query = Product::with(['category', 'unit', 'tax'])
+        $query = Product::with(['category', 'unit', 'tax', 'vat'])
             ->byStore(Auth::user()->store_id);
 
         // Search functionality
@@ -60,6 +61,7 @@ class ProductController extends Controller
         $data['categories'] = Category::all();
         $data['units'] = Unit::all();
         $data['taxes'] = Tax::all();
+        $data['vats'] = Vat::all();
 
         return view('admin.products.create', $data)
             ->with('menu', 'products');
@@ -93,7 +95,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): View
     {
-        $product->load(['category', 'unit', 'tax']);
+        $product->load(['category', 'unit', 'tax', 'vat']);
         $data['product'] = $product;
         $data['title'] = $product->name;
         return view('admin.products.show', $data)
@@ -108,6 +110,7 @@ class ProductController extends Controller
         $data['categories'] = Category::all();
         $data['units'] = Unit::all();
         $data['taxes'] = Tax::all();
+        $data['vats'] = Vat::all();
         $data['product'] = $product;
         $data['title'] = $product->name;
 
@@ -229,7 +232,8 @@ class ProductController extends Controller
      */
     public function importForm()
     {
-        return view('admin.products.import')
+        $data['title'] = 'Import Products';
+        return view('admin.products.import', $data)
             ->with('menu', 'products');
     }
 
@@ -262,7 +266,7 @@ class ProductController extends Controller
                     'purchase_price' => $row[2] ?? 0,
                     'sell_price' => $row[3] ?? 0,
                     'stock_quantity' => $row[4] ?? 0,
-                    'description' => $row[8] ?? null,
+                    'description' => $row[9] ?? null,
                     'store_id' => Auth::user()->store_id,
                 ];
 
@@ -282,6 +286,12 @@ class ProductController extends Controller
                 if (!empty($row[7])) {
                     $tax = Tax::where('name', $row[7])->first();
                     $productData['tax_id'] = $tax?->id;
+                }
+
+                // Find VAT by name
+                if (!empty($row[8])) {
+                    $vat = Vat::where('name', $row[8])->first();
+                    $productData['vat_id'] = $vat?->id;
                 }
 
                 Product::create($productData);

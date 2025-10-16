@@ -43,7 +43,7 @@
                                 <ul class="list-unstyled">
                                     <li><i class="fa fa-check text-success"></i> First row should contain headers</li>
                                     <li><i class="fa fa-check text-success"></i> Required columns: Name, SKU, Purchase Price, Sell Price, Stock Quantity</li>
-                                    <li><i class="fa fa-check text-success"></i> Optional columns: Category, Unit, Tax, Description</li>
+                                    <li><i class="fa fa-check text-success"></i> Optional columns: Category, Unit, Tax, VAT, Description</li>
                                     <li><i class="fa fa-check text-success"></i> Maximum file size: 2MB</li>
                                     <li><i class="fa fa-check text-success"></i> Supported formats: CSV, TXT</li>
                                 </ul>
@@ -58,12 +58,13 @@
                                     <li>Category (optional)</li>
                                     <li>Unit (optional)</li>
                                     <li>Tax (optional)</li>
+                                    <li>VAT (optional)</li>
                                     <li>Description (optional)</li>
                                 </ol>
 
                                 <div class="alert alert-warning mt-3">
                                     <small>
-                                        <strong>Note:</strong> Category, Unit, and Tax should match existing names in your system. 
+                                        <strong>Note:</strong> Category, Unit, Tax, and VAT should match existing names in your system. 
                                         If not found, they will be left empty.
                                     </small>
                                 </div>

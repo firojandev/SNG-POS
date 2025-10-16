@@ -30,6 +30,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'nullable|exists:categories,id',
             'unit_id' => 'nullable|exists:units,id',
             'tax_id' => 'nullable|exists:taxes,id',
+            'vat_id' => 'nullable|exists:vats,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
