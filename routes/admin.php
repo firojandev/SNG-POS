@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Admin\VatController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ProductController;
@@ -45,6 +46,15 @@ Route::prefix('tax')->group(function () {
     Route::get('/{tax}/edit', [TaxController::class, 'edit'])->name('tax.edit');
     Route::put('/{tax}', [TaxController::class, 'update'])->name('tax.update');
     Route::delete('/{tax}', [TaxController::class, 'destroy'])->name('tax.destroy');
+});
+
+Route::prefix('vat')->group(function () {
+    Route::get('/', [VatController::class, 'index'])->name('vat.index');
+    Route::get('/get-data', [VatController::class, 'getData'])->name('vat.getData');
+    Route::post('/', [VatController::class, 'store'])->name('vat.store');
+    Route::get('/{vat}/edit', [VatController::class, 'edit'])->name('vat.edit');
+    Route::put('/{vat}', [VatController::class, 'update'])->name('vat.update');
+    Route::delete('/{vat}', [VatController::class, 'destroy'])->name('vat.destroy');
 });
 
 Route::prefix('store')->group(function () {

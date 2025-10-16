@@ -17,7 +17,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Product</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' || @$menu == 'unit' || @$menu == 'tax' || @$menu == 'products' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'category' || @$menu == 'unit' || @$menu == 'tax' || @$menu == 'vat' || @$menu == 'products' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('category.index')}}" class="aside-nav-sublink {{@$menu == 'category' ? 'active' : ''}}">
@@ -29,6 +29,12 @@
                             <a href="{{route('unit.index')}}" class="aside-nav-sublink {{@$menu == 'unit' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Unit</span>
+                            </a>
+                        </li>
+                        <li class="aside-nav-item">
+                            <a href="{{route('vat.index')}}" class="aside-nav-sublink {{@$menu == 'vat' ? 'active' : ''}}">
+                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                <span class="aside-nav-text shrink-text-toggleable">VAT</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
