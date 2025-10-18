@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ExpenseCategoryController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\IncomeCategoryController;
 use App\Http\Controllers\Admin\IncomeController;
+use App\Http\Controllers\Admin\PurchaseController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -89,6 +90,12 @@ Route::prefix('products')->name('admin.products.')->group(function () {
     Route::post('/import/csv', [ProductController::class, 'import'])->name('import');
     Route::get('/barcode/download', [ProductController::class, 'downloadBarcode'])->name('barcode.download');
 });
+
+Route::prefix('purchase')->group(function () {
+    Route::get('/', [PurchaseController::class, 'index'])->name('purchase.index');
+    Route::get('create', [PurchaseController::class, 'create'])->name('purchase.create');
+});
+
 
 // Settings Routes
 Route::prefix('settings')->name('admin.settings.')->group(function () {

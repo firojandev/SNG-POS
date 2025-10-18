@@ -59,16 +59,16 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Purchase</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'purchase' || @$menu == 'create-purchase' ? 'show' : ''}} ">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('purchase.create')}}" class="aside-nav-sublink {{@$menu == 'create-purchase' ? 'active' : '' }}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">New Purchase</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('purchase.index')}}" class="aside-nav-sublink {{@$menu == 'purchase' ? 'active' : '' }}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">All Purchase</span>
                             </a>

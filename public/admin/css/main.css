@@ -1858,10 +1858,14 @@ a, .nav-link {
     width: 50%;
 }
 
+.width-60-percentage{
+    width: 60%;
+}
 
 .width-70-percentage{
     width: 70%;
 }
+
 
 .width-80-percentage{
     width: 80%;
