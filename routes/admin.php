@@ -94,6 +94,12 @@ Route::prefix('products')->name('admin.products.')->group(function () {
 Route::prefix('purchase')->group(function () {
     Route::get('/', [PurchaseController::class, 'index'])->name('purchase.index');
     Route::get('create', [PurchaseController::class, 'create'])->name('purchase.create');
+    Route::post('/', [PurchaseController::class, 'store'])->name('purchase.store');
+    Route::get('{purchase}', [PurchaseController::class, 'show'])->name('purchase.show');
+    
+    // API routes for AJAX requests
+    Route::get('api/products', [PurchaseController::class, 'getProducts'])->name('purchase.api.products');
+    Route::post('api/calculate-unit-total', [PurchaseController::class, 'calculateUnitTotal'])->name('purchase.api.calculate-unit-total');
 });
 
 

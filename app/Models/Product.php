@@ -72,12 +72,12 @@ class Product extends Model
 
     public function getFormattedPurchasePriceAttribute()
     {
-        return get_option('app_currency') . number_format($this->purchase_price, 0);
+        return get_option('app_currency', '$') . number_format($this->purchase_price, 2);
     }
 
     public function getFormattedSellPriceAttribute()
     {
-        return  get_option('app_currency') . number_format($this->sell_price, 0);
+        return get_option('app_currency', '$') . number_format($this->sell_price, 2);
     }
 
     public function getStockStatusAttribute()
