@@ -34,6 +34,12 @@ class Purchase extends Model
         'deleted_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'formatted_total_amount',
+        'formatted_paid_amount',
+        'formatted_due_amount'
+    ];
+
     protected static function boot(): void
     {
         parent::boot();

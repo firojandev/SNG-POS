@@ -37,7 +37,12 @@
                                     </tr>
                                     </thead>
                                     <tbody id="cartTableBody">
-                                    <!-- Cart items will be populated dynamically -->
+                                    <tr id="emptyCartMessage">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fa fa-shopping-cart fa-2x mb-2"></i>
+                                            <p class="mb-0">Cart is empty. Select products from the right panel to add them.</p>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -60,7 +65,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="ps-0"><strong>Paid Amount:</strong></td>
-                                                <td class="text-right pe-0"><input type="number" id="paidAmount" name="paid_amount" class="form-control form-control-sm text-center" placeholder="Paid Amount" value="0" step="0.01" min="0"></td>
+                                                <td class="text-right pe-0"><input type="number" id="paidAmount" name="paid_amount" class="form-control form-control-sm text-center" placeholder="Paid Amount" value="0" step="0.01" min="0" max="999999"></td>
                                             </tr>
                                             <tr>
                                                 <td class="ps-0"><strong>Due Amount:</strong></td>
@@ -236,39 +241,10 @@
 @push('js')
     <!--============== Extra Plugin =================-->
     <script type="text/javascript" src="{{asset('admin/plugin/select2/select2.min.js')}}"></script>
-    <script src="{{ asset('admin/partial/js/purchase.js') }}"></script>
+
     <script>
-        $(".select2").select2({
-            theme: "bootstrap-5",
-            containerCssClass: "select2--small", // For Select2 v4.0
-            selectionCssClass: "select2--small", // For Select2 v4.1
-            dropdownCssClass: "select2--small",
-        });
-
-        $('.pos-card-body-content').each(function () {
-            var initHeight = 0;
-            $(this).children().each(function () {
-                initHeight = parseFloat(initHeight + $(this).outerHeight());
-            });
-
-            if ($(this).outerHeight() < initHeight)
-            {
-                $(this).css({
-                    'padding-right': 4+'px'
-                });
-            } else {
-                $(this).css({
-                    'padding-right': 0
-                });
-            }
-        });
-
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Pass configuration to JavaScript
+        "use strict";
+        // Pass configuration to JavaScript before loading purchase.js
         window.purchaseRoutes = {
             products: '{{ route('purchase.api.products') }}',
             calculateUnitTotal: '{{ route('purchase.api.calculate-unit-total') }}',
@@ -282,6 +258,8 @@
             currency: '{{ get_option('app_currency', '$') }}'
         };
     </script>
+
+    <script src="{{ asset('admin/partial/js/purchase.js') }}"></script>
     <!--============== End Plugin ===================-->
 @endpush
 

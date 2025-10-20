@@ -93,10 +93,14 @@ Route::prefix('products')->name('admin.products.')->group(function () {
 
 Route::prefix('purchase')->group(function () {
     Route::get('/', [PurchaseController::class, 'index'])->name('purchase.index');
+    Route::get('get-data', [PurchaseController::class, 'getData'])->name('purchase.api.getData');
     Route::get('create', [PurchaseController::class, 'create'])->name('purchase.create');
     Route::post('/', [PurchaseController::class, 'store'])->name('purchase.store');
-    Route::get('{purchase}', [PurchaseController::class, 'show'])->name('purchase.show');
-    
+    Route::get('{purchase:uuid}', [PurchaseController::class, 'show'])->name('purchase.show');
+    Route::get('{purchase:uuid}/edit', [PurchaseController::class, 'edit'])->name('purchase.edit');
+    Route::put('{purchase:uuid}', [PurchaseController::class, 'update'])->name('purchase.update');
+    Route::delete('{purchase:uuid}', [PurchaseController::class, 'destroy'])->name('purchase.destroy');
+
     // API routes for AJAX requests
     Route::get('api/products', [PurchaseController::class, 'getProducts'])->name('purchase.api.products');
     Route::post('api/calculate-unit-total', [PurchaseController::class, 'calculateUnitTotal'])->name('purchase.api.calculate-unit-total');

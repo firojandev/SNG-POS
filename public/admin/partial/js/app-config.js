@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Application Configuration
  * Global configuration variables available throughout the admin panel
@@ -30,7 +31,7 @@ function initializeAppConfig() {
     } else {
         window.appConfig.dateFormatPhp = 'Y-m-d';
     }
-    
+
     // Make currency available globally for backward compatibility
     window.appCurrency = window.appConfig.currency;
 }

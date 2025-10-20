@@ -43,13 +43,28 @@ class PurchaseService
      */
     private function createPurchaseItem(Purchase $purchase, array $item): PurchaseItem
     {
+        // Calculate totals if not provided
+        $unitPrice = $item['unit_price'];
+        $quantity = $item['quantity'];
+        $taxId = $item['tax_id'] ?? null;
+
+        // Calculate unit total with tax if not already calculated
+        if (!isset($item['tax_amount']) || !isset($item['unit_total'])) {
+            $calculation = $this->calculateUnitTotal($unitPrice, $quantity, $taxId);
+            $taxAmount = $calculation['tax_amount'];
+            $unitTotal = $calculation['unit_total'];
+        } else {
+            $taxAmount = $item['tax_amount'];
+            $unitTotal = $item['unit_total'];
+        }
+
         return PurchaseItem::create([
             'purchase_id' => $purchase->id,
             'product_id' => $item['product_id'],
-            'unit_price' => $item['unit_price'],
-            'quantity' => $item['quantity'],
-            'tax_amount' => $item['tax_amount'],
-            'unit_total' => $item['unit_total'],
+            'unit_price' => $unitPrice,
+            'quantity' => $quantity,
+            'tax_amount' => $taxAmount,
+            'unit_total' => $unitTotal,
         ]);
     }
 
@@ -69,11 +84,13 @@ class PurchaseService
     {
         $subtotal = $unitPrice * $quantity;
         $taxAmount = 0;
+        $taxPercentage = 0;
 
         if ($taxId) {
             $tax = Tax::find($taxId);
             if ($tax) {
-                $taxAmount = ($subtotal * $tax->value) / 100;
+                $taxPercentage = $tax->value;
+                $taxAmount = ($subtotal * $taxPercentage) / 100;
             }
         }
 
@@ -83,7 +100,7 @@ class PurchaseService
             'subtotal' => $subtotal,
             'tax_amount' => $taxAmount,
             'unit_total' => $unitTotal,
-            'tax_percentage' => $tax ? $tax->value : 0
+            'tax_percentage' => $taxPercentage
         ];
     }
 
