@@ -40,6 +40,14 @@ class Purchase extends Model
         'formatted_due_amount'
     ];
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
     protected static function boot(): void
     {
         parent::boot();

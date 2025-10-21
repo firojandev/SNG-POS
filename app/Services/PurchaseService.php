@@ -7,6 +7,7 @@ use App\Models\PurchaseItem;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Tax;
+use App\Models\PaymentToSupplier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
@@ -32,6 +33,18 @@ class PurchaseService
             foreach ($data['items'] as $item) {
                 $this->createPurchaseItem($purchase, $item);
                 $this->updateProductStock($item['product_id'], $item['quantity']);
+            }
+
+            // Update supplier balance with due amount
+            $this->updateSupplierBalance($data['supplier_id'], $data['due_amount']);
+
+            // Create payment record if there's a paid amount
+            if ($data['paid_amount'] > 0) {
+                $this->createPaymentRecord(
+                    $data['supplier_id'],
+                    $data['paid_amount'],
+                    $purchase->created_at->format('Y-m-d')
+                );
             }
 
             return $purchase->load(['supplier', 'items.product']);
@@ -163,5 +176,29 @@ class PurchaseService
     {
         return Category::orderBy('name')
             ->get();
+    }
+
+    /**
+     * Update supplier balance by adding the due amount
+     */
+    private function updateSupplierBalance(int $supplierId, float $dueAmount): void
+    {
+        if ($dueAmount > 0) {
+            $supplier = Supplier::findOrFail($supplierId);
+            $supplier->increment('balance', $dueAmount);
+        }
+    }
+
+    /**
+     * Create a payment record to supplier
+     */
+    private function createPaymentRecord(int $supplierId, float $amount, string $paymentDate): PaymentToSupplier
+    {
+        return PaymentToSupplier::create([
+            'supplier_id' => $supplierId,
+            'amount' => $amount,
+            'payment_date' => $paymentDate,
+            'note' => 'Payment from purchase',
+        ]);
     }
 }

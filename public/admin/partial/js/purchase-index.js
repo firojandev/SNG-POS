@@ -183,13 +183,13 @@ class PurchaseIndexManager {
                    data-bs-toggle="tooltip">
                     <i class="fa fa-eye"></i>
                 </a>
-                <button type="button"
-                        class="btn btn-sm btn-warning"
-                        title="Edit (Coming Soon)"
-                        data-bs-toggle="tooltip"
-                        disabled>
-                    <i class="fa fa-edit"></i>
-                </button>
+<!--                <button type="button"-->
+<!--                        class="btn btn-sm btn-warning"-->
+<!--                        title="Edit (Coming Soon)"-->
+<!--                        data-bs-toggle="tooltip"-->
+<!--                        disabled>-->
+<!--                    <i class="fa fa-edit"></i>-->
+<!--                </button>-->
 <!--                <button type="button"-->
 <!--                        class="btn btn-sm btn-danger"-->
 <!--                        title="Delete (Coming Soon)"-->

@@ -67,11 +67,11 @@ class PurchaseController extends Controller
                     'success' => true,
                     'message' => 'Purchase created successfully',
                     'data' => $purchase,
-                    'redirect' => route('purchase.show', $purchase->id)
+                    'redirect' => route('purchase.show', $purchase)
                 ], 201);
             }
 
-            return redirect()->route('purchase.show', $purchase->id)
+            return redirect()->route('purchase.show', $purchase)
                 ->with('success', 'Purchase created successfully');
 
         } catch (\Exception $e) {
