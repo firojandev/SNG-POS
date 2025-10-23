@@ -45,11 +45,47 @@ class PurchaseManager {
 
     init() {
         console.log('PurchaseManager: Initializing...');
+        this.initializeDatePicker();
         this.bindEvents();
         // Load products immediately when page loads
         console.log('PurchaseManager: Loading initial products...');
         this.loadProducts(true);
         this.updateCartDisplay();
+    }
+
+    initializeDatePicker() {
+        // Initialize jQuery UI datepicker
+        if (typeof $.fn.datepicker !== 'undefined') {
+            const phpFmt = (window.purchaseConfig && window.purchaseConfig.dateFormatPhp) ? window.purchaseConfig.dateFormatPhp : 'Y-m-d';
+            const jqFmt = this.phpDateFormatToJqueryUI(phpFmt);
+            $('#purchaseDate').datepicker({
+                dateFormat: jqFmt
+            });
+            // Set today's date as default
+            $('#purchaseDate').datepicker('setDate', new Date());
+        }
+    }
+
+    // Map PHP date format to jQuery UI datepicker format
+    phpDateFormatToJqueryUI(phpFormat) {
+        // Basic mapping for common tokens used in settings
+        const map = {
+            'Y': 'yy',
+            'y': 'y',
+            'm': 'mm',
+            'n': 'm',
+            'd': 'dd',
+            'j': 'd',
+            '/': '/',
+            '-': '-',
+            ' ': ' '
+        };
+        let result = '';
+        for (let i = 0; i < phpFormat.length; i++) {
+            const ch = phpFormat[i];
+            result += (map[ch] !== undefined) ? map[ch] : ch;
+        }
+        return result;
     }
 
     bindEvents() {
@@ -535,6 +571,11 @@ class PurchaseManager {
             return;
         }
 
+        if (!$('#purchaseDate').val()) {
+            this.showAlert('Please select a purchase date.', 'warning');
+            return;
+        }
+
         // Disable submit button and show loading
         const submitBtn = $('#purchaseForm button[type="submit"]');
         const originalText = submitBtn.html();
@@ -555,6 +596,7 @@ class PurchaseManager {
 
         const formData = {
             supplier_id: $('#supplierSelect').val(),
+            date: $('#purchaseDate').val(),
             items: items,
             total_amount: this.parseCurrency($('#totalAmount').text()),
             paid_amount: parseFloat($('#paidAmount').val()) || 0,

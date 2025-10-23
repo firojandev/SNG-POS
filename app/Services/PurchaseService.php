@@ -23,6 +23,7 @@ class PurchaseService
             // Create the purchase
             $purchase = Purchase::create([
                 'supplier_id' => $data['supplier_id'],
+                'date' => $data['date'],
                 'total_amount' => $data['total_amount'],
                 'paid_amount' => $data['paid_amount'],
                 'due_amount' => $data['due_amount'],

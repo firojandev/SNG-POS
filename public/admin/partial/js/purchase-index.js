@@ -40,6 +40,7 @@ class PurchaseIndexManager {
             processing: true,
             serverSide: false,
             responsive: true,
+            deferRender: true,
             ajax: {
                 url: this.routes.getData,
                 dataSrc: function(json) {
@@ -76,11 +77,7 @@ class PurchaseIndexManager {
             language: this.getTableLanguage(),
             dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                  "<'row'<'col-sm-12'tr>>" +
-                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-            drawCallback: function(settings) {
-                // Initialize tooltips after table draw
-                self.initializeTooltips();
-            }
+                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
         });
     }
 
@@ -97,7 +94,10 @@ class PurchaseIndexManager {
                 name: 'invoice_number',
                 defaultContent: '-',
                 render: function(data, type, row) {
-                    return data ? '<strong>' + self.escapeHtml(data) + '</strong>' : '-';
+                    if (!data) return '-';
+                    const uuid = row.uuid || '';
+                    const viewUrl = self.routes.view.replace(':uuid', uuid);
+                    return '<a href="' + viewUrl + '" class="fw-bold text-primary">' + self.escapeHtml(data) + '</a>';
                 }
             },
             {
@@ -109,18 +109,12 @@ class PurchaseIndexManager {
                 }
             },
             {
-                data: 'created_at',
-                name: 'created_at',
+                data: 'date',
+                name: 'date',
                 defaultContent: '-',
                 className: 'text-center',
                 render: function(data, type, row) {
-                    if (!data) return '-';
-
-                    if (type === 'sort' || type === 'type') {
-                        return data; // Return raw data for sorting
-                    }
-
-                    return self.formatDate(data);
+                    return data ? data : '-';
                 }
             },
             {
@@ -179,24 +173,9 @@ class PurchaseIndexManager {
             <div class="btn-group" role="group">
                 <a href="${viewUrl}"
                    class="btn btn-sm btn-primary me-2"
-                   title="View Purchase Details"
-                   data-bs-toggle="tooltip">
+                   title="View Purchase Details">
                     <i class="fa fa-eye"></i>
                 </a>
-<!--                <button type="button"-->
-<!--                        class="btn btn-sm btn-warning"-->
-<!--                        title="Edit (Coming Soon)"-->
-<!--                        data-bs-toggle="tooltip"-->
-<!--                        disabled>-->
-<!--                    <i class="fa fa-edit"></i>-->
-<!--                </button>-->
-<!--                <button type="button"-->
-<!--                        class="btn btn-sm btn-danger"-->
-<!--                        title="Delete (Coming Soon)"-->
-<!--                        data-bs-toggle="tooltip"-->
-<!--                        disabled>-->
-<!--                    <i class="fa fa-trash"></i>-->
-<!--                </button>-->
             </div>
         `;
     }
@@ -245,6 +224,16 @@ class PurchaseIndexManager {
      * Initialize Bootstrap tooltips
      */
     initializeTooltips() {
+        // Dispose of existing tooltips first to prevent duplicates
+        const existingTooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        existingTooltips.forEach(function(tooltipEl) {
+            const existingTooltip = bootstrap.Tooltip.getInstance(tooltipEl);
+            if (existingTooltip) {
+                existingTooltip.dispose();
+            }
+        });
+
+        // Initialize new tooltips
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);

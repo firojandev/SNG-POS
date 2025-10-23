@@ -2,22 +2,49 @@
 @section('content')
     <main class="main-content">
 
+        <div class="breadcrumb-professional">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{route('admin.dashboard')}}">
+                            <i class="icon-home me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{route('purchase.index')}}">Purchases</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ @$title }}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
         <div class="row">
             <div class="col-lg-6 col-xl-7">
                 <div class="theme-card pos-card h-100">
                     <div class="pos-card-header">
                         <div class="row gx-2">
-                            <div class="col-6 col-md-8 col-lg-9">
-                                <div class="pos-input">
-                                    <select id="supplierSelect" class="form-control form-control-sm select2" aria-label="select" required>
-                                        <option value="">Select Supplier</option>
-                                        @foreach($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-9">
+                                <div class="row gx-2">
+                                    <div class="col-6">
+                                        <div class="pos-input">
+                                            <select id="supplierSelect" class="form-control form-control-sm select2" aria-label="select" required>
+                                                <option value="">Select Supplier</option>
+                                                @foreach($suppliers as $supplier)
+                                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="pos-input">
+                                            <input type="text" id="purchaseDate" name="date" class="form-control form-control-sm" placeholder="{{ get_option('date_format', 'Y-m-d') }}" required autocomplete="off">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-4 col-lg-3 text-right">
+                            <div class="col-3 text-right">
                                 <a href="javascript:void(0);" class="btn btn-sm w-100 btn-brand-secondary" data-bs-toggle="modal" data-bs-target="#supplierModal"><span><i class="fa fa-plus"></i> </span> Add Supplier</a>
                             </div>
                         </div>
@@ -235,12 +262,14 @@
     <!--============== Extra Plugin =================-->
     <link rel="stylesheet" type="text/css" href="{{asset('admin/plugin/select2/select2.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('admin/plugin/select2/select2-bootstrap/select2-bootstrap-5-theme.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('admin/plugin/jquery-ui/jquery-ui.min.css')}}">
     <!--============== End Extra Plugin =================-->
 @endpush
 
 @push('js')
     <!--============== Extra Plugin =================-->
     <script type="text/javascript" src="{{asset('admin/plugin/select2/select2.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('admin/plugin/jquery-ui/jquery-ui.js')}}"></script>
 
     <script>
         "use strict";
@@ -255,7 +284,8 @@
 
         window.purchaseConfig = {
             defaultImage: '{{ asset('admin/images/product/default.png') }}',
-            currency: '{{ get_option('app_currency', '$') }}'
+            currency: '{{ get_option('app_currency', '$') }}',
+            dateFormatPhp: '{{ get_option('date_format', 'Y-m-d') }}'
         };
     </script>
 

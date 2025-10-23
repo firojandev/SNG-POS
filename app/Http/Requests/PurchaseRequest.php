@@ -23,6 +23,7 @@ class PurchaseRequest extends FormRequest
     {
         return [
             'supplier_id' => 'required|exists:suppliers,id',
+            'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.unit_price' => 'required|numeric|min:0',
@@ -35,6 +36,23 @@ class PurchaseRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $date = $this->input('date');
+        if ($date) {
+            $phpFormat = get_option('date_format', 'Y-m-d');
+            try {
+                $normalized = \Carbon\Carbon::createFromFormat($phpFormat, $date)->format('Y-m-d');
+                $this->merge(['date' => $normalized]);
+            } catch (\Exception $e) {
+                // leave as is; validation will catch invalid date
+            }
+        }
+    }
+
+    /**
      * Get custom messages for validator errors.
      */
     public function messages(): array
@@ -42,6 +60,8 @@ class PurchaseRequest extends FormRequest
         return [
             'supplier_id.required' => 'Please select a supplier.',
             'supplier_id.exists' => 'The selected supplier is invalid.',
+            'date.required' => 'Purchase date is required.',
+            'date.date' => 'Purchase date must be a valid date.',
             'items.required' => 'Please add at least one item to the purchase.',
             'items.min' => 'Please add at least one item to the purchase.',
             'items.*.product_id.required' => 'Product is required for each item.',

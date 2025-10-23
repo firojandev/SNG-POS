@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseRequest;
+use App\Http\Resources\PurchaseResource;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Services\PurchaseService;
@@ -29,12 +30,12 @@ class PurchaseController extends Controller
     {
         try {
             $purchases = Purchase::with(['supplier'])
-                ->orderBy('created_at', 'desc')
+                ->latest()
                 ->get();
 
             return response()->json([
                 'success' => true,
-                'data' => $purchases
+                'data' => PurchaseResource::collection($purchases)
             ]);
 
         } catch (\Exception $e) {

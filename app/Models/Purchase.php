@@ -18,6 +18,7 @@ class Purchase extends Model
         'uuid',
         'invoice_number',
         'supplier_id',
+        'date',
         'total_amount',
         'paid_amount',
         'due_amount',
@@ -26,6 +27,7 @@ class Purchase extends Model
     ];
 
     protected $casts = [
+        'date' => 'date',
         'total_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'due_amount' => 'decimal:2',

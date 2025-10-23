@@ -53,11 +53,17 @@
                                     </tr>
                                     <tr>
                                         <td class="text-muted"><strong>Purchase Date:</strong></td>
-                                        <td>{{ $purchase->created_at->format('M d, Y') }}</td>
+                                        <td>
+                                            @if($purchase->date)
+                                                {{ \Carbon\Carbon::parse($purchase->date)->format(get_option('date_format', 'Y-m-d')) }}
+                                            @else
+                                                {{ $purchase->created_at->format('M d, Y') }}
+                                            @endif
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted"><strong>Time:</strong></td>
-                                        <td>{{ $purchase->created_at->format('h:i A') }}</td>
+                                        <td class="text-muted"><strong>Created At:</strong></td>
+                                        <td>{{ $purchase->created_at->format('M d, Y h:i A') }}</td>
                                     </tr>
                                 </table>
                             </div>

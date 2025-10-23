@@ -88,8 +88,14 @@
             <tr>
                 <td width="50%">
                     <strong>Invoice Number:</strong> {{ $purchase->invoice_number }}<br>
-                    <strong>Date:</strong> {{ $purchase->created_at->format('M d, Y') }}<br>
-                    <strong>Time:</strong> {{ $purchase->created_at->format('h:i A') }}
+                    <strong>Purchase Date:</strong>
+                    @if($purchase->date)
+                        {{ \Carbon\Carbon::parse($purchase->date)->format(get_option('date_format', 'Y-m-d')) }}
+                    @else
+                        {{ $purchase->created_at->format('M d, Y') }}
+                    @endif
+                    <br>
+                    <strong>Created At:</strong> {{ $purchase->created_at->format('M d, Y h:i A') }}
                 </td>
                 <td width="50%">
                     <strong>Supplier:</strong> {{ $purchase->supplier->name }}<br>
