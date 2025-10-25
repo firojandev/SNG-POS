@@ -141,15 +141,97 @@ class PaymentToSupplierController extends Controller
     }
 
     /**
-     * Get all payments for DataTable.
+     * Get all payments for DataTable with server-side pagination.
      */
-    public function getData(): JsonResponse
+    public function getData(Request $request): JsonResponse
     {
         try {
-            $payments = PaymentToSupplier::with('supplier')->latest()->get();
-            return response()->json(['success' => true, 'data' => PaymentToSupplierResource::collection($payments)]);
+            // Get total records count (before filtering)
+            $totalRecords = PaymentToSupplier::count();
+
+            // Start building query
+            $query = PaymentToSupplier::query();
+
+            // Search functionality
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $query->where(function($q) use ($searchValue) {
+                    $q->whereHas('supplier', function($sq) use ($searchValue) {
+                        $sq->where('name', 'like', "%{$searchValue}%");
+                    })
+                    ->orWhere('amount', 'like', "%{$searchValue}%")
+                    ->orWhere('payment_date', 'like', "%{$searchValue}%")
+                    ->orWhere('note', 'like', "%{$searchValue}%");
+                });
+            }
+
+            // Get filtered records count
+            $filteredRecords = $query->count();
+
+            // Sorting
+            $joinedWithSupplier = false;
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+
+                // Map column index to database column
+                $columns = ['supplier_name', 'amount', 'payment_date', 'note'];
+                if (isset($columns[$orderColumnIndex])) {
+                    $orderColumn = $columns[$orderColumnIndex];
+
+                    if ($orderColumn === 'supplier_name') {
+                        $query->leftJoin('suppliers', 'payment_to_suppliers.supplier_id', '=', 'suppliers.id')
+                              ->orderBy('suppliers.name', $orderDirection)
+                              ->select('payment_to_suppliers.*');
+                        $joinedWithSupplier = true;
+                    } else {
+                        $query->orderBy('payment_to_suppliers.' . $orderColumn, $orderDirection);
+                    }
+                }
+            } else {
+                // Default sorting: latest payment_date first
+                $query->orderBy('payment_to_suppliers.payment_date', 'desc')
+                      ->orderBy('payment_to_suppliers.created_at', 'desc');
+            }
+
+            // Fallback if joined but no additional sorting applied
+            if ($joinedWithSupplier) {
+                $query->orderBy('payment_to_suppliers.payment_date', 'desc');
+            }
+
+            // Pagination
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+
+            $payments = $query->with('supplier')->skip($start)->take($length)->get();
+
+            // Format data for DataTable
+            $data = [];
+            foreach ($payments as $payment) {
+                $data[] = [
+                    'id' => $payment->id,
+                    'supplier' => $payment->supplier ? $payment->supplier->name : '',
+                    'amount' => $payment->amount,
+                    'payment_date' => optional($payment->payment_date)->format(get_option('date_format', 'Y-m-d')),
+                    'note' => $payment->note ?? '',
+                ];
+            }
+
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $filteredRecords,
+                'data' => $data
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to fetch payments'], 500);
+            \Log::error('Payment getData error: ' . $e->getMessage());
+            return response()->json([
+                'draw' => intval($request->input('draw', 0)),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

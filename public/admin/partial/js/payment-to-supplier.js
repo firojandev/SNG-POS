@@ -7,7 +7,6 @@ let currentSupplierBalance = 0;
 $(document).ready(function() {
     initializeDataTable();
     initializeWidgets();
-    loadPayments();
 
     $('#paymentForm').on('submit', handleFormSubmit);
     $('#paymentModal').on('shown.bs.modal', function() {
@@ -76,73 +75,68 @@ function phpDateFormatToJqueryUI(phpFormat) {
 function initializeDataTable() {
     paymentDataTable = $('#dataTable').DataTable({
         processing: true,
-        serverSide: false,
+        serverSide: true,
         responsive: true,
         searching: true,
         ordering: true,
         info: true,
         autoWidth: false,
+        order: [[2, 'desc']], // Default sort by payment_date (column index 2) in descending order (latest first)
+        ajax: {
+            url: '/admin/payment-to-supplier/get-data',
+            type: 'GET',
+            error: function(xhr, error, thrown) {
+                console.error('DataTable Error:', error);
+                showToastr('error', 'Failed to load payments');
+            }
+        },
+        columns: [
+            { data: 'supplier', name: 'supplier' },
+            {
+                data: 'amount',
+                name: 'amount',
+                render: function(data, type, row) {
+                    return (typeof formatCurrency === 'function')
+                        ? formatCurrency(data, (window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$', 2)
+                        : (((window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$') + parseFloat(data).toFixed(2));
+                }
+            },
+            { data: 'payment_date', name: 'payment_date' },
+            { data: 'note', name: 'note' },
+            {
+                data: 'id',
+                name: 'action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="text-center">
+                            <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditModal(${data})">
+                                <i class="fa fa-edit"></i> Edit
+                            </button>
+                            <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteModal(${data})">
+                                <i class="fa fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
         columnDefs: [
             { orderable: false, targets: -1 }
         ],
         language: {
             emptyTable: 'No payments found',
-            zeroRecords: 'No matching payments found'
-        }
+            zeroRecords: 'No matching payments found',
+            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>'
+        },
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
     });
 }
 
-function loadPayments() {
-    // Show loading overlay
-    if (typeof showPageLoader === 'function') {
-        showPageLoader();
-    }
-
-    $.ajax({
-        url: '/admin/payment-to-supplier/get-data',
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                populateTable(response.data);
-            } else {
-                showToastr('error', 'Failed to load payments');
-            }
-        },
-        error: function() {
-            showToastr('error', 'Failed to load payments');
-        },
-        complete: function() {
-            if (typeof hidePageLoader === 'function') {
-                hidePageLoader();
-            }
-        }
-    });
-}
-
-function populateTable(payments) {
-    paymentDataTable.clear();
-    payments.forEach(function(payment) {
-        const actions = `
-            <div class="text-center">
-                <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditModal(${payment.id})">
-                    <i class="fa fa-edit"></i> Edit
-                </button>
-                <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteModal(${payment.id})">
-                    <i class="fa fa-trash"></i> Delete
-                </button>
-            </div>
-        `;
-
-        paymentDataTable.row.add([
-            payment.supplier ? payment.supplier.name : '',
-            (typeof formatCurrency === 'function') ? formatCurrency(payment.amount, (window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$', 2) : (((window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$') + parseFloat(payment.amount).toFixed(2)),
-            payment.payment_date,
-            payment.note || '',
-            actions
-        ]);
-    });
-    paymentDataTable.draw();
+function reloadDataTable() {
+    paymentDataTable.ajax.reload(null, false);
 }
 
 function fetchSupplierBalance(supplierId) {
@@ -252,7 +246,7 @@ function openDeleteModal(id) {
             success: function(response) {
                 if (response.success) {
                     showSuccessDialog('Deleted!', response.message, 1500, function() {
-                        loadPayments();
+                        reloadDataTable();
                     });
                 } else {
                     showErrorDialog('Error!', response.message || 'Delete operation failed');
@@ -303,7 +297,7 @@ function handleFormSubmit(e) {
             if (response.success) {
                 showToastr('success', response.message);
                 $('#paymentModal').modal('hide');
-                loadPayments();
+                reloadDataTable();
             } else {
                 showToastr('error', response.message || 'Operation failed');
             }
