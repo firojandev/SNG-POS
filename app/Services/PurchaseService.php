@@ -43,6 +43,7 @@ class PurchaseService
             if ($data['paid_amount'] > 0) {
                 $this->createPaymentRecord(
                     $data['supplier_id'],
+                    $purchase->id,
                     $data['paid_amount'],
                     $purchase->created_at->format('Y-m-d')
                 );
@@ -193,10 +194,11 @@ class PurchaseService
     /**
      * Create a payment record to supplier
      */
-    private function createPaymentRecord(int $supplierId, float $amount, string $paymentDate): PaymentToSupplier
+    private function createPaymentRecord(int $supplierId, int $purchaseId, float $amount, string $paymentDate): PaymentToSupplier
     {
         return PaymentToSupplier::create([
             'supplier_id' => $supplierId,
+            'purchase_id' => $purchaseId,
             'amount' => $amount,
             'payment_date' => $paymentDate,
             'note' => 'Payment from purchase',

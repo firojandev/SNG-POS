@@ -5,13 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentToSupplier extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'store_id',
         'supplier_id',
+        'purchase_id',
         'amount',
         'payment_date',
         'note',
@@ -22,6 +26,7 @@ class PaymentToSupplier extends Model
         'payment_date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     protected static function boot(): void
@@ -49,6 +54,14 @@ class PaymentToSupplier extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * Get the purchase that owns this payment.
+     */
+    public function purchase(): BelongsTo
+    {
+        return $this->belongsTo(Purchase::class);
     }
 
     /**

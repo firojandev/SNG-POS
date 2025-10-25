@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\IncomeCategoryController;
 use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\PaymentToSupplierController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -179,6 +180,17 @@ Route::prefix('incomes')->group(function () {
     Route::get('/{income}/edit', [IncomeController::class, 'edit'])->name('incomes.edit');
     Route::put('/{income}', [IncomeController::class, 'update'])->name('incomes.update');
     Route::delete('/{income}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
+});
+
+// Payment to Supplier Routes
+Route::prefix('payment-to-supplier')->group(function () {
+    Route::get('/', [PaymentToSupplierController::class, 'index'])->name('payment-to-supplier.index');
+    Route::get('/get-data', [PaymentToSupplierController::class, 'getData'])->name('payment-to-supplier.getData');
+    Route::get('/get-supplier-balance', [PaymentToSupplierController::class, 'getSupplierBalance'])->name('payment-to-supplier.getSupplierBalance');
+    Route::post('/', [PaymentToSupplierController::class, 'store'])->name('payment-to-supplier.store');
+    Route::get('/{paymentToSupplier}/edit', [PaymentToSupplierController::class, 'edit'])->name('payment-to-supplier.edit');
+    Route::put('/{paymentToSupplier}', [PaymentToSupplierController::class, 'update'])->name('payment-to-supplier.update');
+    Route::delete('/{paymentToSupplier}', [PaymentToSupplierController::class, 'destroy'])->name('payment-to-supplier.destroy');
 });
 
 // Profile Routes
