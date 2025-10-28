@@ -1,0 +1,166 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class Invoice extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'uuid',
+        'invoice_number',
+        'customer_id',
+        'store_id',
+        'date',
+        'subtotal',
+        'discount',
+        'total_amount',
+        'paid_amount',
+        'due_amount',
+        'status',
+        'note'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'subtotal' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
+        'due_amount' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'formatted_subtotal',
+        'formatted_discount',
+        'formatted_total_amount',
+        'formatted_paid_amount',
+        'formatted_due_amount'
+    ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // Auto-set uuid and store_id when creating
+        self::creating(function($model){
+            $model->uuid = Str::uuid()->toString();
+            $model->store_id = Auth::user()->store_id;
+            $model->invoice_number = 'INV-' . date('Y') . '-' . str_pad(Invoice::whereYear('created_at', date('Y'))->count() + 1, 6, '0', STR_PAD_LEFT);
+        });
+
+        // Global scope to filter by store_id
+        static::addGlobalScope('store', function (Builder $builder) {
+            if (Auth::check() && Auth::user()->store_id) {
+                $builder->where('store_id', Auth::user()->store_id);
+            }
+        });
+    }
+
+    /**
+     * Get the customer that owns the invoice.
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Get the invoice items for the invoice.
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
+    /**
+     * Scope a query to a specific store.
+     */
+    public function scopeForStore(Builder $query, $storeId): Builder
+    {
+        return $query->where('store_id', $storeId);
+    }
+
+    /**
+     * Scope a query to only active invoices.
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Scope a query to only returned invoices.
+     */
+    public function scopeReturned(Builder $query): Builder
+    {
+        return $query->where('status', 'returned');
+    }
+
+    /**
+     * Scope a query to only cancelled invoices.
+     */
+    public function scopeCancelled(Builder $query): Builder
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+    /**
+     * Get formatted subtotal
+     */
+    public function getFormattedSubtotalAttribute()
+    {
+        return get_option('app_currency') . number_format($this->subtotal, 2);
+    }
+
+    /**
+     * Get formatted discount
+     */
+    public function getFormattedDiscountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->discount, 2);
+    }
+
+    /**
+     * Get formatted total amount
+     */
+    public function getFormattedTotalAmountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->total_amount, 2);
+    }
+
+    /**
+     * Get formatted paid amount
+     */
+    public function getFormattedPaidAmountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->paid_amount, 2);
+    }
+
+    /**
+     * Get formatted due amount
+     */
+    public function getFormattedDueAmountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->due_amount, 2);
+    }
+}

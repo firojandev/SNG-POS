@@ -107,6 +107,26 @@ Route::prefix('purchase')->group(function () {
     Route::post('api/calculate-unit-total', [PurchaseController::class, 'calculateUnitTotal'])->name('purchase.api.calculate-unit-total');
 });
 
+// Invoice Routes
+Route::prefix('invoice')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('invoice.index');
+    Route::get('get-data', [\App\Http\Controllers\Admin\InvoiceController::class, 'getData'])->name('invoice.api.getData');
+    Route::get('create', [\App\Http\Controllers\Admin\InvoiceController::class, 'create'])->name('invoice.create');
+    Route::post('/', [\App\Http\Controllers\Admin\InvoiceController::class, 'store'])->name('invoice.store');
+    Route::get('{invoice:uuid}', [\App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('invoice.show');
+    Route::get('{invoice:uuid}/edit', [\App\Http\Controllers\Admin\InvoiceController::class, 'edit'])->name('invoice.edit');
+    Route::put('{invoice:uuid}', [\App\Http\Controllers\Admin\InvoiceController::class, 'update'])->name('invoice.update');
+    Route::delete('{invoice:uuid}', [\App\Http\Controllers\Admin\InvoiceController::class, 'destroy'])->name('invoice.destroy');
+
+    // Sale Return and Cancel routes
+    Route::post('{invoice:uuid}/return', [\App\Http\Controllers\Admin\InvoiceController::class, 'returnInvoice'])->name('invoice.return');
+    Route::post('{invoice:uuid}/cancel', [\App\Http\Controllers\Admin\InvoiceController::class, 'cancelInvoice'])->name('invoice.cancel');
+
+    // API routes for AJAX requests
+    Route::get('api/products', [\App\Http\Controllers\Admin\InvoiceController::class, 'getProducts'])->name('invoice.api.products');
+    Route::post('api/calculate-unit-total', [\App\Http\Controllers\Admin\InvoiceController::class, 'calculateUnitTotal'])->name('invoice.api.calculate-unit-total');
+});
+
 
 // Settings Routes
 Route::prefix('settings')->name('admin.settings.')->group(function () {

@@ -85,16 +85,16 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Sales</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'invoice' || @$menu == 'create-invoice' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('invoice.create')}}" class="aside-nav-sublink {{@$menu == 'create-invoice' ? 'active' : '' }}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">New Sale</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('invoice.index')}}" class="aside-nav-sublink {{@$menu == 'invoice' ? 'active' : '' }}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">All Sales</span>
                             </a>
