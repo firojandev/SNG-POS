@@ -20,9 +20,11 @@ class Invoice extends Model
         'customer_id',
         'store_id',
         'date',
-        'subtotal',
+        'unit_total',
+        'total_vat',
         'discount',
         'total_amount',
+        'payable_amount',
         'paid_amount',
         'due_amount',
         'status',
@@ -31,9 +33,11 @@ class Invoice extends Model
 
     protected $casts = [
         'date' => 'date',
-        'subtotal' => 'decimal:2',
+        'unit_total' => 'decimal:2',
+        'total_vat' => 'decimal:2',
         'discount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'payable_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'due_amount' => 'decimal:2',
         'created_at' => 'datetime',
@@ -42,9 +46,11 @@ class Invoice extends Model
     ];
 
     protected $appends = [
-        'formatted_subtotal',
+        'formatted_unit_total',
+        'formatted_total_vat',
         'formatted_discount',
         'formatted_total_amount',
+        'formatted_payable_amount',
         'formatted_paid_amount',
         'formatted_due_amount'
     ];
@@ -125,11 +131,19 @@ class Invoice extends Model
     }
 
     /**
-     * Get formatted subtotal
+     * Get formatted unit total
      */
-    public function getFormattedSubtotalAttribute()
+    public function getFormattedUnitTotalAttribute()
     {
-        return get_option('app_currency') . number_format($this->subtotal, 2);
+        return get_option('app_currency') . number_format($this->unit_total, 2);
+    }
+
+    /**
+     * Get formatted total vat
+     */
+    public function getFormattedTotalVatAttribute()
+    {
+        return get_option('app_currency') . number_format($this->total_vat, 2);
     }
 
     /**
@@ -146,6 +160,14 @@ class Invoice extends Model
     public function getFormattedTotalAmountAttribute()
     {
         return get_option('app_currency') . number_format($this->total_amount, 2);
+    }
+
+    /**
+     * Get formatted payable amount
+     */
+    public function getFormattedPayableAmountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->payable_amount, 2);
     }
 
     /**

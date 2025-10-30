@@ -319,7 +319,7 @@ class InvoiceManager {
         const productImage = product.image ? `/storage/${product.image}` : this.defaultImage;
 
         return $(`
-            <div class="col-sm-6">
+            <div class="col-12">
                 <div class="wiz-card pos-product-item ${selectedClass}" data-product-id="${product.id}">
                     <div class="me-1">
                         <div class="pos-product-fig">
@@ -449,7 +449,10 @@ class InvoiceManager {
                     </td>
                 </tr>
             `);
+            $('#unitTotalAmount').text(this.formatCurrency(0));
+            $('#totalVatAmount').text(this.formatCurrency(0));
             $('#totalAmount').text(this.formatCurrency(0));
+            $('#payableAmount').text(this.formatCurrency(0));
             $('#dueAmount').text(this.formatCurrency(0));
             $('#paidAmount').val(0);
             return;
@@ -458,14 +461,16 @@ class InvoiceManager {
         // Remove empty message if exists
         $('#emptyCartMessage').remove();
 
-        let totalAmount = 0;
+        let subtotal = 0;
+        let totalVat = 0;
 
         // Calculate totals for all items
         const itemCalculations = {};
         for (const item of this.cart) {
             const calculation = await this.calculateItemTotal(item);
             itemCalculations[item.product_id] = calculation;
-            totalAmount += calculation.unit_total;
+            subtotal += calculation.unit_total;
+            totalVat += calculation.vat_amount;
         }
 
         // If we're updating a specific product, only update that row
@@ -496,23 +501,31 @@ class InvoiceManager {
         }
 
         // Update totals with discount
-        $('#subtotalAmount').text(this.formatCurrency(totalAmount));
+        $('#unitTotalAmount').text(this.formatCurrency(subtotal));
+        $('#totalVatAmount').text(this.formatCurrency(totalVat));
         this.calculateTotalsWithDiscount();
     }
 
     calculateTotalsWithDiscount() {
-        const subtotal = this.parseCurrency($('#subtotalAmount').text());
+        const unitTotal = this.parseCurrency($('#unitTotalAmount').text());
+        const totalVat = this.parseCurrency($('#totalVatAmount').text());
         let discount = parseFloat($('#discountAmount').val()) || 0;
 
-        // Prevent discount from exceeding subtotal
-        if (discount > subtotal) {
-            discount = subtotal;
+        // Calculate Total Amount = Unit Total + Total VAT
+        const totalAmount = unitTotal + totalVat;
+        $('#totalAmount').text(this.formatCurrency(totalAmount));
+
+        // Calculate Payable Amount = Total Amount - Discount
+        const payableAmount = Math.max(0, totalAmount - discount);
+
+        // Prevent discount from exceeding Total Amount
+        if (discount > totalAmount) {
+            discount = totalAmount;
             $('#discountAmount').val(discount.toFixed(2));
-            this.showToast('Discount cannot exceed subtotal', 'info');
+            this.showToast('Discount cannot exceed total amount', 'info');
         }
 
-        const totalAmount = Math.max(0, subtotal - discount);
-        $('#totalAmount').text(this.formatCurrency(totalAmount));
+        $('#payableAmount').text(this.formatCurrency(payableAmount));
         this.calculateDueAmount();
     }
 
@@ -559,17 +572,17 @@ class InvoiceManager {
     }
 
     calculateDueAmount() {
-        const totalAmount = this.parseCurrency($('#totalAmount').text());
+        const payableAmount = this.parseCurrency($('#payableAmount').text());
         let paidAmount = parseFloat($('#paidAmount').val()) || 0;
 
-        // Prevent paid amount from exceeding total amount
-        if (paidAmount > totalAmount) {
-            paidAmount = totalAmount;
+        // Prevent paid amount from exceeding payable amount
+        if (paidAmount > payableAmount) {
+            paidAmount = payableAmount;
             $('#paidAmount').val(paidAmount.toFixed(2));
-            this.showToast('Paid amount cannot exceed total amount', 'info');
+            this.showToast('Paid amount cannot exceed payable amount', 'info');
         }
 
-        const dueAmount = Math.max(0, totalAmount - paidAmount);
+        const dueAmount = Math.max(0, payableAmount - paidAmount);
         $('#dueAmount').text(this.formatCurrency(dueAmount));
     }
 
@@ -619,9 +632,11 @@ class InvoiceManager {
             customer_id: $('#customerSelect').val(),
             date: $('#invoiceDate').val(),
             items: items,
-            subtotal: this.parseCurrency($('#subtotalAmount').text()),
+            unit_total: this.parseCurrency($('#unitTotalAmount').text()),
+            total_vat: this.parseCurrency($('#totalVatAmount').text()),
             discount: parseFloat($('#discountAmount').val()) || 0,
             total_amount: this.parseCurrency($('#totalAmount').text()),
+            payable_amount: this.parseCurrency($('#payableAmount').text()),
             paid_amount: parseFloat($('#paidAmount').val()) || 0,
             due_amount: this.parseCurrency($('#dueAmount').text()),
             note: $('#note').val()

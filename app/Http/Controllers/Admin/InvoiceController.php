@@ -257,7 +257,6 @@ class InvoiceController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'subtotal' => $response['subtotal'],
                     'vat_amount' => $response['vat_amount'],
                     'unit_total' => $response['unit_total'],
                     'vat_percentage' => $response['vat_percentage'],

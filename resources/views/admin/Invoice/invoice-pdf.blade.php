@@ -178,8 +178,16 @@
 
     <table class="summary-table">
         <tr>
-            <td><strong>Subtotal:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_subtotal }}</td>
+            <td><strong>Unit Total:</strong></td>
+            <td class="text-right">{{ $invoice->formatted_unit_total }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total VAT:</strong></td>
+            <td class="text-right">{{ $invoice->formatted_total_vat }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total Amount:</strong></td>
+            <td class="text-right">{{ $invoice->formatted_total_amount }}</td>
         </tr>
         @if($invoice->discount > 0)
         <tr>
@@ -188,8 +196,8 @@
         </tr>
         @endif
         <tr>
-            <td><strong>Total Amount:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_total_amount }}</td>
+            <td><strong>Payable Amount:</strong></td>
+            <td class="text-right">{{ $invoice->formatted_payable_amount }}</td>
         </tr>
         <tr>
             <td><strong>Paid Amount:</strong></td>

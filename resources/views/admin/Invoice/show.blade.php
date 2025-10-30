@@ -118,16 +118,24 @@
                                 <h6 class="text-muted mb-3">Payment Summary</h6>
                                 <table class="table table-sm table-borderless">
                                     <tr>
-                                        <td class="text-muted"><strong>Subtotal:</strong></td>
-                                        <td>{{ $invoice->formatted_subtotal }}</td>
+                                        <td class="text-muted"><strong>Unit Total:</strong></td>
+                                        <td>{{ $invoice->formatted_unit_total }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted"><strong>Total VAT:</strong></td>
+                                        <td>{{ $invoice->formatted_total_vat }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted"><strong>Total Amount:</strong></td>
+                                        <td><strong>{{ $invoice->formatted_total_amount }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted"><strong>Discount:</strong></td>
                                         <td class="text-danger">{{ $invoice->formatted_discount }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted"><strong>Total Amount:</strong></td>
-                                        <td><strong>{{ $invoice->formatted_total_amount }}</strong></td>
+                                        <td class="text-muted"><strong>Payable Amount:</strong></td>
+                                        <td><strong>{{ $invoice->formatted_payable_amount }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted"><strong>Paid Amount:</strong></td>

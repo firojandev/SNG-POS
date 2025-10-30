@@ -21,7 +21,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-6 col-xl-7">
+            <div class="col-lg-7 col-xl-8">
                 <div class="theme-card pos-card h-100">
                     <div class="pos-card-header">
                         <div class="row gx-2">
@@ -87,16 +87,24 @@
                                         <table class="table align-middle pos-vendor-table text-muted table-borderless mb-0">
                                             <tbody>
                                             <tr>
-                                                <td class="ps-0 width-60-percentage"><strong>Subtotal:</strong></td>
-                                                <td class="text-right pe-0" id="subtotalAmount">{{ get_option('app_currency', '$') }}0.00</td>
+                                                <td class="ps-0 width-60-percentage"><strong>Unit Total:</strong></td>
+                                                <td class="text-right pe-0" id="unitTotalAmount">{{ get_option('app_currency', '$') }}0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="ps-0"><strong>Total VAT:</strong></td>
+                                                <td class="text-right pe-0" id="totalVatAmount">{{ get_option('app_currency', '$') }}0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="ps-0 width-60-percentage"><strong>Total Amount:</strong></td>
+                                                <td class="text-right pe-0" id="totalAmount">{{ get_option('app_currency', '$') }}0.00</td>
                                             </tr>
                                             <tr>
                                                 <td class="ps-0"><strong>Discount:</strong></td>
                                                 <td class="text-right pe-0"><input type="number" id="discountAmount" name="discount" class="form-control form-control-sm text-center" placeholder="Discount" value="0" step="0.01" min="0" max="999999"></td>
                                             </tr>
                                             <tr>
-                                                <td class="ps-0 width-60-percentage"><strong>Total Amount:</strong></td>
-                                                <td class="text-right pe-0" id="totalAmount">{{ get_option('app_currency', '$') }}0.00</td>
+                                                <td class="ps-0 width-60-percentage"><strong>Payable Amount:</strong></td>
+                                                <td class="text-right pe-0" id="payableAmount">{{ get_option('app_currency', '$') }}0.00</td>
                                             </tr>
                                             <tr>
                                                 <td class="ps-0"><strong>Paid Amount:</strong></td>
@@ -131,17 +139,17 @@
 
                 </div>
             </div>
-            <div class="col-lg-6 col-xl-5">
+            <div class="col-lg-5 col-xl-4">
                 <div class="theme-card pos-card h-100">
                     <div class="pos-card-header">
                         <div class="row gx-2">
-                            <div class="col-6">
-                                <div class="pos-input">
+                            <div class="col-12">
+                                <div class="pos-input mb-2">
                                     <span class="pos-input-prepend text-light-muted"><i class="fa fa-search text-13"></i></span>
                                     <input type="text" id="productSearch" placeholder="Search by Name, SKU" class="form-control form-control-sm" aria-label="input">
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="pos-input">
                                     <select id="categoryFilter" class="form-control form-control-sm select2" aria-label="select">
                                         <option value="">All Categories</option>

@@ -24,9 +24,11 @@ class InvoiceService
             $invoice = Invoice::create([
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
-                'subtotal' => $data['subtotal'],
+                'unit_total' => $data['unit_total'],
+                'total_vat' => $data['total_vat'] ?? 0,
                 'discount' => $data['discount'] ?? 0,
                 'total_amount' => $data['total_amount'],
+                'payable_amount' => $data['payable_amount'],
                 'paid_amount' => $data['paid_amount'],
                 'due_amount' => $data['due_amount'],
                 'note' => $data['note'] ?? null,
@@ -94,28 +96,29 @@ class InvoiceService
     }
 
     /**
-     * Calculate unit total with vat
+     * Calculate unit total and vat amount separately
+     * Unit Total = Price × Quantity (WITHOUT VAT)
+     * VAT Amount = (Price × Quantity) × VAT%
      */
     public function calculateUnitTotal(float $unitPrice, int $quantity, ?int $vatId = null): array
     {
-        $subtotal = $unitPrice * $quantity;
+        // Unit total is just price × quantity WITHOUT VAT
+        $unitTotal = $unitPrice * $quantity;
         $vatAmount = 0;
         $vatPercentage = 0;
 
+        // Calculate VAT separately
         if ($vatId) {
             $vat = Vat::find($vatId);
             if ($vat) {
                 $vatPercentage = $vat->value;
-                $vatAmount = ($subtotal * $vatPercentage) / 100;
+                $vatAmount = ($unitTotal * $vatPercentage) / 100;
             }
         }
 
-        $unitTotal = $subtotal + $vatAmount;
-
         return [
-            'subtotal' => $subtotal,
-            'vat_amount' => $vatAmount,
-            'unit_total' => $unitTotal,
+            'unit_total' => $unitTotal,  // WITHOUT VAT
+            'vat_amount' => $vatAmount,  // Separate VAT amount
             'vat_percentage' => $vatPercentage
         ];
     }
