@@ -700,7 +700,7 @@ a, .nav-link {
 }
 
 .pos-card-body {
-    height: 68vh;
+    height: 100vh;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;

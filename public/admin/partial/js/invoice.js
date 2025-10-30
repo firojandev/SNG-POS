@@ -137,9 +137,22 @@ class InvoiceManager {
             this.calculateDueAmount();
         });
 
-        // Discount amount change
-        $('#discountAmount').on('input', () => {
+        // Invoice-level discount changes
+        $('#discountType, #discountValue').on('change input', () => {
             this.calculateTotalsWithDiscount();
+        });
+
+        // Item-level discount changes
+        $(document).on('change', '.item-discount-type', (e) => {
+            const row = $(e.target).closest('tr');
+            const productId = row.data('product-id');
+            this.updateItemDiscount(productId);
+        });
+
+        $(document).on('input', '.item-discount-value', (e) => {
+            const row = $(e.target).closest('tr');
+            const productId = row.data('product-id');
+            this.updateItemDiscount(productId);
         });
 
         // Form submission
@@ -371,7 +384,10 @@ class InvoiceManager {
                 formatted_unit_price: product.formatted_sell_price,
                 quantity: 1,
                 vat_id: product.vat_id,
-                vat_percentage: product.vat ? product.vat.value : 0
+                vat_percentage: product.vat ? product.vat.value : 0,
+                item_discount_type: null,
+                item_discount_value: 0,
+                item_discount_amount: 0
             });
             // Visual feedback for new item
             this.showToast(`${product.name} added to cart`, 'success');
@@ -443,7 +459,7 @@ class InvoiceManager {
             // Show empty cart message
             tbody.html(`
                 <tr id="emptyCartMessage">
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="7" class="text-center text-muted py-4">
                         <i class="fa fa-shopping-cart fa-2x mb-2"></i>
                         <p class="mb-0">Cart is empty. Select products from the right panel to add them.</p>
                     </td>
@@ -481,10 +497,10 @@ class InvoiceManager {
                 const existingRow = $(`tr[data-product-id="${item.product_id}"]`);
 
                 if (existingRow.length) {
-                    // Update existing row
+                    // Update existing row - column indexes: Name=0, U/P=1, QTY=2, Disc=3, V/U=4, U/T=5, Remove=6
                     existingRow.find('td:eq(2) .qty-count').val(item.quantity);
-                    existingRow.find('td:eq(3)').text(this.formatCurrency(calculation.vat_amount));
-                    existingRow.find('td:eq(4)').text(this.formatCurrency(calculation.unit_total));
+                    existingRow.find('td:eq(4)').text(this.formatCurrency(calculation.vat_amount));
+                    existingRow.find('td:eq(5)').text(this.formatCurrency(calculation.unit_total));
                 } else {
                     // Row doesn't exist, add it
                     tbody.append(this.createCartRow(item, calculation));
@@ -509,23 +525,46 @@ class InvoiceManager {
     calculateTotalsWithDiscount() {
         const unitTotal = this.parseCurrency($('#unitTotalAmount').text());
         const totalVat = this.parseCurrency($('#totalVatAmount').text());
-        let discount = parseFloat($('#discountAmount').val()) || 0;
 
         // Calculate Total Amount = Unit Total + Total VAT
         const totalAmount = unitTotal + totalVat;
         $('#totalAmount').text(this.formatCurrency(totalAmount));
 
-        // Calculate Payable Amount = Total Amount - Discount
-        const payableAmount = Math.max(0, totalAmount - discount);
+        // Get invoice-level discount type and value
+        const discountType = $('#discountType').val();
+        const discountValue = parseFloat($('#discountValue').val()) || 0;
 
-        // Prevent discount from exceeding Total Amount
-        if (discount > totalAmount) {
-            discount = totalAmount;
-            $('#discountAmount').val(discount.toFixed(2));
-            this.showToast('Discount cannot exceed total amount', 'info');
+        let discountAmount = 0;
+
+        if (discountValue > 0) {
+            if (discountType === 'percentage') {
+                // Calculate percentage discount
+                discountAmount = (totalAmount * discountValue) / 100;
+
+                // Prevent percentage from exceeding 100
+                if (discountValue > 100) {
+                    $('#discountValue').val(100);
+                    discountAmount = totalAmount;
+                }
+            } else {
+                // Flat discount
+                discountAmount = discountValue;
+
+                // Prevent flat discount from exceeding total amount
+                if (discountAmount > totalAmount) {
+                    discountAmount = totalAmount;
+                    $('#discountValue').val(totalAmount.toFixed(2));
+                }
+            }
         }
 
+        // Display calculated discount amount
+        $('#discountAmountDisplay').text(`-${this.formatCurrency(discountAmount)}`);
+
+        // Calculate Payable Amount = Total Amount - Discount
+        const payableAmount = Math.max(0, totalAmount - discountAmount);
         $('#payableAmount').text(this.formatCurrency(payableAmount));
+
         this.calculateDueAmount();
     }
 
@@ -541,8 +580,19 @@ class InvoiceManager {
                         <a href="#" class="btn btn-sm no-focus qty-increment">+</a>
                     </div>
                 </td>
-                <td>${this.formatCurrency(calculation.vat_amount)}</td>
-                <td>${this.formatCurrency(calculation.unit_total)}</td>
+                <td>
+                    <div class="d-flex flex-column gap-1" style="min-width: 100px;">
+                        <select class="form-control form-control-sm item-discount-type">
+                            <option value="">None</option>
+                            <option value="flat" ${item.item_discount_type === 'flat' ? 'selected' : ''}>Flat</option>
+                            <option value="percentage" ${item.item_discount_type === 'percentage' ? 'selected' : ''}>%</option>
+                        </select>
+                        <input type="number" class="form-control form-control-sm item-discount-value" placeholder="0" value="${item.item_discount_value || 0}" step="0.01" min="0" ${!item.item_discount_type ? 'disabled' : ''}>
+                        <small class="text-muted item-discount-display">${item.item_discount_amount > 0 ? '-' + this.formatCurrency(item.item_discount_amount) : '-' + this.currency + '0.00'}</small>
+                    </div>
+                </td>
+                <td class="vat-amount">${this.formatCurrency(calculation.vat_amount)}</td>
+                <td class="unit-total">${this.formatCurrency(calculation.unit_total)}</td>
                 <td><a href="#" class="btn btn-sm btn-danger text-12 py-0 px-1 remove-item"><i class="fa fa-minus"></i></a></td>
             </tr>
         `);
@@ -550,6 +600,10 @@ class InvoiceManager {
 
     async calculateItemTotal(item) {
         try {
+            // Calculate base subtotal (price × quantity) - BEFORE discount
+            const baseSubtotal = item.unit_price * item.quantity;
+
+            // Call backend API to get VAT calculation on ORIGINAL price (Option B)
             const response = await fetch(this.routes.calculateUnitTotal, {
                 method: 'POST',
                 headers: {
@@ -564,10 +618,28 @@ class InvoiceManager {
             });
 
             const result = await response.json();
-            return result.success ? result.data : { unit_total: item.unit_price * item.quantity, vat_amount: 0 };
+
+            if (result.success) {
+                // VAT is calculated on original price (from backend)
+                const vatAmount = result.data.vat_amount;
+
+                // Apply item-level discount to get final unit_total
+                const discountAmount = item.item_discount_amount || 0;
+                const unitTotalAfterDiscount = baseSubtotal - discountAmount;
+
+                return {
+                    unit_total: unitTotalAfterDiscount,  // After item discount
+                    vat_amount: vatAmount,               // VAT on original price (Option B)
+                    vat_percentage: result.data.vat_percentage
+                };
+            }
+
+            // Fallback calculation
+            return { unit_total: baseSubtotal - (item.item_discount_amount || 0), vat_amount: 0 };
         } catch (error) {
             console.error('Error calculating total:', error);
-            return { unit_total: item.unit_price * item.quantity, vat_amount: 0 };
+            const baseSubtotal = item.unit_price * item.quantity;
+            return { unit_total: baseSubtotal - (item.item_discount_amount || 0), vat_amount: 0 };
         }
     }
 
@@ -584,6 +656,55 @@ class InvoiceManager {
 
         const dueAmount = Math.max(0, payableAmount - paidAmount);
         $('#dueAmount').text(this.formatCurrency(dueAmount));
+    }
+
+    updateItemDiscount(productId) {
+        const item = this.cart.find(i => i.product_id === productId);
+        if (!item) return;
+
+        const row = $(`tr[data-product-id="${productId}"]`);
+        const discountType = row.find('.item-discount-type').val();
+        const discountValue = parseFloat(row.find('.item-discount-value').val()) || 0;
+
+        // Enable/disable discount value input based on type
+        row.find('.item-discount-value').prop('disabled', !discountType);
+
+        // Update item discount fields
+        item.item_discount_type = discountType || null;
+        item.item_discount_value = discountType ? discountValue : 0;
+
+        // Calculate discount amount based on type
+        const subtotal = item.unit_price * item.quantity;
+
+        if (discountType === 'percentage') {
+            // Percentage discount
+            let percentage = discountValue;
+            if (percentage > 100) {
+                percentage = 100;
+                row.find('.item-discount-value').val(100);
+            }
+            item.item_discount_amount = (subtotal * percentage) / 100;
+        } else if (discountType === 'flat') {
+            // Flat discount
+            let flatAmount = discountValue;
+            if (flatAmount > subtotal) {
+                flatAmount = subtotal;
+                row.find('.item-discount-value').val(flatAmount.toFixed(2));
+            }
+            item.item_discount_amount = flatAmount;
+        } else {
+            item.item_discount_amount = 0;
+        }
+
+        // Update discount display
+        row.find('.item-discount-display').text(
+            item.item_discount_amount > 0
+                ? `-${this.formatCurrency(item.item_discount_amount)}`
+                : `-${this.currency}0.00`
+        );
+
+        // Recalculate totals
+        this.updateCartDisplay(productId);
     }
 
     updateProductSelection() {
@@ -615,7 +736,7 @@ class InvoiceManager {
         const originalText = submitBtn.html();
         submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
 
-        // Calculate item totals with vat
+        // Calculate item totals with vat and discounts
         const items = await Promise.all(this.cart.map(async (item) => {
             const calculation = await this.calculateItemTotal(item);
             return {
@@ -624,9 +745,28 @@ class InvoiceManager {
                 quantity: item.quantity,
                 vat_id: item.vat_id || null,
                 vat_amount: calculation.vat_amount,
-                unit_total: calculation.unit_total
+                unit_total: calculation.unit_total,
+                item_discount_type: item.item_discount_type || null,
+                item_discount_value: item.item_discount_value || 0,
+                item_discount_amount: item.item_discount_amount || 0
             };
         }));
+
+        // Get invoice-level discount data
+        const discountType = $('#discountType').val();
+        const discountValue = parseFloat($('#discountValue').val()) || 0;
+
+        // Calculate discount amount based on type
+        const totalAmount = this.parseCurrency($('#totalAmount').text());
+        let discountAmount = 0;
+
+        if (discountValue > 0 && discountType) {
+            if (discountType === 'percentage') {
+                discountAmount = (totalAmount * Math.min(discountValue, 100)) / 100;
+            } else {
+                discountAmount = Math.min(discountValue, totalAmount);
+            }
+        }
 
         const formData = {
             customer_id: $('#customerSelect').val(),
@@ -634,8 +774,10 @@ class InvoiceManager {
             items: items,
             unit_total: this.parseCurrency($('#unitTotalAmount').text()),
             total_vat: this.parseCurrency($('#totalVatAmount').text()),
-            discount: parseFloat($('#discountAmount').val()) || 0,
             total_amount: this.parseCurrency($('#totalAmount').text()),
+            discount_type: discountType,
+            discount_value: discountValue,
+            discount_amount: discountAmount,
             payable_amount: this.parseCurrency($('#payableAmount').text()),
             paid_amount: parseFloat($('#paidAmount').val()) || 0,
             due_amount: this.parseCurrency($('#dueAmount').text()),

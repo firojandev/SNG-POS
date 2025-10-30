@@ -22,8 +22,10 @@ class Invoice extends Model
         'date',
         'unit_total',
         'total_vat',
-        'discount',
         'total_amount',
+        'discount_type',
+        'discount_value',
+        'discount_amount',
         'payable_amount',
         'paid_amount',
         'due_amount',
@@ -35,8 +37,9 @@ class Invoice extends Model
         'date' => 'date',
         'unit_total' => 'decimal:2',
         'total_vat' => 'decimal:2',
-        'discount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'discount_value' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'payable_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'due_amount' => 'decimal:2',
@@ -48,8 +51,8 @@ class Invoice extends Model
     protected $appends = [
         'formatted_unit_total',
         'formatted_total_vat',
-        'formatted_discount',
         'formatted_total_amount',
+        'formatted_discount_amount',
         'formatted_payable_amount',
         'formatted_paid_amount',
         'formatted_due_amount'
@@ -147,11 +150,11 @@ class Invoice extends Model
     }
 
     /**
-     * Get formatted discount
+     * Get formatted discount amount
      */
-    public function getFormattedDiscountAttribute()
+    public function getFormattedDiscountAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->discount, 2);
+        return get_option('app_currency') . number_format($this->discount_amount, 2);
     }
 
     /**

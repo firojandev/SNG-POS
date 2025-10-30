@@ -26,8 +26,10 @@ class InvoiceService
                 'date' => $data['date'],
                 'unit_total' => $data['unit_total'],
                 'total_vat' => $data['total_vat'] ?? 0,
-                'discount' => $data['discount'] ?? 0,
                 'total_amount' => $data['total_amount'],
+                'discount_type' => $data['discount_type'] ?? 'flat',
+                'discount_value' => $data['discount_value'] ?? 0,
+                'discount_amount' => $data['discount_amount'] ?? 0,
                 'payable_amount' => $data['payable_amount'],
                 'paid_amount' => $data['paid_amount'],
                 'due_amount' => $data['due_amount'],
@@ -55,20 +57,18 @@ class InvoiceService
      */
     private function createInvoiceItem(Invoice $invoice, array $item): InvoiceItem
     {
-        // Calculate totals if not provided
         $unitPrice = $item['unit_price'];
         $quantity = $item['quantity'];
         $vatId = $item['vat_id'] ?? null;
 
-        // Calculate unit total with vat if not already calculated
-        if (!isset($item['vat_amount']) || !isset($item['unit_total'])) {
-            $calculation = $this->calculateUnitTotal($unitPrice, $quantity, $vatId);
-            $vatAmount = $calculation['vat_amount'];
-            $unitTotal = $calculation['unit_total'];
-        } else {
-            $vatAmount = $item['vat_amount'];
-            $unitTotal = $item['unit_total'];
-        }
+        // Item discount fields
+        $itemDiscountType = $item['item_discount_type'] ?? null;
+        $itemDiscountValue = $item['item_discount_value'] ?? 0;
+        $itemDiscountAmount = $item['item_discount_amount'] ?? 0;
+
+        // VAT amount and unit total should be provided by frontend
+        $vatAmount = $item['vat_amount'] ?? 0;
+        $unitTotal = $item['unit_total'] ?? ($unitPrice * $quantity);
 
         return InvoiceItem::create([
             'invoice_id' => $invoice->id,
@@ -77,6 +77,9 @@ class InvoiceService
             'quantity' => $quantity,
             'vat_amount' => $vatAmount,
             'unit_total' => $unitTotal,
+            'item_discount_type' => $itemDiscountType,
+            'item_discount_value' => $itemDiscountValue,
+            'item_discount_amount' => $itemDiscountAmount,
         ]);
     }
 

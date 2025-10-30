@@ -58,6 +58,7 @@
                                         <th>Name</th>
                                         <th data-bs-toggle="tooltip" data-bs-placement="top" title="Unit Price">U/P</th>
                                         <th>QTY</th>
+                                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="Discount">Disc</th>
                                         <th data-bs-toggle="tooltip" data-bs-placement="top" title="VAT Per Unit">V/U</th>
                                         <th data-bs-toggle="tooltip" data-bs-placement="top" title="Unit Total">U/T</th>
                                         <th>-</th>
@@ -65,7 +66,7 @@
                                     </thead>
                                     <tbody id="cartTableBody">
                                     <tr id="emptyCartMessage">
-                                        <td colspan="6" class="text-center text-muted py-4">
+                                        <td colspan="7" class="text-center text-muted py-4">
                                             <i class="fa fa-shopping-cart fa-2x mb-2"></i>
                                             <p class="mb-0">Cart is empty. Select products from the right panel to add them.</p>
                                         </td>
@@ -100,7 +101,16 @@
                                             </tr>
                                             <tr>
                                                 <td class="ps-0"><strong>Discount:</strong></td>
-                                                <td class="text-right pe-0"><input type="number" id="discountAmount" name="discount" class="form-control form-control-sm text-center" placeholder="Discount" value="0" step="0.01" min="0" max="999999"></td>
+                                                <td class="text-right pe-0">
+                                                    <div class="d-flex gap-1">
+                                                        <select id="discountType" name="discount_type" class="form-control form-control-sm" style="max-width: 70px;">
+                                                            <option value="flat">Flat</option>
+                                                            <option value="percentage">%</option>
+                                                        </select>
+                                                        <input type="number" id="discountValue" name="discount_value" class="form-control form-control-sm text-center" placeholder="0" value="0" step="0.01" min="0" max="999999">
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1" id="discountAmountDisplay">-{{ get_option('app_currency', '$') }}0.00</small>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="ps-0 width-60-percentage"><strong>Payable Amount:</strong></td>

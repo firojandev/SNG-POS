@@ -16,7 +16,10 @@ class InvoiceItem extends Model
         'unit_price',
         'quantity',
         'vat_amount',
-        'unit_total'
+        'unit_total',
+        'item_discount_type',
+        'item_discount_value',
+        'item_discount_amount'
     ];
 
     protected $casts = [
@@ -24,6 +27,8 @@ class InvoiceItem extends Model
         'quantity' => 'integer',
         'vat_amount' => 'decimal:2',
         'unit_total' => 'decimal:2',
+        'item_discount_value' => 'decimal:2',
+        'item_discount_amount' => 'decimal:2',
     ];
 
     /**
@@ -64,5 +69,13 @@ class InvoiceItem extends Model
     public function getFormattedUnitTotalAttribute()
     {
         return get_option('app_currency') . number_format($this->unit_total, 2);
+    }
+
+    /**
+     * Get formatted item discount amount
+     */
+    public function getFormattedItemDiscountAmountAttribute()
+    {
+        return get_option('app_currency') . number_format($this->item_discount_amount, 2);
     }
 }
