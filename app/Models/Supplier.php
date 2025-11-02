@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -50,6 +51,22 @@ class Supplier extends Model
     public function scopeForStore(Builder $query, $storeId): Builder
     {
         return $query->where('store_id', $storeId);
+    }
+
+    /**
+     * Get the purchases for the supplier.
+     */
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Get the payments for the supplier.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(PaymentToSupplier::class);
     }
 
 }

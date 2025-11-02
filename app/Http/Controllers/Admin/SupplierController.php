@@ -98,6 +98,44 @@ class SupplierController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete supplier'], 500);
         }
     }
+
+    public function view(Supplier $supplier): View
+    {
+        // Get supplier purchases with pagination
+        $purchases = $supplier->purchases()
+            ->latest('date')
+            ->paginate(10, ['*'], 'purchases_page');
+
+        // Get supplier payments with pagination
+        $payments = $supplier->payments()
+            ->with('purchase')
+            ->latest('payment_date')
+            ->paginate(10, ['*'], 'payments_page');
+
+        // Calculate statistics
+        $totalPurchases = $supplier->purchases()->count();
+        $totalPurchaseAmount = $supplier->purchases()->sum('total_amount');
+        $totalPayments = $supplier->payments()->sum('amount');
+        $totalDueAmount = $supplier->purchases()->sum('due_amount');
+        $paymentsCount = $supplier->payments()->count();
+
+        // Total balance is already maintained in supplier balance
+        $totalBalance = $supplier->balance;
+
+        $data['title'] = 'Supplier Profile - ' . $supplier->name;
+        $data['menu'] = 'suppliers';
+        $data['supplier'] = $supplier;
+        $data['purchases'] = $purchases;
+        $data['payments'] = $payments;
+        $data['totalPurchases'] = $totalPurchases;
+        $data['totalPurchaseAmount'] = $totalPurchaseAmount;
+        $data['totalPayments'] = $totalPayments;
+        $data['totalDueAmount'] = $totalDueAmount;
+        $data['paymentsCount'] = $paymentsCount;
+        $data['totalBalance'] = $totalBalance;
+
+        return view('admin.Supplier.view', $data);
+    }
 }
 
 

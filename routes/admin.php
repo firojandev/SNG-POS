@@ -147,6 +147,7 @@ Route::prefix('suppliers')->group(function () {
     Route::get('/', [SupplierController::class, 'index'])->name('suppliers.index');
     Route::get('/get-data', [SupplierController::class, 'getData'])->name('suppliers.getData');
     Route::post('/', [SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('/{supplier}/view', [SupplierController::class, 'view'])->name('suppliers.view');
     Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
     Route::put('/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
     Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
