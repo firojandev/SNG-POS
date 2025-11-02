@@ -75,13 +75,13 @@ function populateSupplierTable(suppliers) {
         const actions = `
             <div class="text-center">
                 <a href="/admin/suppliers/${supplier.id}/view" class="btn btn-sm text-13 btn-info me-2">
-                    <i class="fa fa-eye"></i> View
+                    <i class="fa fa-eye"></i>
                 </a>
                 <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditSupplierModal(${supplier.id})">
-                    <i class="fa fa-edit"></i> Edit
+                    <i class="fa fa-edit"></i>
                 </button>
                 <button type="button" class="btn btn-sm text-13 btn-danger" onclick="openDeleteSupplierModal(${supplier.id}, '${supplier.name.replace(/'/g, "\\'")}')">
-                    <i class="fa fa-trash"></i> Delete
+                    <i class="fa fa-trash"></i>
                 </button>
             </div>`;
 

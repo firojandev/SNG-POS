@@ -105,7 +105,12 @@ class PurchaseIndexManager {
                 name: 'supplier.name',
                 defaultContent: '-',
                 render: function(data, type, row) {
-                    return (data && data.name) ? self.escapeHtml(data.name) : '-';
+                    if (data && data.name) {
+                        const supplierId = data.id || '';
+                        const supplierViewUrl = '/admin/suppliers/' + supplierId + '/view';
+                        return '<a href="' + supplierViewUrl + '" class="text-primary" title="View Supplier Profile">' + self.escapeHtml(data.name) + '</a>';
+                    }
+                    return '-';
                 }
             },
             {
@@ -169,15 +174,30 @@ class PurchaseIndexManager {
         const uuid = row.uuid || '';
         const viewUrl = this.routes.view.replace(':uuid', uuid);
 
-        return `
+        let buttons = `
             <div class="btn-group" role="group">
                 <a href="${viewUrl}"
                    class="btn btn-sm btn-primary me-2"
                    title="View Purchase Details">
                     <i class="fa fa-eye"></i>
                 </a>
-            </div>
         `;
+
+        // Add payment button if there is due amount
+        if (row.due_amount && parseFloat(row.due_amount) > 0) {
+            buttons += `
+                <button type="button"
+                   class="btn btn-sm btn-success"
+                   onclick="openPaymentModal('${uuid}', '${this.escapeHtml(row.invoice_number)}', ${row.due_amount}, ${row.supplier ? row.supplier.id : 0})"
+                   title="Make Payment">
+                    <i class="fa fa-credit-card"></i>
+                </button>
+            `;
+        }
+
+        buttons += `</div>`;
+
+        return buttons;
     }
 
     /**
@@ -368,6 +388,8 @@ class PurchaseIndexManager {
 
 // Initialize when document is ready
 let purchaseIndexManager;
+let currentPurchaseUuid = null;
+let currentDueAmount = 0;
 
 $(document).ready(function() {
     // Check if routes are available
@@ -378,6 +400,22 @@ $(document).ready(function() {
 
     // Initialize the manager
     purchaseIndexManager = new PurchaseIndexManager();
+
+    // Set today's date as default
+    $('#payment_date').val(new Date().toISOString().split('T')[0]);
+
+    // Handle payment form submission
+    $('#paymentForm').on('submit', handlePaymentFormSubmit);
+
+    // Reset form when modal is closed
+    $('#paymentModal').on('hidden.bs.modal', function() {
+        resetPaymentForm();
+    });
+
+    // Validate payment amount
+    $('#payment_amount').on('input', function() {
+        validatePaymentAmount();
+    });
 });
 
 // Cleanup on page unload
@@ -386,3 +424,189 @@ $(window).on('beforeunload', function() {
         purchaseIndexManager.destroy();
     }
 });
+
+/**
+ * Open payment modal
+ * @param {string} uuid - Purchase UUID
+ * @param {string} invoiceNumber - Invoice number
+ * @param {number} dueAmount - Due amount
+ * @param {number} supplierId - Supplier ID
+ */
+function openPaymentModal(uuid, invoiceNumber, dueAmount, supplierId) {
+    currentPurchaseUuid = uuid;
+    currentDueAmount = parseFloat(dueAmount);
+
+    $('#purchase_uuid').val(uuid);
+    $('#supplier_id').val(supplierId);
+    $('#invoice_number_display').val(invoiceNumber);
+    $('#due_amount_display').val(window.purchaseIndexConfig.currency + currentDueAmount.toFixed(2));
+    $('#payment_amount').attr('max', currentDueAmount);
+    $('#payment_amount').val(currentDueAmount.toFixed(2));
+
+    // Clear validation errors
+    clearValidationErrors();
+
+    $('#paymentModal').modal('show');
+}
+
+/**
+ * Handle payment form submission
+ * @param {Event} e - Form submit event
+ */
+function handlePaymentFormSubmit(e) {
+    e.preventDefault();
+
+    if (!validatePaymentAmount()) {
+        return;
+    }
+
+    const formData = new FormData(document.getElementById('paymentForm'));
+
+    showLoadingSpinner('#paymentSaveSpinner', '#paymentSaveBtn');
+    clearValidationErrors();
+
+    $.ajax({
+        url: '/admin/purchase/' + currentPurchaseUuid + '/make-payment',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.success) {
+                showToast(response.message, 'success');
+                $('#paymentModal').modal('hide');
+                // Reload the page after a short delay to show success message
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            } else {
+                showToast(response.message || 'Payment failed', 'danger');
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status === 422) {
+                displayValidationErrors(xhr.responseJSON.errors);
+                showToast('Please correct the validation errors', 'danger');
+            } else {
+                showToast('An error occurred. Please try again.', 'danger');
+            }
+        },
+        complete: function() {
+            hideLoadingSpinner('#paymentSaveSpinner', '#paymentSaveBtn');
+        }
+    });
+}
+
+/**
+ * Validate payment amount
+ * @returns {boolean}
+ */
+function validatePaymentAmount() {
+    const amount = parseFloat($('#payment_amount').val());
+    const $amountInput = $('#payment_amount');
+    const $amountError = $('#amountError');
+
+    if (isNaN(amount) || amount <= 0) {
+        $amountInput.addClass('is-invalid');
+        $amountError.text('Payment amount must be greater than 0');
+        return false;
+    }
+
+    if (amount > currentDueAmount) {
+        $amountInput.addClass('is-invalid');
+        $amountError.text('Payment amount cannot exceed due amount');
+        return false;
+    }
+
+    $amountInput.removeClass('is-invalid');
+    $amountError.text('');
+    return true;
+}
+
+/**
+ * Reset payment form
+ */
+function resetPaymentForm() {
+    $('#paymentForm')[0].reset();
+    $('#payment_date').val(new Date().toISOString().split('T')[0]);
+    currentPurchaseUuid = null;
+    currentDueAmount = 0;
+    clearValidationErrors();
+}
+
+/**
+ * Display validation errors
+ * @param {Object} errors
+ */
+function displayValidationErrors(errors) {
+    for (const field in errors) {
+        if (errors.hasOwnProperty(field)) {
+            const errorElement = '#' + field + 'Error';
+            const inputElement = '[name="' + field + '"]';
+
+            $(errorElement).text(errors[field][0]);
+            $(inputElement).addClass('is-invalid');
+        }
+    }
+}
+
+/**
+ * Clear validation errors
+ */
+function clearValidationErrors() {
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').text('');
+}
+
+/**
+ * Show loading spinner
+ * @param {string} spinnerSelector
+ * @param {string} buttonSelector
+ */
+function showLoadingSpinner(spinnerSelector, buttonSelector) {
+    $(spinnerSelector).removeClass('d-none');
+    $(buttonSelector).prop('disabled', true);
+}
+
+/**
+ * Hide loading spinner
+ * @param {string} spinnerSelector
+ * @param {string} buttonSelector
+ */
+function hideLoadingSpinner(spinnerSelector, buttonSelector) {
+    $(spinnerSelector).addClass('d-none');
+    $(buttonSelector).prop('disabled', false);
+}
+
+/**
+ * Show toast notification
+ * @param {string} message
+ * @param {string} type
+ */
+function showToast(message, type = 'info') {
+    if (typeof toastr !== 'undefined') {
+        toastr[type](message);
+    } else {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3"
+                 role="alert"
+                 style="z-index: 9999; min-width: 300px;">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        const $alert = $(alertHtml);
+        $('body').append($alert);
+
+        setTimeout(() => {
+            $alert.fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+}

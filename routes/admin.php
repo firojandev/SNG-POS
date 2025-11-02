@@ -101,6 +101,7 @@ Route::prefix('purchase')->group(function () {
     Route::get('{purchase:uuid}/edit', [PurchaseController::class, 'edit'])->name('purchase.edit');
     Route::put('{purchase:uuid}', [PurchaseController::class, 'update'])->name('purchase.update');
     Route::delete('{purchase:uuid}', [PurchaseController::class, 'destroy'])->name('purchase.destroy');
+    Route::post('{purchase:uuid}/make-payment', [PurchaseController::class, 'makePayment'])->name('purchase.makePayment');
 
     // API routes for AJAX requests
     Route::get('api/products', [PurchaseController::class, 'getProducts'])->name('purchase.api.products');

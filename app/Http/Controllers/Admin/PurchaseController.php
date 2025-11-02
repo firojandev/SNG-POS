@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseRequest;
 use App\Http\Resources\PurchaseResource;
 use App\Models\Purchase;
+use App\Models\PaymentToSupplier;
 use App\Models\Supplier;
 use App\Services\PurchaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
 class PurchaseController extends Controller
@@ -190,6 +193,73 @@ class PurchaseController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong while calculating unit total.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function makePayment(Request $request, Purchase $purchase): JsonResponse
+    {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01|max:' . $purchase->due_amount,
+            'payment_date' => 'required|date',
+            'note' => 'nullable|string|max:500',
+            'supplier_id' => 'required|exists:suppliers,id'
+        ], [
+            'amount.max' => 'Payment amount cannot exceed due amount of ' . get_option('app_currency') . number_format($purchase->due_amount, 2),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $paymentAmount = $request->input('amount');
+
+            // Create payment record
+            $payment = PaymentToSupplier::create([
+                'supplier_id' => $request->input('supplier_id'),
+                'purchase_id' => $purchase->id,
+                'amount' => $paymentAmount,
+                'payment_date' => $request->input('payment_date'),
+                'note' => $request->input('note'),
+            ]);
+
+            // Update purchase paid and due amounts
+            $purchase->paid_amount = $purchase->paid_amount + $paymentAmount;
+            $purchase->due_amount = $purchase->due_amount - $paymentAmount;
+            $purchase->save();
+
+            // Update supplier balance
+            $supplier = Supplier::find($request->input('supplier_id'));
+            $supplier->balance = $supplier->balance - $paymentAmount;
+            $supplier->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment recorded successfully',
+                'data' => [
+                    'payment' => $payment,
+                    'purchase' => $purchase->fresh(),
+                    'supplier' => $supplier->fresh()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to record payment',
                 'error' => $e->getMessage()
             ], 500);
         }
