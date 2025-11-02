@@ -29,6 +29,14 @@
                         <a href="{{ route('purchase.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
+                        @if($purchase->due_amount > 0)
+                            <button type="button"
+                                    class="btn btn-sm btn-success me-2"
+                                    onclick="window.paymentModal.open('{{ $purchase->uuid }}', '{{ $purchase->invoice_number }}', {{ $purchase->due_amount }}, {{ $purchase->supplier_id }})"
+                                    title="Make Payment">
+                                <i class="fa fa-credit-card"></i> Make Payment
+                            </button>
+                        @endif
                         <a href="{{ route('purchase.show', $purchase->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
                             <i class="fa fa-file-pdf-o"></i> Download PDF
                         </a>
@@ -202,6 +210,10 @@
                 </div>
             </div>
         </div>
+
+        {{-- Include Payment to Supplier Modal Component --}}
+        @include('admin.components.payment-to-supplier-modal')
+
     </main>
 @endsection
 
@@ -222,4 +234,25 @@
         font-weight: 500;
     }
 </style>
+@endpush
+
+@push('js')
+    <!--============== Purchase Payment Modal JS =================-->
+    <script type="text/javascript" src="{{asset('admin/partial/js/purchase-payment-modal.js')}}"></script>
+    <script>
+        "use strict";
+        $(document).ready(function() {
+            // Initialize payment modal instance
+            window.paymentModal = new PaymentToSupplierModal({
+                currency: '{{ get_option('app_currency', '$') }}',
+                onSuccess: function() {
+                    // Reload the page to show updated amounts
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+    <!--============== End Purchase Payment Modal JS =================-->
 @endpush

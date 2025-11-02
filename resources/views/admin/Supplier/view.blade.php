@@ -152,7 +152,11 @@
                                 <tbody>
                                     @forelse($purchases as $purchase)
                                         <tr>
-                                            <td><strong>{{ $purchase->invoice_number }}</strong></td>
+                                            <td>
+                                                <a href="{{ route('purchase.show', $purchase->uuid) }}" class="fw-bold text-primary" target="_blank">
+                                                    {{ $purchase->invoice_number }}
+                                                </a>
+                                            </td>
                                             <td>{{ $purchase->date->format(get_option('date_format', 'd M Y')) }}</td>
                                             <td>{{ get_option('app_currency') }}{{ number_format($purchase->total_amount, 2) }}</td>
                                             <td class="text-success">{{ get_option('app_currency') }}{{ number_format($purchase->paid_amount, 2) }}</td>
@@ -167,10 +171,21 @@
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                <a href="{{ route('purchase.show', $purchase->uuid) }}"
-                                                   class="btn btn-sm btn-info" target="_blank">
-                                                    <i class="fa fa-eye"></i> View
-                                                </a>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('purchase.show', $purchase->uuid) }}"
+                                                       class="btn btn-sm btn-primary me-2" target="_blank"
+                                                       title="View Purchase Details">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    @if($purchase->due_amount > 0)
+                                                        <button type="button"
+                                                           class="btn btn-sm btn-success"
+                                                           onclick="openPaymentModal('{{ $purchase->uuid }}', '{{ $purchase->invoice_number }}', {{ $purchase->due_amount }}, {{ $supplier->id }})"
+                                                           title="Make Payment">
+                                                            <i class="fa fa-credit-card"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
@@ -248,6 +263,9 @@
             </div>
         </div>
 
+        {{-- Include Payment to Supplier Modal Component --}}
+        @include('admin.components.payment-to-supplier-modal')
+
     </main>
 @endsection
 
@@ -275,4 +293,25 @@
             font-size: 0.85rem;
         }
     </style>
+@endpush
+
+@push('js')
+    <!--============== Purchase Payment Modal JS =================-->
+    <script type="text/javascript" src="{{asset('admin/partial/js/purchase-payment-modal.js')}}"></script>
+    <script>
+        "use strict";
+        $(document).ready(function() {
+            // Initialize payment modal instance
+            window.paymentModal = new PaymentToSupplierModal({
+                currency: '{{ get_option('app_currency', '$') }}',
+                onSuccess: function() {
+                    // Reload the page to show updated balances and payment history
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+    <!--============== End Purchase Payment Modal JS =================-->
 @endpush
