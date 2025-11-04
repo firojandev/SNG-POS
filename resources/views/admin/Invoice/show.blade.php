@@ -274,122 +274,23 @@
 
 @push('js')
 <script>
-    function returnInvoice(uuid) {
-        Swal.fire({
-            title: 'Return Invoice?',
-            text: 'Are you sure you want to return this invoice? This will restore product stock.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, return it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/invoice/${uuid}/return`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Invoice returned successfully',
-                            icon: 'success',
-                            confirmButtonColor: '#3085d6'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: data.message || 'Failed to return invoice',
-                            icon: 'error',
-                            confirmButtonColor: '#d33'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'An error occurred while returning the invoice',
-                        icon: 'error',
-                        confirmButtonColor: '#d33'
-                    });
-                });
-            }
-        });
-    }
+    "use strict";
 
-    function cancelInvoice(uuid) {
-        Swal.fire({
-            title: 'Cancel Invoice?',
-            text: 'Are you sure you want to cancel this invoice? This will restore product stock.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, cancel it!',
-            cancelButtonText: 'No, keep it'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/invoice/${uuid}/cancel`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Invoice cancelled successfully',
-                            icon: 'success',
-                            confirmButtonColor: '#3085d6'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: data.message || 'Failed to cancel invoice',
-                            icon: 'error',
-                            confirmButtonColor: '#d33'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'An error occurred while cancelling the invoice',
-                        icon: 'error',
-                        confirmButtonColor: '#d33'
-                    });
-                });
-            }
-        });
-    }
-
-    // Initialize payment from customer modal
-    $(document).ready(function() {
-        window.paymentFromCustomerModal = new PaymentFromCustomerModal({
-            currency: '{{ get_option('app_currency', '$') }}',
-            onSuccess: function() {
-                location.reload();
-            }
-        });
-    });
+    /**
+     * Invoice Show Page Configuration
+     */
+    window.invoiceShowConfig = {
+        csrfToken: '{{ csrf_token() }}',
+        currency: '{{ get_option('app_currency', '$') }}',
+        baseUrl: '/admin/invoice'
+    };
 </script>
 
 <!--============== Payment from Customer Modal JS =================-->
 <script type="text/javascript" src="{{asset('admin/partial/js/payment-from-customer-modal.js')}}"></script>
 <!--============== End Payment from Customer Modal JS =================-->
+
+<!--============== Invoice Show JS =================-->
+<script type="text/javascript" src="{{asset('admin/partial/js/invoice-show.js')}}"></script>
+<!--============== End Invoice Show JS =================-->
 @endpush

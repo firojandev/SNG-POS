@@ -217,11 +217,7 @@ Route::prefix('incomes')->group(function () {
 Route::prefix('payment-to-supplier')->group(function () {
     Route::get('/', [PaymentToSupplierController::class, 'index'])->name('payment-to-supplier.index');
     Route::get('/get-data', [PaymentToSupplierController::class, 'getData'])->name('payment-to-supplier.getData');
-    Route::get('/get-supplier-balance', [PaymentToSupplierController::class, 'getSupplierBalance'])->name('payment-to-supplier.getSupplierBalance');
-    Route::post('/', [PaymentToSupplierController::class, 'store'])->name('payment-to-supplier.store');
-    Route::get('/{paymentToSupplier}/edit', [PaymentToSupplierController::class, 'edit'])->name('payment-to-supplier.edit');
-    Route::put('/{paymentToSupplier}', [PaymentToSupplierController::class, 'update'])->name('payment-to-supplier.update');
-    Route::delete('/{paymentToSupplier}', [PaymentToSupplierController::class, 'destroy'])->name('payment-to-supplier.destroy');
+    Route::get('/export-csv', [PaymentToSupplierController::class, 'exportCsv'])->name('payment-to-supplier.exportCsv');
 });
 
 // Profile Routes
