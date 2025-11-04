@@ -123,11 +123,20 @@ Route::prefix('invoice')->group(function () {
     Route::post('{invoice:uuid}/return', [\App\Http\Controllers\Admin\InvoiceController::class, 'returnInvoice'])->name('invoice.return');
     Route::post('{invoice:uuid}/cancel', [\App\Http\Controllers\Admin\InvoiceController::class, 'cancelInvoice'])->name('invoice.cancel');
 
+    // Payment from Customer route
+    Route::post('{invoice:uuid}/receive-payment', [\App\Http\Controllers\Admin\PaymentFromCustomerController::class, 'storeInvoicePayment'])->name('invoice.receivePayment');
+
     // API routes for AJAX requests
     Route::get('api/products', [\App\Http\Controllers\Admin\InvoiceController::class, 'getProducts'])->name('invoice.api.products');
     Route::post('api/calculate-unit-total', [\App\Http\Controllers\Admin\InvoiceController::class, 'calculateUnitTotal'])->name('invoice.api.calculate-unit-total');
 });
 
+// Payment from Customer Routes
+Route::prefix('payment-from-customer')->name('payment-from-customer.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\PaymentFromCustomerController::class, 'index'])->name('index');
+    Route::get('/get-data', [\App\Http\Controllers\Admin\PaymentFromCustomerController::class, 'getData'])->name('getData');
+    Route::get('/export-csv', [\App\Http\Controllers\Admin\PaymentFromCustomerController::class, 'exportCsv'])->name('exportCsv');
+});
 
 // Settings Routes
 Route::prefix('settings')->name('admin.settings.')->group(function () {

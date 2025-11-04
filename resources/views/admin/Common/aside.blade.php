@@ -157,7 +157,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Payment</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'payment-to-supplier' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'payment-to-supplier' || @$menu == 'payment-from-customer' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('payment-to-supplier.index')}}" class="aside-nav-sublink {{@$menu == 'payment-to-supplier' ? 'active' : ''}}">
@@ -166,9 +166,9 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('payment-from-customer.index')}}" class="aside-nav-sublink {{@$menu == 'payment-from-customer' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Received from Customer </span>
+                                <span class="aside-nav-text shrink-text-toggleable">Received from Customer</span>
                             </a>
                         </li>
                     </ul>

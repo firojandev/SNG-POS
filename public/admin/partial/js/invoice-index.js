@@ -214,6 +214,18 @@ class InvoiceIndexManager {
             `;
         }
 
+        // Show payment button if there is due amount for active invoices
+        if (row.status === 'active' && row.due_amount && parseFloat(row.due_amount) > 0) {
+            buttons += `
+                <button type="button"
+                   class="btn btn-sm btn-success me-1"
+                   onclick="openPaymentFromCustomerModal('${uuid}', '${this.escapeHtml(row.invoice_number)}', ${row.due_amount}, ${row.customer ? row.customer.id : 0})"
+                   title="Receive Payment">
+                    <i class="fa fa-credit-card"></i>
+                </button>
+            `;
+        }
+
         // Show return/cancel buttons only for active invoices
         if (row.status === 'active') {
             buttons += `

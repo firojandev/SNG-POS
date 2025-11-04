@@ -22,10 +22,10 @@
         <div class="theme-card">
             <div class="theme-card-header">
                 <div class="row align-items-center">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <h4 class="theme-card-title mb-0">Invoice Details</h4>
                     </div>
-                    <div class="col-md-8 text-end">
+                    <div class="col-md-10 text-end">
                         <a href="{{ route('invoice.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
@@ -36,6 +36,11 @@
                             <a href="{{ route('invoice.edit', $invoice->uuid) }}" class="btn btn-sm btn-info me-2">
                                 <i class="fa fa-edit"></i> Edit
                             </a>
+                            @if($invoice->due_amount > 0)
+                                <button type="button" class="btn btn-sm btn-success me-2" onclick="openPaymentFromCustomerModal('{{ $invoice->uuid }}', '{{ $invoice->invoice_number }}', {{ $invoice->due_amount }}, {{ $invoice->customer_id }})">
+                                    <i class="fa fa-credit-card"></i> Receive Payment
+                                </button>
+                            @endif
                             <button type="button" class="btn btn-sm btn-warning me-2" onclick="returnInvoice('{{ $invoice->uuid }}')">
                                 <i class="fa fa-undo"></i> Return
                             </button>
@@ -235,18 +240,16 @@
                                     </tr>
                                     @endforeach
                                 </tbody>
-                                <tfoot class="table-light">
-                                    <tr>
-                                        <th colspan="7" class="text-end">Grand Total:</th>
-                                        <th class="text-end text-primary">{{ $invoice->formatted_total_amount }}</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- Include Payment from Customer Modal Component --}}
+        @include('admin.components.payment-from-customer-modal')
+
     </main>
 @endsection
 
@@ -374,5 +377,19 @@
             }
         });
     }
+
+    // Initialize payment from customer modal
+    $(document).ready(function() {
+        window.paymentFromCustomerModal = new PaymentFromCustomerModal({
+            currency: '{{ get_option('app_currency', '$') }}',
+            onSuccess: function() {
+                location.reload();
+            }
+        });
+    });
 </script>
+
+<!--============== Payment from Customer Modal JS =================-->
+<script type="text/javascript" src="{{asset('admin/partial/js/payment-from-customer-modal.js')}}"></script>
+<!--============== End Payment from Customer Modal JS =================-->
 @endpush

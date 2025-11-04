@@ -47,6 +47,9 @@
             </div>
         </div>
 
+        {{-- Include Payment from Customer Modal Component --}}
+        @include('admin.components.payment-from-customer-modal')
+
     </main>
 @endsection
 
@@ -89,4 +92,25 @@
     <!--============== Invoice Index Custom JS =================-->
     <script type="text/javascript" src="{{asset('admin/partial/js/invoice-index.js')}}"></script>
     <!--============== End Invoice Index Custom JS =================-->
+
+    <!--============== Payment from Customer Modal JS =================-->
+    <script type="text/javascript" src="{{asset('admin/partial/js/payment-from-customer-modal.js')}}"></script>
+    <script>
+        "use strict";
+        $(document).ready(function() {
+            // Initialize payment modal instance
+            window.paymentFromCustomerModal = new PaymentFromCustomerModal({
+                currency: '{{ get_option('app_currency', '$') }}',
+                onSuccess: function() {
+                    // Reload DataTable instead of full page reload
+                    if (invoiceIndexManager && invoiceIndexManager.dataTable) {
+                        invoiceIndexManager.refreshTable();
+                    } else {
+                        location.reload();
+                    }
+                }
+            });
+        });
+    </script>
+    <!--============== End Payment from Customer Modal JS =================-->
 @endpush
