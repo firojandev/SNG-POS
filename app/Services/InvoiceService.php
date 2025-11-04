@@ -7,6 +7,7 @@ use App\Models\InvoiceItem;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Vat;
+use App\Models\PaymentFromCustomer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -46,6 +47,11 @@ class InvoiceService
             // Update customer balance with due amount if exists
             if (isset($data['due_amount']) && $data['due_amount'] > 0) {
                 $this->updateCustomerBalance($data['customer_id'], $data['due_amount']);
+            }
+
+            // Create payment entry if there is a paid amount
+            if (isset($data['paid_amount']) && $data['paid_amount'] > 0) {
+                $this->createPaymentEntry($invoice, $data);
             }
 
             return $invoice->load(['customer', 'items.product']);
@@ -199,6 +205,95 @@ class InvoiceService
                 $customer->increment('balance', $dueAmount);
             }
         }
+    }
+
+    /**
+     * Create payment entry from customer
+     */
+    private function createPaymentEntry(Invoice $invoice, array $data, bool $isUpdate = false): void
+    {
+        // Generate descriptive note
+        $invoiceNumber = $invoice->invoice_number ?? 'INV-' . $invoice->id;
+        $action = $isUpdate ? 'updated' : 'created';
+        $paymentNote = "Payment received for invoice {$invoiceNumber} (invoice {$action})";
+
+        // Append user's note if provided
+        if (!empty($data['note'])) {
+            $paymentNote .= " - " . $data['note'];
+        }
+
+        PaymentFromCustomer::create([
+            'store_id' => Auth::user()->store_id,
+            'customer_id' => $invoice->customer_id,
+            'invoice_id' => $invoice->id,
+            'payment_date' => $data['date'],
+            'amount' => $data['paid_amount'],
+            'note' => $paymentNote,
+        ]);
+    }
+
+    /**
+     * Update an existing invoice with items
+     */
+    public function updateInvoice(Invoice $invoice, array $data): Invoice
+    {
+        return DB::transaction(function () use ($invoice, $data) {
+            // Only allow editing active invoices
+            if ($invoice->status !== 'active') {
+                throw new \Exception('Only active invoices can be edited.');
+            }
+
+            // Store old due amount for customer balance adjustment
+            $oldDueAmount = $invoice->due_amount;
+
+            // Update the invoice
+            $invoice->update([
+                'customer_id' => $data['customer_id'],
+                'date' => $data['date'],
+                'unit_total' => $data['unit_total'],
+                'total_vat' => $data['total_vat'] ?? 0,
+                'total_amount' => $data['total_amount'],
+                'discount_type' => $data['discount_type'] ?? 'flat',
+                'discount_value' => $data['discount_value'] ?? 0,
+                'discount_amount' => $data['discount_amount'] ?? 0,
+                'payable_amount' => $data['payable_amount'],
+                'paid_amount' => $data['paid_amount'],
+                'due_amount' => $data['due_amount'],
+                'note' => $data['note'] ?? null,
+            ]);
+
+            // Restore stock for old items
+            foreach ($invoice->items as $item) {
+                $this->increaseProductStock($item->product_id, $item->quantity);
+            }
+
+            // Delete old invoice items
+            $invoice->items()->delete();
+
+            // Create new invoice items and decrease product stock
+            foreach ($data['items'] as $item) {
+                $this->createInvoiceItem($invoice, $item);
+                $this->decreaseProductStock($item['product_id'], $item['quantity']);
+            }
+
+            // Adjust customer balance
+            if ($oldDueAmount > 0) {
+                $this->decreaseCustomerBalance($invoice->customer_id, $oldDueAmount);
+            }
+            if (isset($data['due_amount']) && $data['due_amount'] > 0) {
+                $this->updateCustomerBalance($data['customer_id'], $data['due_amount']);
+            }
+
+            // Update payment entry if paid amount changed
+            if (isset($data['paid_amount']) && $data['paid_amount'] > 0) {
+                // Delete old payment entries for this invoice
+                PaymentFromCustomer::where('invoice_id', $invoice->id)->delete();
+                // Create new payment entry with update flag
+                $this->createPaymentEntry($invoice, $data, true);
+            }
+
+            return $invoice->fresh()->load(['customer', 'items.product']);
+        });
     }
 
     /**

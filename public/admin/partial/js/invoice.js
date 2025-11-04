@@ -47,6 +47,13 @@ class InvoiceManager {
         console.log('InvoiceManager: Initializing...');
         this.initializeDatePicker();
         this.bindEvents();
+
+        // Check if in edit mode and load existing invoice data
+        if (window.invoiceConfig.isEditMode && window.invoiceConfig.invoiceData) {
+            console.log('InvoiceManager: Loading existing invoice data...');
+            this.loadExistingInvoice();
+        }
+
         // Load products immediately when page loads
         console.log('InvoiceManager: Loading initial products...');
         this.loadProducts(true);
@@ -86,6 +93,50 @@ class InvoiceManager {
             result += (map[ch] !== undefined) ? map[ch] : ch;
         }
         return result;
+    }
+
+    loadExistingInvoice() {
+        const invoiceData = window.invoiceConfig.invoiceData;
+
+        // Set customer
+        $('#customerSelect').val(invoiceData.customer_id).trigger('change');
+        this.selectedCustomer = invoiceData.customer_id;
+
+        // Set note
+        if (invoiceData.note) {
+            $('#note').val(invoiceData.note);
+        }
+
+        // Set discount
+        if (invoiceData.discount_type) {
+            $('#discountType').val(invoiceData.discount_type);
+            $('#discountValue').val(invoiceData.discount_value);
+        }
+
+        // Set paid amount
+        if (invoiceData.paid_amount) {
+            $('#paidAmount').val(invoiceData.paid_amount);
+        }
+
+        // Load items into cart
+        if (invoiceData.items && invoiceData.items.length > 0) {
+            this.cart = [];
+            invoiceData.items.forEach(item => {
+                this.cart.push({
+                    product_id: item.product.id,
+                    product_name: item.product.name,
+                    sku: item.product.sku,
+                    unit_price: parseFloat(item.unit_price),
+                    formatted_unit_price: this.formatCurrency(item.unit_price),
+                    quantity: item.quantity,
+                    vat_id: item.product.vat_id,
+                    vat_percentage: item.product.vat ? item.product.vat.value : 0,
+                    item_discount_type: item.item_discount_type || null,
+                    item_discount_value: parseFloat(item.item_discount_value || 0),
+                    item_discount_amount: parseFloat(item.item_discount_amount || 0)
+                });
+            });
+        }
     }
 
     bindEvents() {
@@ -785,8 +836,12 @@ class InvoiceManager {
         };
 
         try {
+            // Use PUT method for edit mode, POST for create mode
+            const isEditMode = window.invoiceConfig.isEditMode || false;
+            const method = isEditMode ? 'PUT' : 'POST';
+
             const response = await fetch(this.routes.store, {
-                method: 'POST',
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
@@ -805,7 +860,7 @@ class InvoiceManager {
                 }, 500);
             } else {
                 submitBtn.prop('disabled', false).html(originalText);
-                this.showAlert(result.message || 'Failed to create invoice', 'danger');
+                this.showAlert(result.message || (isEditMode ? 'Failed to update invoice' : 'Failed to create invoice'), 'danger');
 
                 // Display validation errors if present
                 if (result.errors) {
@@ -815,7 +870,8 @@ class InvoiceManager {
         } catch (error) {
             console.error('Error submitting invoice:', error);
             submitBtn.prop('disabled', false).html(originalText);
-            this.showAlert('Error: Failed to create invoice. Please try again.', 'danger');
+            const isEditMode = window.invoiceConfig.isEditMode || false;
+            this.showAlert('Error: Failed to ' + (isEditMode ? 'update' : 'create') + ' invoice. Please try again.', 'danger');
         }
     }
 

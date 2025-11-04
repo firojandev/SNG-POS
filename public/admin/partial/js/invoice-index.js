@@ -189,6 +189,7 @@ class InvoiceIndexManager {
     renderActionButtons(row) {
         const uuid = row.uuid || '';
         const viewUrl = this.routes.view.replace(':uuid', uuid);
+        const editUrl = this.routes.edit.replace(':uuid', uuid);
         const returnUrl = this.routes.return.replace(':uuid', uuid);
         const cancelUrl = this.routes.cancel.replace(':uuid', uuid);
         const deleteUrl = this.routes.destroy.replace(':uuid', uuid);
@@ -201,6 +202,17 @@ class InvoiceIndexManager {
                     <i class="fa fa-eye"></i>
                 </a>
         `;
+
+        // Show edit button only for active invoices
+        if (row.status === 'active') {
+            buttons += `
+                <a href="${editUrl}"
+                   class="btn btn-sm btn-info me-1"
+                   title="Edit Invoice">
+                    <i class="fa fa-edit"></i>
+                </a>
+            `;
+        }
 
         // Show return/cancel buttons only for active invoices
         if (row.status === 'active') {
@@ -241,31 +253,42 @@ class InvoiceIndexManager {
      * @param {string} uuid
      */
     returnInvoice(uuid) {
-        if (!confirm('Are you sure you want to return this invoice? This will restore product stock.')) {
-            return;
-        }
-
-        const returnUrl = this.routes.return.replace(':uuid', uuid);
-
-        fetch(returnUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        Swal.fire({
+            title: 'Return Invoice?',
+            text: 'Are you sure you want to return this invoice? This will restore product stock.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, return it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                this.showSuccess('Invoice returned successfully');
-                this.refreshTable();
-            } else {
-                this.showError(data.message || 'Failed to return invoice');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            this.showError('An error occurred while returning the invoice');
+
+            const returnUrl = this.routes.return.replace(':uuid', uuid);
+
+            fetch(returnUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showSuccess('Invoice returned successfully');
+                    this.refreshTable();
+                } else {
+                    this.showError(data.message || 'Failed to return invoice');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.showError('An error occurred while returning the invoice');
+            });
         });
     }
 
@@ -274,31 +297,42 @@ class InvoiceIndexManager {
      * @param {string} uuid
      */
     cancelInvoice(uuid) {
-        if (!confirm('Are you sure you want to cancel this invoice? This will restore product stock.')) {
-            return;
-        }
-
-        const cancelUrl = this.routes.cancel.replace(':uuid', uuid);
-
-        fetch(cancelUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        Swal.fire({
+            title: 'Cancel Invoice?',
+            text: 'Are you sure you want to cancel this invoice? This will restore product stock.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                this.showSuccess('Invoice cancelled successfully');
-                this.refreshTable();
-            } else {
-                this.showError(data.message || 'Failed to cancel invoice');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            this.showError('An error occurred while cancelling the invoice');
+
+            const cancelUrl = this.routes.cancel.replace(':uuid', uuid);
+
+            fetch(cancelUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showSuccess('Invoice cancelled successfully');
+                    this.refreshTable();
+                } else {
+                    this.showError(data.message || 'Failed to cancel invoice');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.showError('An error occurred while cancelling the invoice');
+            });
         });
     }
 
@@ -307,31 +341,42 @@ class InvoiceIndexManager {
      * @param {string} uuid
      */
     deleteInvoice(uuid) {
-        if (!confirm('Are you sure you want to delete this invoice? This action cannot be undone.')) {
-            return;
-        }
-
-        const deleteUrl = this.routes.destroy.replace(':uuid', uuid);
-
-        fetch(deleteUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        Swal.fire({
+            title: 'Delete Invoice?',
+            text: 'Are you sure you want to delete this invoice? This action cannot be undone.',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                this.showSuccess('Invoice deleted successfully');
-                this.refreshTable();
-            } else {
-                this.showError(data.message || 'Failed to delete invoice');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            this.showError('An error occurred while deleting the invoice');
+
+            const deleteUrl = this.routes.destroy.replace(':uuid', uuid);
+
+            fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showSuccess('Invoice deleted successfully');
+                    this.refreshTable();
+                } else {
+                    this.showError(data.message || 'Failed to delete invoice');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.showError('An error occurred while deleting the invoice');
+            });
         });
     }
 

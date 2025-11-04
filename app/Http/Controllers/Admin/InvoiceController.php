@@ -118,8 +118,35 @@ class InvoiceController extends Controller
 
     public function update(InvoiceRequest $request, Invoice $invoice)
     {
-        // TODO: Implement update functionality
-        return redirect()->back()->with('info', 'Update functionality will be implemented soon');
+        try {
+            $data = $request->validated();
+            $updatedInvoice = $this->invoiceService->updateInvoice($invoice, $data);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Invoice updated successfully',
+                    'data' => $updatedInvoice,
+                    'redirect' => route('invoice.show', $updatedInvoice)
+                ], 200);
+            }
+
+            return redirect()->route('invoice.show', $updatedInvoice)
+                ->with('success', 'Invoice updated successfully');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update invoice',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Failed to update invoice: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroy(Invoice $invoice)

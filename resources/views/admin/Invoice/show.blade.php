@@ -22,10 +22,10 @@
         <div class="theme-card">
             <div class="theme-card-header">
                 <div class="row align-items-center">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <h4 class="theme-card-title mb-0">Invoice Details</h4>
                     </div>
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-8 text-end">
                         <a href="{{ route('invoice.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
@@ -33,6 +33,9 @@
                             <i class="fa fa-file-pdf-o"></i> Download PDF
                         </a>
                         @if($invoice->status === 'active')
+                            <a href="{{ route('invoice.edit', $invoice->uuid) }}" class="btn btn-sm btn-info me-2">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
                             <button type="button" class="btn btn-sm btn-warning me-2" onclick="returnInvoice('{{ $invoice->uuid }}')">
                                 <i class="fa fa-undo"></i> Return
                             </button>
@@ -269,53 +272,107 @@
 @push('js')
 <script>
     function returnInvoice(uuid) {
-        if (confirm('Are you sure you want to return this invoice? This will restore product stock.')) {
-            fetch(`/admin/invoice/${uuid}/return`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Invoice returned successfully');
-                    location.reload();
-                } else {
-                    alert(data.message || 'Failed to return invoice');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while returning the invoice');
-            });
-        }
+        Swal.fire({
+            title: 'Return Invoice?',
+            text: 'Are you sure you want to return this invoice? This will restore product stock.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, return it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/invoice/${uuid}/return`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Invoice returned successfully',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message || 'Failed to return invoice',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while returning the invoice',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                });
+            }
+        });
     }
 
     function cancelInvoice(uuid) {
-        if (confirm('Are you sure you want to cancel this invoice? This will restore product stock.')) {
-            fetch(`/admin/invoice/${uuid}/cancel`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Invoice cancelled successfully');
-                    location.reload();
-                } else {
-                    alert(data.message || 'Failed to cancel invoice');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while cancelling the invoice');
-            });
-        }
+        Swal.fire({
+            title: 'Cancel Invoice?',
+            text: 'Are you sure you want to cancel this invoice? This will restore product stock.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/invoice/${uuid}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Invoice cancelled successfully',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message || 'Failed to cancel invoice',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while cancelling the invoice',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                });
+            }
+        });
     }
 </script>
 @endpush
