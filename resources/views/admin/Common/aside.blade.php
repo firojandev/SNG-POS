@@ -180,10 +180,10 @@
                     <span class="aside-nav-text shrink-text-toggleable">Sales Reports</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('sales-report.summary')}}" class="aside-nav-sublink {{@$menu == 'sales-report-summary' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Sales Summary</span>
                             </a>

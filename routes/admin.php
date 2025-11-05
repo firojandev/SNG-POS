@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\IncomeCategoryController;
 use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\PaymentToSupplierController;
+use App\Http\Controllers\Admin\SalesReportController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -218,6 +219,13 @@ Route::prefix('payment-to-supplier')->group(function () {
     Route::get('/', [PaymentToSupplierController::class, 'index'])->name('payment-to-supplier.index');
     Route::get('/get-data', [PaymentToSupplierController::class, 'getData'])->name('payment-to-supplier.getData');
     Route::get('/export-csv', [PaymentToSupplierController::class, 'exportCsv'])->name('payment-to-supplier.exportCsv');
+});
+
+// Sales Report Routes
+Route::prefix('reports/sales')->name('sales-report.')->group(function () {
+    Route::get('/summary', [SalesReportController::class, 'summary'])->name('summary');
+    Route::get('/export-csv', [SalesReportController::class, 'exportCsv'])->name('export-csv');
+    Route::get('/get-data', [SalesReportController::class, 'getData'])->name('getData');
 });
 
 // Profile Routes
