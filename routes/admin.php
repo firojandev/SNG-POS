@@ -228,6 +228,8 @@ Route::prefix('reports/sales')->name('sales-report.')->group(function () {
     Route::get('/get-data', [SalesReportController::class, 'getData'])->name('getData');
     Route::get('/product-wise', [SalesReportController::class, 'productWise'])->name('product-wise');
     Route::get('/export-product-wise-csv', [SalesReportController::class, 'exportProductWiseCsv'])->name('export-product-wise-csv');
+    Route::get('/revenue', [SalesReportController::class, 'revenue'])->name('revenue');
+    Route::get('/export-revenue-csv', [SalesReportController::class, 'exportRevenueCsv'])->name('export-revenue-csv');
 });
 
 // Profile Routes

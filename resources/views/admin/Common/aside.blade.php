@@ -180,7 +180,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Sales Reports</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' || @$menu == 'sales-report-product-wise' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' || @$menu == 'sales-report-product-wise' || @$menu == 'sales-report-revenue' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('sales-report.summary')}}" class="aside-nav-sublink {{@$menu == 'sales-report-summary' ? 'active' : ''}}">
@@ -195,9 +195,9 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('sales-report.revenue')}}" class="aside-nav-sublink {{@$menu == 'sales-report-revenue' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Revenue </span>
+                                <span class="aside-nav-text shrink-text-toggleable">Revenue Report</span>
                             </a>
                         </li>
                     </ul>

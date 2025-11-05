@@ -7,12 +7,19 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Services\SalesReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class SalesReportController extends Controller
 {
+    protected $salesReportService;
+
+    public function __construct(SalesReportService $salesReportService)
+    {
+        $this->salesReportService = $salesReportService;
+    }
     /**
      * Display sales summary report
      */
@@ -21,13 +28,17 @@ class SalesReportController extends Controller
         $menu = 'sales-report-summary';
         $title = 'Sales Summary Report';
 
-        // Get date range from request or default to current month
-        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
 
-        // Parse dates
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->endOfDay();
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
 
         // Get summary statistics
         $summary = $this->getSalesSummary($start, $end);
@@ -175,18 +186,24 @@ class SalesReportController extends Controller
      */
     public function exportCsv(Request $request)
     {
-        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
 
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->endOfDay();
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
 
         $invoices = Invoice::with(['customer', 'items.product'])
             ->whereBetween('date', [$start, $end])
             ->orderBy('date', 'desc')
             ->get();
 
-        $filename = 'sales_summary_' . $startDate . '_to_' . $endDate . '.csv';
+        $filename = $this->salesReportService->createCsvFilename('sales_summary', $startDate, $endDate);
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -244,13 +261,17 @@ class SalesReportController extends Controller
         $menu = 'sales-report-product-wise';
         $title = 'Product Wise Sales Report';
 
-        // Get date range from request or default to current month
-        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
 
-        // Parse dates
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->endOfDay();
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
 
         // Get product sales data
         $productSales = InvoiceItem::select(
@@ -314,11 +335,17 @@ class SalesReportController extends Controller
      */
     public function exportProductWiseCsv(Request $request)
     {
-        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
 
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->endOfDay();
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
 
         $productSales = InvoiceItem::select(
                 'product_id',
@@ -342,7 +369,7 @@ class SalesReportController extends Controller
             ->orderBy('total_sales', 'desc')
             ->get();
 
-        $filename = 'product_wise_sales_' . $startDate . '_to_' . $endDate . '.csv';
+        $filename = $this->salesReportService->createCsvFilename('product_wise_sales', $startDate, $endDate);
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -418,5 +445,266 @@ class SalesReportController extends Controller
                 ];
             })
         ]);
+    }
+
+    /**
+     * Display revenue report (profit analysis)
+     */
+    public function revenue(Request $request)
+    {
+        $menu = 'sales-report-revenue';
+        $title = 'Revenue Report';
+
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
+
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
+
+        // Get revenue summary
+        $summary = $this->getRevenueSummary($start, $end);
+
+        // Get daily revenue data for chart
+        $dailyRevenue = $this->getDailyRevenue($start, $end);
+
+        // Get revenue by category
+        $categoryRevenue = $this->getRevenueByCategory($start, $end);
+
+        // Get top profitable products
+        $topProfitableProducts = $this->getTopProfitableProducts($start, $end, 10);
+
+        // Get product revenue details
+        $productRevenue = $this->getProductRevenue($start, $end);
+
+        return view('admin.Reports.revenue', compact(
+            'menu',
+            'title',
+            'startDate',
+            'endDate',
+            'summary',
+            'dailyRevenue',
+            'categoryRevenue',
+            'topProfitableProducts',
+            'productRevenue'
+        ));
+    }
+
+    /**
+     * Get revenue summary statistics
+     */
+    private function getRevenueSummary($start, $end)
+    {
+        $invoiceItems = InvoiceItem::whereHas('invoice', function($query) use ($start, $end) {
+            $query->whereBetween('date', [$start, $end])
+                  ->where('status', 'active');
+        })->get();
+
+        $totalSales = $invoiceItems->sum('unit_total');
+        $totalRevenue = $invoiceItems->sum('revenue');
+        $totalCost = $invoiceItems->sum(function($item) {
+            $product = Product::find($item->product_id);
+            return $product && $product->purchase_price
+                ? $product->purchase_price * $item->quantity
+                : 0;
+        });
+
+        $revenueMargin = $totalSales > 0 ? ($totalRevenue / $totalSales) * 100 : 0;
+        $totalItemsSold = $invoiceItems->sum('quantity');
+
+        return [
+            'total_sales' => $totalSales,
+            'total_revenue' => $totalRevenue,
+            'total_cost' => $totalCost,
+            'revenue_margin' => $revenueMargin,
+            'items_sold' => $totalItemsSold,
+            'avg_revenue_per_sale' => $totalItemsSold > 0 ? $totalRevenue / $totalItemsSold : 0
+        ];
+    }
+
+    /**
+     * Get daily revenue data for chart
+     */
+    private function getDailyRevenue($start, $end)
+    {
+        return InvoiceItem::select(
+                DB::raw('DATE(invoices.date) as date'),
+                DB::raw('SUM(invoice_items.unit_total) as total_sales'),
+                DB::raw('SUM(invoice_items.revenue) as total_revenue')
+            )
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->whereBetween('invoices.date', [$start, $end])
+            ->where('invoices.status', 'active')
+            ->groupBy(DB::raw('DATE(invoices.date)'))
+            ->orderBy('date')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'date' => Carbon::parse($item->date)->format('M d'),
+                    'sales' => (float) $item->total_sales,
+                    'revenue' => (float) $item->total_revenue
+                ];
+            });
+    }
+
+    /**
+     * Get revenue by category
+     */
+    private function getRevenueByCategory($start, $end)
+    {
+        return InvoiceItem::select(
+                'categories.name as category',
+                DB::raw('SUM(invoice_items.unit_total) as total_sales'),
+                DB::raw('SUM(invoice_items.revenue) as total_revenue'),
+                DB::raw('COUNT(DISTINCT invoice_items.product_id) as product_count'),
+                DB::raw('SUM(invoice_items.quantity) as total_quantity')
+            )
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->join('products', 'invoice_items.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->whereBetween('invoices.date', [$start, $end])
+            ->where('invoices.status', 'active')
+            ->groupBy('categories.id', 'categories.name')
+            ->orderBy('total_revenue', 'desc')
+            ->get()
+            ->map(function($item) {
+                $revenueMargin = $item->total_sales > 0
+                    ? ($item->total_revenue / $item->total_sales) * 100
+                    : 0;
+
+                return [
+                    'category' => $item->category ?? 'Uncategorized',
+                    'total_sales' => (float) $item->total_sales,
+                    'total_revenue' => (float) $item->total_revenue,
+                    'revenue_margin' => $revenueMargin,
+                    'product_count' => $item->product_count,
+                    'total_quantity' => $item->total_quantity
+                ];
+            });
+    }
+
+    /**
+     * Get top profitable products
+     */
+    private function getTopProfitableProducts($start, $end, $limit = 10)
+    {
+        return InvoiceItem::select(
+                'products.name',
+                'products.sku',
+                'categories.name as category',
+                DB::raw('SUM(invoice_items.quantity) as total_quantity'),
+                DB::raw('SUM(invoice_items.unit_total) as total_sales'),
+                DB::raw('SUM(invoice_items.revenue) as total_revenue')
+            )
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->join('products', 'invoice_items.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->whereBetween('invoices.date', [$start, $end])
+            ->where('invoices.status', 'active')
+            ->groupBy('products.id', 'products.name', 'products.sku', 'categories.name')
+            ->orderBy('total_revenue', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Get detailed product revenue
+     */
+    private function getProductRevenue($start, $end)
+    {
+        return InvoiceItem::select(
+                'products.id',
+                'products.name',
+                'products.sku',
+                'products.stock_quantity',
+                'categories.name as category',
+                DB::raw('SUM(invoice_items.quantity) as total_quantity'),
+                DB::raw('SUM(invoice_items.unit_total) as total_sales'),
+                DB::raw('SUM(invoice_items.revenue) as total_revenue'),
+                DB::raw('AVG(invoice_items.unit_price) as avg_price'),
+                DB::raw('COUNT(DISTINCT invoice_items.invoice_id) as order_count')
+            )
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->join('products', 'invoice_items.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->whereBetween('invoices.date', [$start, $end])
+            ->where('invoices.status', 'active')
+            ->groupBy('products.id', 'products.name', 'products.sku', 'products.stock_quantity', 'categories.name')
+            ->orderBy('total_revenue', 'desc')
+            ->get();
+    }
+
+    /**
+     * Export revenue report to CSV
+     */
+    public function exportRevenueCsv(Request $request)
+    {
+        // Parse date range using service
+        $dateRange = $this->salesReportService->parseDateRange(
+            $request->input('start_date'),
+            $request->input('end_date'),
+            'current_month'
+        );
+
+        $start = $dateRange['start'];
+        $end = $dateRange['end'];
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
+
+        $productRevenue = $this->getProductRevenue($start, $end);
+
+        $filename = $this->salesReportService->createCsvFilename('revenue', $startDate, $endDate);
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($productRevenue) {
+            $file = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($file, [
+                'Product Name',
+                'SKU',
+                'Category',
+                'Quantity Sold',
+                'Total Sales',
+                'Total Revenue (Profit)',
+                'Revenue Margin %',
+                'Avg Price',
+                'Orders',
+                'Current Stock'
+            ]);
+
+            // Add data rows
+            foreach ($productRevenue as $item) {
+                $revenueMargin = $item->total_sales > 0
+                    ? round(($item->total_revenue / $item->total_sales) * 100, 2)
+                    : 0;
+
+                fputcsv($file, [
+                    $item->name,
+                    $item->sku,
+                    $item->category ?? 'Uncategorized',
+                    $item->total_quantity,
+                    number_format($item->total_sales, 2),
+                    number_format($item->total_revenue, 2),
+                    $revenueMargin . '%',
+                    number_format($item->avg_price, 2),
+                    $item->order_count,
+                    $item->stock_quantity ?? 0
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
