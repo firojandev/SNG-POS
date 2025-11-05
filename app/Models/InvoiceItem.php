@@ -17,6 +17,7 @@ class InvoiceItem extends Model
         'quantity',
         'vat_amount',
         'unit_total',
+        'revenue',
         'item_discount_type',
         'item_discount_value',
         'item_discount_amount'
@@ -27,6 +28,7 @@ class InvoiceItem extends Model
         'quantity' => 'integer',
         'vat_amount' => 'decimal:2',
         'unit_total' => 'decimal:2',
+        'revenue' => 'decimal:2',
         'item_discount_value' => 'decimal:2',
         'item_discount_amount' => 'decimal:2',
     ];
@@ -77,5 +79,13 @@ class InvoiceItem extends Model
     public function getFormattedItemDiscountAmountAttribute()
     {
         return get_option('app_currency') . number_format($this->item_discount_amount, 2);
+    }
+
+    /**
+     * Get formatted revenue (profit)
+     */
+    public function getFormattedRevenueAttribute()
+    {
+        return get_option('app_currency') . number_format($this->revenue, 2);
     }
 }

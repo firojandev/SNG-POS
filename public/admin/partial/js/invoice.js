@@ -122,6 +122,8 @@ class InvoiceManager {
         if (invoiceData.items && invoiceData.items.length > 0) {
             this.cart = [];
             invoiceData.items.forEach(item => {
+                // In edit mode, stock has been restored by backend, so current stock_quantity is correct
+                const availableStock = item.product.stock_quantity || 0;
                 this.cart.push({
                     product_id: item.product.id,
                     product_name: item.product.name,
@@ -129,6 +131,7 @@ class InvoiceManager {
                     unit_price: parseFloat(item.unit_price),
                     formatted_unit_price: this.formatCurrency(item.unit_price),
                     quantity: item.quantity,
+                    stock_quantity: availableStock,
                     vat_id: item.product.vat_id,
                     vat_percentage: item.product.vat ? item.product.vat.value : 0,
                     item_discount_type: item.item_discount_type || null,
@@ -397,16 +400,21 @@ class InvoiceManager {
                                     <td colspan="3">${product.name}</td>
                                 </tr>
                                 <tr>
+                                    <td><strong>SKU</strong></td>
+                                    <td>:</td>
+                                    <td>${product.sku || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stock</strong></td>
+                                    <td>:</td>
+                                    <td><span class="badge ${product.stock_quantity > 10 ? 'bg-success' : product.stock_quantity > 0 ? 'bg-warning' : 'bg-danger'}">${product.stock_quantity || 0}</span></td>
+                                </tr>
+                                <tr>
                                     <td><strong>Price</strong></td>
                                     <td>:</td>
                                     <td>${formattedPrice}</td>
                                 </tr>
-                                <tr>
-                                    <td><strong>SKU</strong></td>
-                                    <td>:</td>
-                                    <td>${product.sku}</td>
-                                </tr>
-                                ${product.vat ? `<tr><td><strong>Vat</strong></td><td>:</td><td>${product.vat.value}%</td></tr>` : ''}
+                                ${product.vat ? `<tr><td><strong>VAT</strong></td><td>:</td><td>${product.vat.value}%</td></tr>` : ''}
                             </tbody>
                         </table>
                     </div>
@@ -419,14 +427,25 @@ class InvoiceManager {
 
     addToCart(product) {
         const existingItem = this.cart.find(item => item.product_id === product.id);
+        const availableStock = product.stock_quantity || 0;
 
         if (existingItem) {
+            // Check if we can increase quantity
+            if (existingItem.quantity >= availableStock) {
+                this.showAlert(`Cannot add more. Only ${availableStock} units available in stock.`, 'warning');
+                return;
+            }
             existingItem.quantity += 1;
             // Visual feedback for quantity update
             this.showToast(`${product.name} quantity updated to ${existingItem.quantity}`, 'info');
             // Only update this specific row
             this.updateCartDisplay(product.id);
         } else {
+            // Check if product has stock
+            if (availableStock <= 0) {
+                this.showAlert(`${product.name} is out of stock.`, 'warning');
+                return;
+            }
             this.cart.push({
                 product_id: product.id,
                 product_name: product.name,
@@ -434,6 +453,7 @@ class InvoiceManager {
                 unit_price: parseFloat(product.sell_price),
                 formatted_unit_price: product.formatted_sell_price,
                 quantity: 1,
+                stock_quantity: availableStock,
                 vat_id: product.vat_id,
                 vat_percentage: product.vat ? product.vat.value : 0,
                 item_discount_type: null,
@@ -486,7 +506,16 @@ class InvoiceManager {
         const item = this.cart.find(item => item.product_id === productId);
 
         if (item) {
-            item.quantity = Math.max(1, item.quantity + change);
+            const newQuantity = item.quantity + change;
+            const availableStock = item.stock_quantity || 0;
+
+            // Validate against stock
+            if (newQuantity > availableStock) {
+                this.showAlert(`Cannot exceed available stock. Only ${availableStock} units available.`, 'warning');
+                return;
+            }
+
+            item.quantity = Math.max(1, newQuantity);
             // Only update this specific row
             this.updateCartDisplay(productId);
         }
@@ -497,7 +526,19 @@ class InvoiceManager {
         const item = this.cart.find(item => item.product_id === productId);
 
         if (item) {
-            item.quantity = Math.max(1, quantity);
+            const availableStock = item.stock_quantity || 0;
+            const requestedQty = Math.max(1, quantity);
+
+            // Validate against stock
+            if (requestedQty > availableStock) {
+                this.showAlert(`Cannot exceed available stock. Only ${availableStock} units available.`, 'warning');
+                // Set to maximum available
+                row.find('.qty-count').val(availableStock);
+                item.quantity = availableStock;
+            } else {
+                item.quantity = requestedQty;
+            }
+
             // Only update this specific row
             this.updateCartDisplay(productId);
         }

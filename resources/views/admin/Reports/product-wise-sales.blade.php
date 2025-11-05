@@ -129,7 +129,7 @@
                         <h6 class="theme-card-title">Sales by Category</h6>
                     </div>
                     <div class="theme-card-body">
-                        <canvas id="categoryChart"></canvas>
+                        <canvas id="categoryChart" style="max-height: 300px;"></canvas>
                     </div>
                 </div>
             </div>

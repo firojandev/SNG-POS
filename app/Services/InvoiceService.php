@@ -76,6 +76,18 @@ class InvoiceService
         $vatAmount = $item['vat_amount'] ?? 0;
         $unitTotal = $item['unit_total'] ?? ($unitPrice * $quantity);
 
+        // Calculate revenue (profit) = ((Sell Price - Purchase Price) * Quantity) - Item Discount
+        // Note: Item discount is directly attributable to this product, so it reduces profit
+        // Invoice-level discount is NOT included as it cannot be fairly distributed per item
+        $revenue = 0;
+        $product = Product::find($item['product_id']);
+        if ($product && $product->purchase_price) {
+            $profitPerUnit = $unitPrice - $product->purchase_price;
+            $grossProfit = $profitPerUnit * $quantity;
+            // Subtract item-level discount from profit
+            $revenue = $grossProfit - $itemDiscountAmount;
+        }
+
         return InvoiceItem::create([
             'invoice_id' => $invoice->id,
             'product_id' => $item['product_id'],
@@ -83,6 +95,7 @@ class InvoiceService
             'quantity' => $quantity,
             'vat_amount' => $vatAmount,
             'unit_total' => $unitTotal,
+            'revenue' => $revenue,
             'item_discount_type' => $itemDiscountType,
             'item_discount_value' => $itemDiscountValue,
             'item_discount_amount' => $itemDiscountAmount,

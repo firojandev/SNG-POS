@@ -245,7 +245,7 @@
                                         <th>#</th>
                                         <th>Product</th>
                                         <th class="text-center">Qty Sold</th>
-                                        <th class="text-end">Revenue</th>
+                                        <th class="text-end">Total Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -197,7 +197,7 @@
                         <li class="aside-nav-item">
                             <a href="#" class="aside-nav-sublink">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">All Sales</span>
+                                <span class="aside-nav-text shrink-text-toggleable">Revenue </span>
                             </a>
                         </li>
                     </ul>
