@@ -237,6 +237,158 @@ class SalesReportController extends Controller
     }
 
     /**
+     * Display product-wise sales report
+     */
+    public function productWise(Request $request)
+    {
+        $menu = 'sales-report-product-wise';
+        $title = 'Product Wise Sales Report';
+
+        // Get date range from request or default to current month
+        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+
+        // Parse dates
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        // Get product sales data
+        $productSales = InvoiceItem::select(
+                'product_id',
+                DB::raw('SUM(quantity) as total_quantity_sold'),
+                DB::raw('SUM(unit_total) as total_sales'),
+                DB::raw('SUM(vat_amount) as total_vat'),
+                DB::raw('COUNT(DISTINCT invoice_id) as order_count'),
+                DB::raw('AVG(unit_price) as avg_unit_price'),
+                DB::raw('MIN(unit_price) as min_unit_price'),
+                DB::raw('MAX(unit_price) as max_unit_price')
+            )
+            ->with(['product' => function($query) {
+                $query->select('id', 'name', 'sku', 'category_id', 'sell_price', 'stock_quantity')
+                      ->with(['category' => function($q) {
+                          $q->select('id', 'name');
+                      }]);
+            }])
+            ->whereHas('invoice', function($query) use ($start, $end) {
+                $query->whereBetween('date', [$start, $end])
+                      ->where('status', '!=', 'cancelled');
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        // Calculate summary
+        $summary = [
+            'total_products_sold' => $productSales->count(),
+            'total_quantity_sold' => $productSales->sum('total_quantity_sold'),
+            'total_sales' => $productSales->sum('total_sales'),
+            'total_vat' => $productSales->sum('total_vat'),
+            'total_orders' => $productSales->sum('order_count'),
+        ];
+
+        // Get category-wise breakdown
+        $categoryBreakdown = $productSales->groupBy(function($item) {
+            return $item->product->category->name ?? 'Uncategorized';
+        })->map(function($items, $category) {
+            return [
+                'category' => $category,
+                'product_count' => $items->count(),
+                'total_quantity' => $items->sum('total_quantity_sold'),
+                'total_sales' => $items->sum('total_sales'),
+            ];
+        })->sortByDesc('total_sales')->values();
+
+        return view('admin.Reports.product-wise-sales', compact(
+            'menu',
+            'title',
+            'productSales',
+            'summary',
+            'categoryBreakdown',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Export product-wise sales as CSV
+     */
+    public function exportProductWiseCsv(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $productSales = InvoiceItem::select(
+                'product_id',
+                DB::raw('SUM(quantity) as total_quantity_sold'),
+                DB::raw('SUM(unit_total) as total_sales'),
+                DB::raw('SUM(vat_amount) as total_vat'),
+                DB::raw('COUNT(DISTINCT invoice_id) as order_count'),
+                DB::raw('AVG(unit_price) as avg_unit_price')
+            )
+            ->with(['product' => function($query) {
+                $query->select('id', 'name', 'sku', 'category_id', 'sell_price', 'stock_quantity')
+                      ->with(['category' => function($q) {
+                          $q->select('id', 'name');
+                      }]);
+            }])
+            ->whereHas('invoice', function($query) use ($start, $end) {
+                $query->whereBetween('date', [$start, $end])
+                      ->where('status', '!=', 'cancelled');
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        $filename = 'product_wise_sales_' . $startDate . '_to_' . $endDate . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($productSales) {
+            $file = fopen('php://output', 'w');
+
+            // Header row
+            fputcsv($file, [
+                'Product Name',
+                'SKU',
+                'Category',
+                'Quantity Sold',
+                'Total Sales',
+                'Total VAT',
+                'Order Count',
+                'Avg Unit Price',
+                'Current Sell Price',
+                'Current Stock'
+            ]);
+
+            // Data rows
+            foreach ($productSales as $item) {
+                fputcsv($file, [
+                    $item->product->name ?? 'N/A',
+                    $item->product->sku ?? 'N/A',
+                    $item->product->category->name ?? 'Uncategorized',
+                    number_format($item->total_quantity_sold, 0),
+                    number_format($item->total_sales, 2),
+                    number_format($item->total_vat, 2),
+                    $item->order_count,
+                    number_format($item->avg_unit_price, 2),
+                    number_format($item->product->sell_price ?? 0, 2),
+                    number_format($item->product->stock_quantity ?? 0, 0)
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
      * Get data for AJAX requests
      */
     public function getData(Request $request)

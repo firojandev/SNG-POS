@@ -180,7 +180,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Sales Reports</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' || @$menu == 'sales-report-product-wise' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('sales-report.summary')}}" class="aside-nav-sublink {{@$menu == 'sales-report-summary' ? 'active' : ''}}">
@@ -189,15 +189,15 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('sales-report.product-wise')}}" class="aside-nav-sublink {{@$menu == 'sales-report-product-wise' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Product Wise </span>
+                                <span class="aside-nav-text shrink-text-toggleable">Product Wise</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
                             <a href="#" class="aside-nav-sublink">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">All Sales </span>
+                                <span class="aside-nav-text shrink-text-toggleable">All Sales</span>
                             </a>
                         </li>
                     </ul>
