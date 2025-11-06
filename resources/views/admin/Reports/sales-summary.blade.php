@@ -295,8 +295,14 @@
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>
-                                                <strong>{{ $customerData->customer->name ?? 'N/A' }}</strong>
-                                                <br><small class="text-muted">{{ $customerData->customer->phone ?? '' }}</small>
+                                                @if($customerData->customer)
+                                                    <a href="{{ route('customers.view', $customerData->customer->id) }}" target="_blank" class="text-decoration-none">
+                                                        <strong>{{ $customerData->customer->name }}</strong>
+                                                    </a>
+                                                    <br><small class="text-muted">{{ $customerData->customer->phone ?? '' }}</small>
+                                                @else
+                                                    <strong>N/A</strong>
+                                                @endif
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge bg-primary">{{ $customerData->invoice_count }}</span>
@@ -348,7 +354,15 @@
                                             <strong>{{ $invoice->invoice_number }}</strong>
                                         </a>
                                     </td>
-                                    <td>{{ $invoice->customer->name ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($invoice->customer)
+                                            <a href="{{ route('customers.view', $invoice->customer->id) }}" target="_blank" class="text-decoration-none">
+                                                {{ $invoice->customer->name }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>{{ $invoice->customer->phone ?? 'N/A' }}</td>
                                     <td class="text-center">{{ $invoice->date->format('Y-m-d') }}</td>
                                     <td class="text-end">{{ $invoice->formatted_payable_amount }}</td>
