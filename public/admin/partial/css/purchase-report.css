@@ -1,0 +1,54 @@
+/* Purchase Report Card Statistics */
+.card-stats {
+    border-left: 4px solid #007bff;
+}
+
+.icon-box {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.icon-box i {
+    font-size: 24px;
+}
+
+/* Background Light Colors */
+.bg-primary-light {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.bg-danger-light {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.bg-info-light {
+    background-color: rgba(23, 162, 184, 0.1);
+}
+
+.bg-warning-light {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-secondary-light {
+    background-color: rgba(108, 117, 125, 0.1);
+}
+
+/* Invoice/Purchase Number Link Styling */
+.table tbody td a.text-decoration-none {
+    color: #007bff;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.table tbody td a.text-decoration-none:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}

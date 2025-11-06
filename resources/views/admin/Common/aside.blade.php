@@ -207,27 +207,21 @@
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
                     <span class="aside-nav-icon"><i class="fa fa-line-chart"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Purchases Reports</span>
+                    <span class="aside-nav-text shrink-text-toggleable">Stock Reports</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'purchase-report' || @$menu == 'stock-report' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('purchase-report.index')}}" class="aside-nav-sublink {{@$menu == 'purchase-report' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Purchase Summary</span>
+                                <span class="aside-nav-text shrink-text-toggleable">Purchase Reports</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('stock-report.index')}}" class="aside-nav-sublink {{@$menu == 'stock-report' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Product Wise </span>
-                            </a>
-                        </li>
-                        <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">All Purchases </span>
+                                <span class="aside-nav-text shrink-text-toggleable">Stock Reports</span>
                             </a>
                         </li>
                     </ul>

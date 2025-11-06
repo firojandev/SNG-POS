@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -96,6 +97,13 @@ class Product extends Model
         self::creating(function($model){
             $model->uuid =  Str::uuid()->toString();
             $model->store_id =  Auth::user()->store_id;
+        });
+
+        // Global scope to filter by store_id
+        static::addGlobalScope('store', function ($builder) {
+            if (Auth::check() && Auth::user()->store_id) {
+                $builder->where('products.store_id', Auth::user()->store_id);
+            }
         });
     }
 

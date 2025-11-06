@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\PaymentToSupplierController;
 use App\Http\Controllers\Admin\SalesReportController;
+use App\Http\Controllers\Admin\PurchaseReportController;
+use App\Http\Controllers\Admin\StockReportController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -230,6 +232,20 @@ Route::prefix('reports/sales')->name('sales-report.')->group(function () {
     Route::get('/export-product-wise-csv', [SalesReportController::class, 'exportProductWiseCsv'])->name('export-product-wise-csv');
     Route::get('/revenue', [SalesReportController::class, 'revenue'])->name('revenue');
     Route::get('/export-revenue-csv', [SalesReportController::class, 'exportRevenueCsv'])->name('export-revenue-csv');
+});
+
+// Purchase Report Routes
+Route::prefix('reports/purchase')->name('purchase-report.')->group(function () {
+    Route::get('/', [PurchaseReportController::class, 'index'])->name('index');
+    Route::get('/export-csv', [PurchaseReportController::class, 'exportCsv'])->name('export-csv');
+    Route::get('/export-product-wise-csv', [PurchaseReportController::class, 'exportProductWiseCsv'])->name('export-product-wise-csv');
+    Route::get('/get-data', [PurchaseReportController::class, 'getData'])->name('getData');
+});
+
+// Stock Report Routes
+Route::prefix('reports/stock')->name('stock-report.')->group(function () {
+    Route::get('/', [StockReportController::class, 'index'])->name('index');
+    Route::get('/export-csv', [StockReportController::class, 'exportCsv'])->name('export-csv');
 });
 
 // Profile Routes

@@ -1,0 +1,161 @@
+/* Stock Card Styling */
+.stock-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e3e6f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.search-product{
+    height: 35px !important;
+}
+
+.stock-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.border-start-primary {
+    border-left: 4px solid #007bff !important;
+}
+
+.border-start-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.border-start-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+
+.border-start-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.border-start-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+}
+
+.stat-icon i {
+    font-size: 24px;
+}
+
+.stock-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.stock-card .small {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Table Styling */
+#stockReportTable thead th {
+    background-color: #f8f9fc;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e3e6f0;
+    padding: 12px 8px;
+}
+
+#stockReportTable tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#stockReportTable tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.04);
+}
+
+#stockReportTable tbody td {
+    vertical-align: middle;
+    padding: 12px 8px;
+}
+
+/* Badge Styling */
+.badge {
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+/* Filter Section & Table Header */
+.theme-card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1rem 1.25rem;
+}
+
+.theme-card-header h5 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.theme-card-header .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    font-weight: 600;
+}
+
+.theme-card-header .btn {
+    white-space: nowrap;
+}
+
+/* Pagination Footer */
+.theme-card-footer {
+    background-color: #f8f9fc;
+    border-top: 1px solid #e3e6f0;
+    padding: 15px 20px;
+}
+
+/* Per page selector */
+#perPageSelect {
+    border: 1px solid #e3e6f0;
+    font-size: 0.875rem;
+    height: 32px;
+    padding: 0.25rem 2rem 0.25rem 0.75rem;
+}
+
+#perPageSelect option {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .stock-card h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .theme-card-header .row {
+        text-align: center !important;
+    }
+
+    .theme-card-header .col-md-6:last-child {
+        margin-top: 15px;
+    }
+
+    .theme-card-header .d-flex {
+        justify-content: center !important;
+    }
+
+    .theme-card-footer .d-flex {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
