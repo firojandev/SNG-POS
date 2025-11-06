@@ -68,11 +68,16 @@ function populateCustomerTable(customers) {
     customerDataTable.clear();
     customers.forEach(function(customer) {
         const photoHtml = customer.photo
-            ? `<div class="text-center"><img src="/storage/${customer.photo}" alt="${customer.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;"></div>`
-            : `<div class="text-center"><div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: white; font-weight: bold;">${customer.name.charAt(0).toUpperCase()}</div></div>`;
+            ? `<div class="text-center"><a href="/admin/customers/${customer.id}/view" target="_blank"><img src="/storage/${customer.photo}" alt="${customer.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;"></a></div>`
+            : `<div class="text-center"><a href="/admin/customers/${customer.id}/view" target="_blank"><div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: white; font-weight: bold;">${customer.name.charAt(0).toUpperCase()}</div></a></div>`;
+
+        const nameHtml = `<a href="/admin/customers/${customer.id}/view" target="_blank" class="text-decoration-none fw-bold text-primary">${customer.name}</a>`;
 
         const actions = `
             <div class="text-center">
+                <a href="/admin/customers/${customer.id}/view" class="btn btn-sm text-13 btn-primary me-2" target="_blank" title="View Customer Details">
+                    <i class="fa fa-eye"></i> View
+                </a>
                 <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditCustomerModal(${customer.id})">
                     <i class="fa fa-edit"></i> Edit
                 </button>
@@ -83,7 +88,7 @@ function populateCustomerTable(customers) {
 
         customerDataTable.row.add([
             photoHtml,
-            customer.name,
+            nameHtml,
             customer.phone,
             customer.email || 'N/A',
             customer.address || 'N/A',

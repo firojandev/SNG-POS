@@ -442,6 +442,7 @@
     <!--============== End Chart.js =================-->
 
     <script>
+        "use strict";
         /**
          * Purchase Report Configuration
          * Pass configuration and data to JavaScript

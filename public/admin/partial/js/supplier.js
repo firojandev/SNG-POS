@@ -69,12 +69,14 @@ function populateSupplierTable(suppliers) {
     supplierDataTable.clear();
     suppliers.forEach(function(supplier) {
         const photoHtml = supplier.photo
-            ? `<div class="text-center"><img src="/storage/${supplier.photo}" alt="${supplier.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;"></div>`
-            : `<div class="text-center"><div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: white; font-weight: bold;">${supplier.name.charAt(0).toUpperCase()}</div></div>`;
+            ? `<div class="text-center"><a href="/admin/suppliers/${supplier.id}/view" target="_blank"><img src="/storage/${supplier.photo}" alt="${supplier.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;"></a></div>`
+            : `<div class="text-center"><a href="/admin/suppliers/${supplier.id}/view" target="_blank"><div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: white; font-weight: bold;">${supplier.name.charAt(0).toUpperCase()}</div></a></div>`;
+
+        const nameHtml = `<a href="/admin/suppliers/${supplier.id}/view" target="_blank" class="text-decoration-none fw-bold text-primary">${supplier.name}</a>`;
 
         const actions = `
             <div class="text-center">
-                <a href="/admin/suppliers/${supplier.id}/view" class="btn btn-sm text-13 btn-info me-2">
+                <a href="/admin/suppliers/${supplier.id}/view" class="btn btn-sm text-13 btn-info me-2" target="_blank" title="View Supplier Details">
                     <i class="fa fa-eye"></i>
                 </a>
                 <button type="button" class="btn btn-sm text-13 btn-brand-secondary me-2" onclick="openEditSupplierModal(${supplier.id})">
@@ -87,7 +89,7 @@ function populateSupplierTable(suppliers) {
 
         supplierDataTable.row.add([
             photoHtml,
-            supplier.name,
+            nameHtml,
             supplier.contact_person || 'N/A',
             supplier.phone,
             supplier.email || 'N/A',

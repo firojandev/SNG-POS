@@ -17,7 +17,7 @@
             </nav>
         </div>
 
-        
+
 
         <div class="theme-card">
             <div class="theme-card-header d-flex justify-content-between">
@@ -38,7 +38,7 @@
                             <th>Phone</th>
                             <th>Email</th>
                             <th>Address</th>
-                            <th class="width-20-percentage text-center">Options</th>
+                            <th class="width-25-percentage text-center">Options</th>
                         </tr>
                         </thead>
                         <tbody id="customerTableBody"></tbody>

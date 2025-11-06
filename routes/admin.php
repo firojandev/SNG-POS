@@ -172,6 +172,7 @@ Route::prefix('customers')->group(function () {
     Route::get('/get-data', [CustomerController::class, 'getData'])->name('customers.getData');
     Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
     Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::get('/{customer}/view', [CustomerController::class, 'view'])->name('customers.view');
     Route::put('/{customer}', [CustomerController::class, 'update'])->name('customers.update');
     Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 });

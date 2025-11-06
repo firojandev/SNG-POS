@@ -48,4 +48,20 @@ class Customer extends Model
         return $query->where('store_id', $storeId);
     }
 
+    /**
+     * Get the invoices for the customer.
+     */
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the payments for the customer.
+     */
+    public function payments()
+    {
+        return $this->hasMany(PaymentFromCustomer::class);
+    }
+
 }
