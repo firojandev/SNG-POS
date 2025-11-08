@@ -1,0 +1,94 @@
+/* Dashboard Styles */
+
+/* Card Stats */
+.card-stats {
+    border-left: 4px solid #007bff;
+    transition: transform 0.2s;
+}
+
+.card-stats:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-stats-secondary {
+    transition: transform 0.2s;
+}
+
+.card-stats-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Icon Boxes */
+.icon-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.icon-box i {
+    font-size: 28px;
+}
+
+.icon-box-sm {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.icon-box-sm i {
+    font-size: 20px;
+}
+
+/* Background Light Colors */
+.bg-primary-light {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.bg-danger-light {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.bg-info-light {
+    background-color: rgba(23, 162, 184, 0.1);
+}
+
+.bg-warning-light {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-secondary-light {
+    background-color: rgba(108, 117, 125, 0.1);
+}
+
+/* Theme Card */
+.theme-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.theme-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.theme-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.theme-card-body {
+    padding: 1.25rem;
+}
