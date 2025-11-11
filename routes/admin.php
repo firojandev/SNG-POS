@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PaymentToSupplierController;
 use App\Http\Controllers\Admin\SalesReportController;
 use App\Http\Controllers\Admin\PurchaseReportController;
 use App\Http\Controllers\Admin\StockReportController;
+use App\Http\Controllers\Admin\AssetController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -215,6 +216,16 @@ Route::prefix('incomes')->group(function () {
     Route::get('/{income}/edit', [IncomeController::class, 'edit'])->name('incomes.edit');
     Route::put('/{income}', [IncomeController::class, 'update'])->name('incomes.update');
     Route::delete('/{income}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
+});
+
+// Asset Routes
+Route::prefix('asset')->name('admin.asset.')->group(function () {
+    Route::get('/', [AssetController::class, 'index'])->name('index');
+    Route::get('/get-data', [AssetController::class, 'getData'])->name('getData');
+    Route::post('/', [AssetController::class, 'store'])->name('store');
+    Route::get('/{asset}/edit', [AssetController::class, 'edit'])->name('edit');
+    Route::put('/{asset}', [AssetController::class, 'update'])->name('update');
+    Route::delete('/{asset}', [AssetController::class, 'destroy'])->name('destroy');
 });
 
 // Payment to Supplier Routes

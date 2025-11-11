@@ -77,7 +77,7 @@
                     <div class="theme-card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Total Revenue (Profit)</h6>
+                                <h6 class="text-muted mb-1">Total Revenue</h6>
                                 <h3 class="mb-0 text-success">{{ get_option('app_currency') }}{{ number_format($summary['total_revenue'], 2) }}</h3>
                             </div>
                             <div class="icon-box bg-success-light">

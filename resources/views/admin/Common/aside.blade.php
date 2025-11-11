@@ -174,6 +174,42 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="aside-nav-item toggle-item">
+                <a href="#" class="aside-nav-link toggler toggle-icon">
+                    <span class="aside-nav-icon"><i class="fa fa-dollar"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Finance</span>
+                </a>
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'asset' ? 'show' : ''}}">
+                    <ul class="list-unstyled aside-nav-list">
+                        <li class="aside-nav-item">
+                            <a href="{{route('admin.asset.index')}}" class="aside-nav-sublink {{@$menu == 'asset' ? 'active' : ''}}">
+                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                <span class="aside-nav-text shrink-text-toggleable">Assets</span>
+                            </a>
+                        </li>
+                        <li class="aside-nav-item">
+                            <a href="#" class="aside-nav-sublink">
+                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                <span class="aside-nav-text shrink-text-toggleable">Debts</span>
+                            </a>
+                        </li>
+                        <li class="aside-nav-item">
+                            <a href="#" class="aside-nav-sublink">
+                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                <span class="aside-nav-text shrink-text-toggleable">Lend</span>
+                            </a>
+                        </li>
+                        <li class="aside-nav-item">
+                            <a href="#" class="aside-nav-sublink">
+                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                <span class="aside-nav-text shrink-text-toggleable">Security Money</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
                     <span class="aside-nav-icon"><i class="fa fa-line-chart"></i></span>
