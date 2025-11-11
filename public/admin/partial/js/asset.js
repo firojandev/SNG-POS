@@ -92,7 +92,7 @@ function populateTable(assets) {
 
         assetDataTable.row.add([
             asset.name,
-            formatCurrency(asset.amount),
+            (typeof formatCurrency === 'function') ? formatCurrency(asset.amount, (window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$', 2) : (((window.appConfig && window.appConfig.currency) ? window.appConfig.currency : '$') + parseFloat(asset.amount).toFixed(2)),
             noteDisplay,
             actions
         ]);
@@ -100,17 +100,6 @@ function populateTable(assets) {
 
     // Redraw table
     assetDataTable.draw();
-}
-
-/**
- * Format currency
- */
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(amount);
 }
 
 /**

@@ -413,7 +413,7 @@
                                             </a>
                                         </td>
                                         <td>{{ $invoice->customer->name ?? 'N/A' }}</td>
-                                        <td><small>{{ $invoice->date->format('M d, Y') }}</small></td>
+                                        <td><small>{{ $invoice->date ? \Carbon\Carbon::parse($invoice->date)->format(get_option('date_format', 'Y-m-d')) : 'N/A' }}</small></td>
                                         <td class="text-end">{{ get_option('app_currency') }}{{ number_format($invoice->payable_amount, 2) }}</td>
                                         <td class="text-center">
                                             @if($invoice->status == 'active')
@@ -519,7 +519,7 @@
                                             </a>
                                         </td>
                                         <td>{{ $purchase->supplier->name ?? 'N/A' }}</td>
-                                        <td>{{ $purchase->date->format('M d, Y') }}</td>
+                                        <td>{{ $purchase->date ? \Carbon\Carbon::parse($purchase->date)->format(get_option('date_format', 'Y-m-d')) : 'N/A' }}</td>
                                         <td class="text-end">{{ get_option('app_currency') }}{{ number_format($purchase->total_amount, 2) }}</td>
                                         <td class="text-end">{{ get_option('app_currency') }}{{ number_format($purchase->paid_amount, 2) }}</td>
                                         <td class="text-end">{{ get_option('app_currency') }}{{ number_format($purchase->due_amount, 2) }}</td>
