@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\SalesReportController;
 use App\Http\Controllers\Admin\PurchaseReportController;
 use App\Http\Controllers\Admin\StockReportController;
 use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\DebtController;
+use App\Http\Controllers\Admin\LendController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -226,6 +228,26 @@ Route::prefix('asset')->name('admin.asset.')->group(function () {
     Route::get('/{asset}/edit', [AssetController::class, 'edit'])->name('edit');
     Route::put('/{asset}', [AssetController::class, 'update'])->name('update');
     Route::delete('/{asset}', [AssetController::class, 'destroy'])->name('destroy');
+});
+
+// Debt Routes
+Route::prefix('debt')->name('admin.debt.')->group(function () {
+    Route::get('/', [DebtController::class, 'index'])->name('index');
+    Route::get('/get-data', [DebtController::class, 'getData'])->name('getData');
+    Route::post('/', [DebtController::class, 'store'])->name('store');
+    Route::get('/{debt}/edit', [DebtController::class, 'edit'])->name('edit');
+    Route::put('/{debt}', [DebtController::class, 'update'])->name('update');
+    Route::delete('/{debt}', [DebtController::class, 'destroy'])->name('destroy');
+});
+
+// Lend Routes
+Route::prefix('lend')->name('admin.lend.')->group(function () {
+    Route::get('/', [LendController::class, 'index'])->name('index');
+    Route::get('/get-data', [LendController::class, 'getData'])->name('getData');
+    Route::post('/', [LendController::class, 'store'])->name('store');
+    Route::get('/{lend}/edit', [LendController::class, 'edit'])->name('edit');
+    Route::put('/{lend}', [LendController::class, 'update'])->name('update');
+    Route::delete('/{lend}', [LendController::class, 'destroy'])->name('destroy');
 });
 
 // Payment to Supplier Routes

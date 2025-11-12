@@ -180,7 +180,7 @@
                     <span class="aside-nav-icon"><i class="fa fa-dollar"></i></span>
                     <span class="aside-nav-text shrink-text-toggleable">Finance</span>
                 </a>
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'asset' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'asset' || @$menu == 'debt' || @$menu == 'lend' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('admin.asset.index')}}" class="aside-nav-sublink {{@$menu == 'asset' ? 'active' : ''}}">
@@ -189,13 +189,13 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('admin.debt.index')}}" class="aside-nav-sublink {{@$menu == 'debt' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Debts</span>
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('admin.lend.index')}}" class="aside-nav-sublink {{@$menu == 'lend' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Lend</span>
                             </a>
