@@ -29,6 +29,9 @@
                         <a href="{{ route('invoice.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
+                        <a href="{{ route('invoice.show', $invoice->uuid) }}?view=pdf" class="btn btn-sm btn-primary me-2" target="_blank">
+                            <i class="fa fa-eye"></i> View PDF
+                        </a>
                         <a href="{{ route('invoice.show', $invoice->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
                             <i class="fa fa-file-pdf-o"></i> Download PDF
                         </a>

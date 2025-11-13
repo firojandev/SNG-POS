@@ -94,6 +94,14 @@ class Invoice extends Model
     }
 
     /**
+     * Get the store that owns the invoice.
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    /**
      * Get the invoice items for the invoice.
      */
     public function items(): HasMany

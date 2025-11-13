@@ -2,51 +2,85 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Sales Invoice - {{ $invoice->invoice_number }}</title>
+    <title>Sale Invoice - {{ $invoice->invoice_number }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             color: #333;
+            margin: 0;
+            padding: 20px;
         }
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #333;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
         }
-        .header h1 {
-            margin: 0;
+        .header-top {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .logo-section {
+            display: table-cell;
+            width: 30%;
+            vertical-align: top;
+        }
+        .logo {
+            max-width: 150px;
+            max-height: 80px;
+        }
+        .store-info {
+            display: table-cell;
+            width: 70%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .store-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
             color: #2c3e50;
         }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 4px;
-            font-size: 12px;
+        .store-details {
+            font-size: 11px;
+            line-height: 1.6;
+            color: #666;
+        }
+        .invoice-title {
+            text-align: center;
+            font-size: 20px;
             font-weight: bold;
-            margin-top: 10px;
+            margin: 20px 0;
+            padding: 10px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+            color: #2c3e50;
         }
-        .status-active {
-            background-color: #28a745;
-            color: white;
+        .info-section {
+            margin-bottom: 20px;
         }
-        .status-returned {
-            background-color: #ffc107;
-            color: #333;
-        }
-        .status-cancelled {
-            background-color: #6c757d;
-            color: white;
-        }
-        .invoice-info {
-            margin-bottom: 30px;
-        }
-        .invoice-info table {
+        .info-table {
             width: 100%;
+            border-collapse: collapse;
         }
-        .invoice-info td {
+        .info-table td {
             padding: 5px;
+            vertical-align: top;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 120px;
+        }
+        .billing-section {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .billing-title {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #2c3e50;
         }
         .items-table {
             width: 100%;
@@ -54,19 +88,15 @@
             margin-bottom: 20px;
         }
         .items-table th {
-            background-color: #2c3e50;
-            color: white;
-            padding: 10px;
-            text-align: left;
+            background-color: #f8f9fa;
+            padding: 8px;
+            font-size: 11px;
+            border: 1px solid #dee2e6;
         }
         .items-table td {
             padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .items-table tfoot td {
-            font-weight: bold;
-            background-color: #f5f5f5;
-            border-top: 2px solid #333;
+            border: 1px solid #dee2e6;
+            font-size: 11px;
         }
         .text-right {
             text-align: right;
@@ -74,65 +104,130 @@
         .text-center {
             text-align: center;
         }
-        .summary-table {
-            width: 300px;
-            margin-left: auto;
+        .summary-section {
             margin-top: 20px;
         }
+        .summary-table {
+            width: 350px;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
         .summary-table td {
-            padding: 5px;
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+        .summary-table .label-col {
+            text-align: right;
+            font-weight: bold;
+            width: 60%;
+        }
+        .summary-table .value-col {
+            text-align: right;
+            width: 40%;
+        }
+        .summary-row {
+            border-bottom: 1px solid #dee2e6;
         }
         .total-row {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: bold;
+            background-color: #f8f9fa;
             border-top: 2px solid #333;
         }
+        .note-section {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #2c3e50;
+        }
         .footer {
-            margin-top: 50px;
+            margin-top: 30px;
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>SALES INVOICE</h1>
-        <p>{{ get_option('app_name', 'SNG POS') }}</p>
-        @if($invoice->status === 'active')
-            <span class="status-badge status-active">ACTIVE</span>
-        @elseif($invoice->status === 'returned')
-            <span class="status-badge status-returned">RETURNED</span>
-        @else
-            <span class="status-badge status-cancelled">CANCELLED</span>
-        @endif
+        <div class="header-top">
+            <div class="logo-section">
+                @if(get_option('app_logo'))
+                    @php
+                        $logoPath = public_path('storage/' . get_option('app_logo'));
+                        if(file_exists($logoPath)) {
+                            $logoData = base64_encode(file_get_contents($logoPath));
+                            $logoExtension = pathinfo($logoPath, PATHINFO_EXTENSION);
+                            $logoMimeType = $logoExtension === 'png' ? 'image/png' : ($logoExtension === 'jpg' || $logoExtension === 'jpeg' ? 'image/jpeg' : 'image/' . $logoExtension);
+                        }
+                    @endphp
+                    @if(isset($logoData))
+                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo">
+                    @endif
+                @endif
+            </div>
+            <div class="store-info">
+                <div class="store-name">{{ $invoice->store->name ?? get_option('app_name', 'SNG POS') }}</div>
+                <div class="store-details">
+                    @if(isset($invoice->store))
+                        @if($invoice->store->address)
+                            {{ $invoice->store->address }}<br>
+                        @endif
+                        @if($invoice->store->phone_number)
+                            Phone: {{ $invoice->store->phone_number }}<br>
+                        @endif
+                        @if($invoice->store->email)
+                            Email: {{ $invoice->store->email }}
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="invoice-title">Sale INVOICE</div>
     </div>
 
-    <div class="invoice-info">
-        <table>
+    <div class="info-section">
+        <table class="info-table">
             <tr>
                 <td width="50%">
-                    <strong>Invoice Number:</strong> {{ $invoice->invoice_number }}<br>
-                    <strong>Invoice Date:</strong>
-                    @if($invoice->date)
-                        {{ \Carbon\Carbon::parse($invoice->date)->format(get_option('date_format', 'Y-m-d')) }}
-                    @else
-                        {{ $invoice->created_at->format('M d, Y') }}
-                    @endif
-                    <br>
-                    <strong>Created At:</strong> {{ $invoice->created_at->format('M d, Y h:i A') }}
+                    <table>
+                        <tr>
+                            <td class="info-label">Invoice No:</td>
+                            <td>{{ $invoice->invoice_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Invoice Date:</td>
+                            <td>
+                                @if($invoice->date)
+                                    {{ \Carbon\Carbon::parse($invoice->date)->format(get_option('date_format', 'd/m/Y')) }}
+                                @else
+                                    {{ $invoice->created_at->format('d/m/Y') }}
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Status:</td>
+                            <td style="text-transform: uppercase; font-weight: bold;">{{ $invoice->status }}</td>
+                        </tr>
+                    </table>
                 </td>
                 <td width="50%">
-                    <strong>Customer:</strong> {{ $invoice->customer->name }}<br>
-                    <strong>Phone:</strong> {{ $invoice->customer->phone }}<br>
-                    @if($invoice->customer->email)
-                    <strong>Email:</strong> {{ $invoice->customer->email }}<br>
-                    @endif
-                    @if($invoice->customer->address)
-                    <strong>Address:</strong> {{ $invoice->customer->address }}
-                    @endif
+                    <div class="billing-section">
+                        <div class="billing-title">BILLING TO:</div>
+                        <strong>{{ $invoice->customer->name }}</strong><br>
+                        @if($invoice->customer->phone)
+                            Phone: {{ $invoice->customer->phone }}<br>
+                        @endif
+                        @if($invoice->customer->email)
+                            Email: {{ $invoice->customer->email }}<br>
+                        @endif
+                        @if($invoice->customer->address)
+                            {{ $invoice->customer->address }}
+                        @endif
+                    </div>
                 </td>
             </tr>
         </table>
@@ -141,19 +236,19 @@
     <table class="items-table">
         <thead>
             <tr>
-                <th width="5%">#</th>
-                <th width="35%">Product</th>
+                <th width="5%" class="text-center">#</th>
+                <th width="30%">Product Name</th>
                 <th width="12%">SKU</th>
-                <th width="12%" class="text-right">Unit Price</th>
                 <th width="10%" class="text-center">Qty</th>
-                <th width="12%" class="text-right">VAT</th>
-                <th width="14%" class="text-right">Total</th>
+                <th width="13%" class="text-center">Unit Price</th>
+                <th width="12%" class="text-center">VAT</th>
+                <th width="18%" class="text-right">Total</th>
             </tr>
         </thead>
         <tbody>
             @foreach($invoice->items as $index => $item)
             <tr>
-                <td>{{ $index + 1 }}</td>
+                <td class="text-center">{{ $index + 1 }}</td>
                 <td>
                     {{ $item->product->name }}
                     @if($item->product->category)
@@ -161,9 +256,9 @@
                     @endif
                 </td>
                 <td>{{ $item->product->sku }}</td>
-                <td class="text-right">{{ $item->formatted_unit_price }}</td>
                 <td class="text-center">{{ $item->quantity }}</td>
-                <td class="text-right">
+                <td class="text-center">{{ $item->formatted_unit_price }}</td>
+                <td class="text-center">
                     @if($item->vat_amount > 0)
                         {{ $item->formatted_vat_amount }}
                     @else
@@ -176,50 +271,52 @@
         </tbody>
     </table>
 
-    <table class="summary-table">
-        <tr>
-            <td><strong>Unit Total:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_unit_total }}</td>
-        </tr>
-        <tr>
-            <td><strong>Total VAT:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_total_vat }}</td>
-        </tr>
-        <tr>
-            <td><strong>Total Amount:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_total_amount }}</td>
-        </tr>
-        @if($invoice->discount > 0)
-        <tr>
-            <td><strong>Discount:</strong></td>
-            <td class="text-right" style="color: red;">- {{ $invoice->formatted_discount }}</td>
-        </tr>
-        @endif
-        <tr>
-            <td><strong>Payable Amount:</strong></td>
-            <td class="text-right">{{ $invoice->formatted_payable_amount }}</td>
-        </tr>
-        <tr>
-            <td><strong>Paid Amount:</strong></td>
-            <td class="text-right" style="color: green;">{{ $invoice->formatted_paid_amount }}</td>
-        </tr>
-        <tr class="total-row">
-            <td><strong>Due Amount:</strong></td>
-            <td class="text-right" style="color: {{ $invoice->due_amount > 0 ? 'red' : 'green' }};">
-                {{ $invoice->formatted_due_amount }}
-            </td>
-        </tr>
-    </table>
+    <div class="summary-section">
+        <table class="summary-table">
+            <tr class="summary-row">
+                <td class="label-col">Unit Total:</td>
+                <td class="value-col">{{ $invoice->formatted_unit_total }}</td>
+            </tr>
+            <tr class="summary-row">
+                <td class="label-col">Total VAT:</td>
+                <td class="value-col">{{ $invoice->formatted_total_vat }}</td>
+            </tr>
+            <tr class="summary-row">
+                <td class="label-col">Total Amount:</td>
+                <td class="value-col">{{ $invoice->formatted_total_amount }}</td>
+            </tr>
+            @if($invoice->discount_amount > 0)
+            <tr class="summary-row">
+                <td class="label-col">Discount:</td>
+                <td class="value-col" style="color: red;">- {{ $invoice->formatted_discount_amount }}</td>
+            </tr>
+            @endif
+            <tr class="summary-row">
+                <td class="label-col">Payable Amount:</td>
+                <td class="value-col">{{ $invoice->formatted_payable_amount }}</td>
+            </tr>
+            <tr class="summary-row">
+                <td class="label-col">Paid Amount:</td>
+                <td class="value-col" style="color: green;">{{ $invoice->formatted_paid_amount }}</td>
+            </tr>
+            <tr class="total-row">
+                <td class="label-col">Due Amount:</td>
+                <td class="value-col" style="color: {{ $invoice->due_amount > 0 ? 'red' : 'green' }};">
+                    {{ $invoice->formatted_due_amount }}
+                </td>
+            </tr>
+        </table>
+    </div>
 
     @if($invoice->note)
-    <div style="margin-top: 30px; padding: 10px; background-color: #f5f5f5; border-left: 4px solid #2c3e50;">
+    <div class="note-section">
         <strong>Note:</strong><br>
         {{ $invoice->note }}
     </div>
     @endif
 
     <div class="footer">
-        <p>Generated on {{ now()->format('M d, Y h:i A') }}</p>
+        <p>Generated on {{ now()->format('d/m/Y h:i A') }}</p>
         <p>Thank you for your business!</p>
     </div>
 </body>

@@ -93,6 +93,11 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
+        // Check if PDF view is requested
+        if (request()->has('view') && request()->get('view') === 'pdf') {
+            return $this->viewPdf($invoice);
+        }
+
         // Check if PDF download is requested
         if (request()->has('download') && request()->get('download') === 'pdf') {
             return $this->downloadPdf($invoice);
@@ -234,9 +239,18 @@ class InvoiceController extends Controller
         }
     }
 
+    private function viewPdf(Invoice $invoice)
+    {
+        $invoice->load(['customer', 'store', 'items.product.category', 'items.product.unit']);
+
+        $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice]);
+
+        return $pdf->stream('invoice-' . $invoice->invoice_number . '.pdf');
+    }
+
     private function downloadPdf(Invoice $invoice)
     {
-        $invoice->load(['customer', 'items.product.category', 'items.product.unit']);
+        $invoice->load(['customer', 'store', 'items.product.category', 'items.product.unit']);
 
         $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice]);
 
