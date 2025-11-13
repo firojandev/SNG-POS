@@ -9,7 +9,7 @@
             font-size: 12px;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
         .header {
             margin-bottom: 20px;
@@ -21,8 +21,8 @@
         }
         .logo-section {
             display: table-cell;
-            width: 30%;
-            vertical-align: top;
+            width: 20%;
+            vertical-align: middle;
         }
         .logo {
             max-width: 150px;
@@ -30,9 +30,9 @@
         }
         .store-info {
             display: table-cell;
-            width: 70%;
-            text-align: right;
-            vertical-align: top;
+            width: 80%;
+            text-align: center;
+            vertical-align: middle;
         }
         .store-name {
             font-size: 18px;
@@ -47,23 +47,23 @@
         }
         .invoice-title {
             text-align: center;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 10px 0;
             padding: 10px 0;
             border-top: 2px solid #333;
             border-bottom: 2px solid #333;
             color: #2c3e50;
         }
         .info-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .info-table {
             width: 100%;
             border-collapse: collapse;
         }
         .info-table td {
-            padding: 5px;
+            padding: 3px;
             vertical-align: top;
         }
         .info-label {
@@ -73,13 +73,13 @@
         .billing-section {
             background-color: #f8f9fa;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             border: 1px solid #dee2e6;
         }
         .billing-title {
             font-weight: bold;
             font-size: 13px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             color: #2c3e50;
         }
         .items-table {
@@ -89,12 +89,12 @@
         }
         .items-table th {
             background-color: #f8f9fa;
-            padding: 8px;
+            padding: 5px;
             font-size: 11px;
             border: 1px solid #dee2e6;
         }
         .items-table td {
-            padding: 8px;
+            padding: 5px;
             border: 1px solid #dee2e6;
             font-size: 11px;
         }
@@ -119,11 +119,11 @@
         .summary-table .label-col {
             text-align: right;
             font-weight: bold;
-            width: 60%;
+            width: 70%;
         }
         .summary-table .value-col {
             text-align: right;
-            width: 40%;
+            width: 30%;
         }
         .summary-row {
             border-bottom: 1px solid #dee2e6;
@@ -153,7 +153,22 @@
 <body>
     <div class="header">
         <div class="header-top">
-            <div class="logo-section">
+{{--            <div class="logo-section">--}}
+{{--                @if(get_option('app_logo'))--}}
+{{--                    @php--}}
+{{--                        $logoPath = public_path('storage/' . get_option('app_logo'));--}}
+{{--                        if(file_exists($logoPath)) {--}}
+{{--                            $logoData = base64_encode(file_get_contents($logoPath));--}}
+{{--                            $logoExtension = pathinfo($logoPath, PATHINFO_EXTENSION);--}}
+{{--                            $logoMimeType = $logoExtension === 'png' ? 'image/png' : ($logoExtension === 'jpg' || $logoExtension === 'jpeg' ? 'image/jpeg' : 'image/' . $logoExtension);--}}
+{{--                        }--}}
+{{--                    @endphp--}}
+{{--                    @if(isset($logoData))--}}
+{{--                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo">--}}
+{{--                    @endif--}}
+{{--                @endif--}}
+{{--            </div>--}}
+            <div class="store-info">
                 @if(get_option('app_logo'))
                     @php
                         $logoPath = public_path('storage/' . get_option('app_logo'));
@@ -164,11 +179,9 @@
                         }
                     @endphp
                     @if(isset($logoData))
-                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo">
+                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo" height="80">
                     @endif
                 @endif
-            </div>
-            <div class="store-info">
                 <div class="store-name">{{ $invoice->store->name ?? get_option('app_name', 'SNG POS') }}</div>
                 <div class="store-details">
                     @if(isset($invoice->store))
@@ -208,10 +221,6 @@
                                 @endif
                             </td>
                         </tr>
-                        <tr>
-                            <td class="info-label">Status:</td>
-                            <td style="text-transform: uppercase; font-weight: bold;">{{ $invoice->status }}</td>
-                        </tr>
                     </table>
                 </td>
                 <td width="50%">
@@ -237,7 +246,7 @@
         <thead>
             <tr>
                 <th width="5%" class="text-center">#</th>
-                <th width="25%">Product Name</th>
+                <th width="25%" style="text-align: left;">Product Name</th>
                 <th width="10%">SKU</th>
                 <th width="8%" class="text-center">Qty</th>
                 <th width="12%" class="text-right">Unit Price</th>
@@ -253,7 +262,7 @@
                 <td>
                     {{ $item->product->name }}
                     @if($item->product->category)
-                        <br><small style="color: #666;">({{ $item->product->category->name }})</small>
+                        <small style="color: #666;">({{ $item->product->category->name }})</small>
                     @endif
                 </td>
                 <td>{{ $item->product->sku }}</td>
