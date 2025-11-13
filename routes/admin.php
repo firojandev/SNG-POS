@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\StockReportController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\DebtController;
 use App\Http\Controllers\Admin\LendController;
+use App\Http\Controllers\Admin\SecurityMoneyController;
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -238,6 +239,16 @@ Route::prefix('debt')->name('admin.debt.')->group(function () {
     Route::get('/{debt}/edit', [DebtController::class, 'edit'])->name('edit');
     Route::put('/{debt}', [DebtController::class, 'update'])->name('update');
     Route::delete('/{debt}', [DebtController::class, 'destroy'])->name('destroy');
+});
+
+// Security Money Routes
+Route::prefix('security-money')->name('admin.security-money.')->group(function () {
+    Route::get('/', [SecurityMoneyController::class, 'index'])->name('index');
+    Route::get('/get-data', [SecurityMoneyController::class, 'getData'])->name('getData');
+    Route::post('/', [SecurityMoneyController::class, 'store'])->name('store');
+    Route::get('/{securityMoney}/edit', [SecurityMoneyController::class, 'edit'])->name('edit');
+    Route::put('/{securityMoney}', [SecurityMoneyController::class, 'update'])->name('update');
+    Route::delete('/{securityMoney}', [SecurityMoneyController::class, 'destroy'])->name('destroy');
 });
 
 // Lend Routes
