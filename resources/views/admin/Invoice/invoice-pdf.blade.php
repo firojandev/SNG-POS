@@ -237,11 +237,12 @@
         <thead>
             <tr>
                 <th width="5%" class="text-center">#</th>
-                <th width="30%">Product Name</th>
-                <th width="12%">SKU</th>
-                <th width="10%" class="text-center">Qty</th>
-                <th width="13%" class="text-center">Unit Price</th>
-                <th width="12%" class="text-center">VAT</th>
+                <th width="25%">Product Name</th>
+                <th width="10%">SKU</th>
+                <th width="8%" class="text-center">Qty</th>
+                <th width="12%" class="text-right">Unit Price</th>
+                <th width="12%" class="text-right">Discount</th>
+                <th width="10%" class="text-right">VAT</th>
                 <th width="18%" class="text-right">Total</th>
             </tr>
         </thead>
@@ -257,8 +258,18 @@
                 </td>
                 <td>{{ $item->product->sku }}</td>
                 <td class="text-center">{{ $item->quantity }}</td>
-                <td class="text-center">{{ $item->formatted_unit_price }}</td>
-                <td class="text-center">
+                <td class="text-right">{{ $item->formatted_unit_price }}</td>
+                <td class="text-right">
+                    @if($item->item_discount_amount > 0)
+                        <span style="color: red;">-{{ $item->formatted_item_discount_amount }}</span>
+                        @if($item->item_discount_type === 'percentage')
+                            <br><small style="color: #666;">({{ $item->item_discount_value }}%)</small>
+                        @endif
+                    @else
+                        -
+                    @endif
+                </td>
+                <td class="text-right">
                     @if($item->vat_amount > 0)
                         {{ $item->formatted_vat_amount }}
                     @else
@@ -287,7 +298,7 @@
             </tr>
             @if($invoice->discount_amount > 0)
             <tr class="summary-row">
-                <td class="label-col">Discount:</td>
+                <td class="label-col">Invoice Discount:</td>
                 <td class="value-col" style="color: red;">- {{ $invoice->formatted_discount_amount }}</td>
             </tr>
             @endif

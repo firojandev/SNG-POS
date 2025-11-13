@@ -23,17 +23,17 @@
             <div class="theme-card-header">
                 <div class="row align-items-center">
                     <div class="col-md-2">
-                        <h4 class="theme-card-title mb-0">Invoice Details</h4>
+                        <h4 class="theme-card-title mb-0">Invoice</h4>
                     </div>
                     <div class="col-md-10 text-end">
                         <a href="{{ route('invoice.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
                         <a href="{{ route('invoice.show', $invoice->uuid) }}?view=pdf" class="btn btn-sm btn-primary me-2" target="_blank">
-                            <i class="fa fa-eye"></i> View PDF
+                            <i class="fa fa-file-pdf-o"></i> View
                         </a>
                         <a href="{{ route('invoice.show', $invoice->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
-                            <i class="fa fa-file-pdf-o"></i> Download PDF
+                            <i class="fa fa-download"></i> PDF
                         </a>
                         @if($invoice->status === 'active')
                             <a href="{{ route('invoice.edit', $invoice->uuid) }}" class="btn btn-sm btn-info me-2">
@@ -140,10 +140,12 @@
                                         <td class="text-muted"><strong>Total Amount:</strong></td>
                                         <td><strong>{{ $invoice->formatted_total_amount }}</strong></td>
                                     </tr>
+                                    @if($invoice->discount_amount > 0)
                                     <tr>
-                                        <td class="text-muted"><strong>Discount:</strong></td>
-                                        <td class="text-danger">{{ $invoice->formatted_discount }}</td>
+                                        <td class="text-muted"><strong>Invoice Discount:</strong></td>
+                                        <td class="text-danger">-{{ $invoice->formatted_discount_amount }}</td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <td class="text-muted"><strong>Payable Amount:</strong></td>
                                         <td><strong>{{ $invoice->formatted_payable_amount }}</strong></td>
@@ -191,13 +193,14 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">#</th>
-                                        <th width="35%">Product</th>
+                                        <th width="30%">Product</th>
                                         <th width="10%" class="text-center">SKU</th>
-                                        <th width="10%" class="text-center">Unit</th>
+                                        <th width="8%" class="text-center">Unit</th>
                                         <th width="10%" class="text-end">Unit Price</th>
-                                        <th width="8%" class="text-center">Quantity</th>
+                                        <th width="7%" class="text-center">Qty</th>
+                                        <th width="10%" class="text-end">Discount</th>
                                         <th width="10%" class="text-end">VAT</th>
-                                        <th width="12%" class="text-end">Total</th>
+                                        <th width="10%" class="text-end">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -231,6 +234,18 @@
                                         <td class="text-end">{{ $item->formatted_unit_price }}</td>
                                         <td class="text-center">
                                             <span class="badge bg-secondary">{{ $item->quantity }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            @if($item->item_discount_amount > 0)
+                                                <span class="text-danger">
+                                                    -{{ $item->formatted_item_discount_amount }}
+                                                    @if($item->item_discount_type === 'percentage')
+                                                        <br><small>({{ $item->item_discount_value }}%)</small>
+                                                    @endif
+                                                </span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
                                         <td class="text-end">
                                             @if($item->vat_amount > 0)
