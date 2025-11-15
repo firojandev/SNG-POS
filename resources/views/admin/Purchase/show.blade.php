@@ -37,6 +37,9 @@
                                 <i class="fa fa-credit-card"></i> Make Payment
                             </button>
                         @endif
+                        <a href="{{ route('purchase.show', $purchase->uuid) }}?view=pdf" class="btn btn-sm btn-primary me-2" target="_blank">
+                            <i class="fa fa-file-pdf-o"></i> View
+                        </a>
                         <a href="{{ route('purchase.show', $purchase->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
                             <i class="fa fa-file-pdf-o"></i> Download PDF
                         </a>

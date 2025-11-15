@@ -95,6 +95,11 @@ class PurchaseController extends Controller
 
     public function show(Purchase $purchase)
     {
+        // Check if PDF view is requested
+        if (request()->has('view') && request()->get('view') === 'pdf') {
+            return $this->viewPdf($purchase);
+        }
+
         // Check if PDF download is requested
         if (request()->has('download') && request()->get('download') === 'pdf') {
             return $this->downloadPdf($purchase);
@@ -132,9 +137,21 @@ class PurchaseController extends Controller
         ]);
     }
 
+    private function viewPdf(Purchase $purchase)
+    {
+        $purchase->load(['supplier', 'store', 'items.product.category', 'items.product.unit']);
+
+        $pdf = \PDF::loadView('admin.Purchase.invoice-pdf', ['purchase' => $purchase])
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans');
+
+        return $pdf->stream('purchase-' . $purchase->invoice_number . '.pdf');
+    }
+
     private function downloadPdf(Purchase $purchase)
     {
-        $purchase->load(['supplier', 'items.product.category', 'items.product.unit']);
+        $purchase->load(['supplier', 'store', 'items.product.category', 'items.product.unit']);
 
         $pdf = \PDF::loadView('admin.Purchase.invoice-pdf', ['purchase' => $purchase])
             ->setOption('isHtml5ParserEnabled', true)

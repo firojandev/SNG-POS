@@ -78,6 +78,14 @@ class Purchase extends Model
     }
 
     /**
+     * Get the store that owns the purchase.
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    /**
      * Get the purchase items for the purchase.
      */
     public function items(): HasMany
