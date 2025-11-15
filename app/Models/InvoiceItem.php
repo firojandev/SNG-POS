@@ -54,7 +54,7 @@ class InvoiceItem extends Model
      */
     public function getFormattedUnitPriceAttribute()
     {
-        return get_option('app_currency') . number_format($this->unit_price, 2);
+        return get_option('app_currency') . ' ' . number_format($this->unit_price, 2);
     }
 
     /**
@@ -62,7 +62,7 @@ class InvoiceItem extends Model
      */
     public function getFormattedVatAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->vat_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->vat_amount, 2);
     }
 
     /**
@@ -70,7 +70,7 @@ class InvoiceItem extends Model
      */
     public function getFormattedUnitTotalAttribute()
     {
-        return get_option('app_currency') . number_format($this->unit_total, 2);
+        return get_option('app_currency') . ' ' . number_format($this->unit_total, 2);
     }
 
     /**
@@ -78,7 +78,7 @@ class InvoiceItem extends Model
      */
     public function getFormattedItemDiscountAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->item_discount_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->item_discount_amount, 2);
     }
 
     /**
@@ -86,6 +86,6 @@ class InvoiceItem extends Model
      */
     public function getFormattedRevenueAttribute()
     {
-        return get_option('app_currency') . number_format($this->revenue, 2);
+        return get_option('app_currency') . ' ' . number_format($this->revenue, 2);
     }
 }

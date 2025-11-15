@@ -17,6 +17,7 @@ return [
 
     /*
      * Dejavu Sans font is missing glyphs for converted entities, turn it off if you need to show € and £.
+     * Set to true to convert HTML entities like &#2547; (৳) for PDF rendering.
      */
     'convert_entities' => true,
 
@@ -179,7 +180,7 @@ return [
          *
          * @var string
          */
-        'default_font' => 'serif',
+        'default_font' => 'DejaVu Sans',
 
         /**
          * Image DPI setting
@@ -267,7 +268,7 @@ return [
          *
          * @var bool
          */
-        'enable_remote' => false,
+        'enable_remote' => true,
 
         /**
          * List of allowed remote hosts

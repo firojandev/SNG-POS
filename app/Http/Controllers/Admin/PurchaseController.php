@@ -136,7 +136,10 @@ class PurchaseController extends Controller
     {
         $purchase->load(['supplier', 'items.product.category', 'items.product.unit']);
 
-        $pdf = \PDF::loadView('admin.Purchase.invoice-pdf', ['purchase' => $purchase]);
+        $pdf = \PDF::loadView('admin.Purchase.invoice-pdf', ['purchase' => $purchase])
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans');
 
         return $pdf->download('purchase-' . $purchase->invoice_number . '.pdf');
     }

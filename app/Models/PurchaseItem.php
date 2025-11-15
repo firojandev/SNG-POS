@@ -44,7 +44,7 @@ class PurchaseItem extends Model
      */
     public function getFormattedUnitPriceAttribute()
     {
-        return get_option('app_currency') . number_format($this->unit_price, 2);
+        return get_option('app_currency') . ' ' . number_format($this->unit_price, 2);
     }
 
     /**
@@ -52,7 +52,7 @@ class PurchaseItem extends Model
      */
     public function getFormattedTaxAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->tax_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->tax_amount, 2);
     }
 
     /**
@@ -60,6 +60,6 @@ class PurchaseItem extends Model
      */
     public function getFormattedUnitTotalAttribute()
     {
-        return get_option('app_currency') . number_format($this->unit_total, 2);
+        return get_option('app_currency') . ' ' . number_format($this->unit_total, 2);
     }
 }

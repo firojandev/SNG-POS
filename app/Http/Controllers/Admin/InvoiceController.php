@@ -243,7 +243,10 @@ class InvoiceController extends Controller
     {
         $invoice->load(['customer', 'store', 'items.product.category', 'items.product.unit']);
 
-        $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice]);
+        $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice])
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans');
 
         return $pdf->stream('invoice-' . $invoice->invoice_number . '.pdf');
     }
@@ -252,7 +255,10 @@ class InvoiceController extends Controller
     {
         $invoice->load(['customer', 'store', 'items.product.category', 'items.product.unit']);
 
-        $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice]);
+        $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice])
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans');
 
         return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
     }

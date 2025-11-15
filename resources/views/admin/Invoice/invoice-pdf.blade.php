@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Sale Invoice - {{ $invoice->invoice_number }}</title>
     <style>
+        @font-face {
+            font-family: 'Noto Sans Bengali';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ public_path('fonts/NotoSansBengali-Regular.ttf') }}') format('truetype');
+        }
+        @font-face {
+            font-family: 'Noto Sans Bengali';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{ public_path('fonts/NotoSansBengali-Regular.ttf') }}') format('truetype');
+        }
+        @page {
+            margin: 15px;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;
             font-size: 12px;
             color: #333;
             margin: 0;
-            padding: 15px;
+            padding: 0;
         }
         .header {
             margin-bottom: 20px;
@@ -133,6 +149,7 @@
             font-weight: bold;
             background-color: #f8f9fa;
             border-top: 2px solid #333;
+            font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;
         }
         .note-section {
             margin-top: 20px;
@@ -317,11 +334,12 @@
             </tr>
             <tr class="summary-row">
                 <td class="label-col">Paid Amount:</td>
-                <td class="value-col" style="color: green;">{{ $invoice->formatted_paid_amount }}</td>
+                <td class="value-col" style="color: green;">{{ $invoice->formatted_paid_amount }}
+                </td>
             </tr>
             <tr class="total-row">
                 <td class="label-col">Due Amount:</td>
-                <td class="value-col" style="color: {{ $invoice->due_amount > 0 ? 'red' : 'green' }};">
+                <td class="value-col" style="color: {{ $invoice->due_amount > 0 ? 'red' : 'green' }}; font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;">
                     {{ $invoice->formatted_due_amount }}
                 </td>
             </tr>

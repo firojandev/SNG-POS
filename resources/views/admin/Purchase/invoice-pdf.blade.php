@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Purchase Invoice - {{ $purchase->invoice_number }}</title>
     <style>
+        @font-face {
+            font-family: 'Noto Sans Bengali';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ public_path('fonts/NotoSansBengali-Regular.ttf') }}') format('truetype');
+        }
+        @font-face {
+            font-family: 'Noto Sans Bengali';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{ public_path('fonts/NotoSansBengali-Regular.ttf') }}') format('truetype');
+        }
+        @page {
+            margin: 15px;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;
             font-size: 14px;
             color: #333;
         }
@@ -65,6 +81,7 @@
         .total-row {
             font-size: 16px;
             font-weight: bold;
+            font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;
             border-top: 2px solid #333;
         }
         .footer {
@@ -166,7 +183,7 @@
         </tr>
         <tr class="total-row">
             <td><strong>Due Amount:</strong></td>
-            <td class="text-right" style="color: {{ $purchase->due_amount > 0 ? 'red' : 'green' }};">
+            <td class="text-right" style="color: {{ $purchase->due_amount > 0 ? 'red' : 'green' }}; font-family: 'Noto Sans Bengali', 'DejaVu Sans', sans-serif;">
                 {{ $purchase->formatted_due_amount }}
             </td>
         </tr>

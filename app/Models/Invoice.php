@@ -146,7 +146,7 @@ class Invoice extends Model
      */
     public function getFormattedUnitTotalAttribute()
     {
-        return get_option('app_currency') . number_format($this->unit_total, 2);
+        return get_option('app_currency') . ' ' . number_format($this->unit_total, 2);
     }
 
     /**
@@ -154,7 +154,7 @@ class Invoice extends Model
      */
     public function getFormattedTotalVatAttribute()
     {
-        return get_option('app_currency') . number_format($this->total_vat, 2);
+        return get_option('app_currency') . ' ' . number_format($this->total_vat, 2);
     }
 
     /**
@@ -162,7 +162,7 @@ class Invoice extends Model
      */
     public function getFormattedDiscountAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->discount_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->discount_amount, 2);
     }
 
     /**
@@ -170,7 +170,7 @@ class Invoice extends Model
      */
     public function getFormattedTotalAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->total_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->total_amount, 2);
     }
 
     /**
@@ -178,7 +178,7 @@ class Invoice extends Model
      */
     public function getFormattedPayableAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->payable_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->payable_amount, 2);
     }
 
     /**
@@ -186,7 +186,7 @@ class Invoice extends Model
      */
     public function getFormattedPaidAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->paid_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->paid_amount, 2);
     }
 
     /**
@@ -194,6 +194,6 @@ class Invoice extends Model
      */
     public function getFormattedDueAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->due_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->due_amount, 2);
     }
 }

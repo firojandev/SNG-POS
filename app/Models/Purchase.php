@@ -98,7 +98,7 @@ class Purchase extends Model
      */
     public function getFormattedTotalAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->total_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->total_amount, 2);
     }
 
     /**
@@ -106,7 +106,7 @@ class Purchase extends Model
      */
     public function getFormattedPaidAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->paid_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->paid_amount, 2);
     }
 
     /**
@@ -114,6 +114,6 @@ class Purchase extends Model
      */
     public function getFormattedDueAmountAttribute()
     {
-        return get_option('app_currency') . number_format($this->due_amount, 2);
+        return get_option('app_currency') . ' ' . number_format($this->due_amount, 2);
     }
 }
