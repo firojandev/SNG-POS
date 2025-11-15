@@ -22,10 +22,10 @@
         <div class="theme-card">
             <div class="theme-card-header">
                 <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h4 class="theme-card-title mb-0">Purchase Details</h4>
+                    <div class="col-md-2">
+                        <h4 class="theme-card-title mb-0"> Details</h4>
                     </div>
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-10 text-end">
                         <a href="{{ route('purchase.index') }}" class="btn btn-sm btn-secondary me-2">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
