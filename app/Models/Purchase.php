@@ -58,7 +58,11 @@ class Purchase extends Model
         self::creating(function($model){
             $model->uuid = Str::uuid()->toString();
             $model->store_id = Auth::user()->store_id;
-            $model->invoice_number = 'PUR-' . date('Y') . '-' . str_pad(Purchase::whereYear('created_at', date('Y'))->count() + 1, 6, '0', STR_PAD_LEFT);
+
+            // Generate unique invoice number using store_id and timestamp
+            $storeId = $model->store_id;
+            $timestamp = date('YmdHis'); // Format: 20250115143025
+            $model->invoice_number = 'PUR-' . $storeId . '-' . $timestamp;
         });
 
         // Global scope to filter by store_id
