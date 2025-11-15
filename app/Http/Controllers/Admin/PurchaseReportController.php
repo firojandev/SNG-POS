@@ -89,6 +89,9 @@ class PurchaseReportController extends Controller
             'total_paid' => $purchases->sum('paid_amount'),
             'total_due' => $purchases->sum('due_amount'),
             'total_count' => $purchases->count(),
+            'total_tax' => PurchaseItem::whereHas('purchase', function($query) use ($start, $end) {
+                $query->whereBetween('date', [$start, $end]);
+            })->sum('tax_amount'),
             'items_purchased' => PurchaseItem::whereHas('purchase', function($query) use ($start, $end) {
                 $query->whereBetween('date', [$start, $end]);
             })->sum('quantity'),

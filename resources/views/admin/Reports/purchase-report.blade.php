@@ -109,11 +109,11 @@
                     <div class="theme-card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Total Orders</h6>
-                                <h3 class="mb-0">{{ number_format($summary['total_count']) }}</h3>
+                                <h6 class="text-muted mb-1">Total Tax Amount</h6>
+                                <h3 class="mb-0">{{ get_option('app_currency') }}{{ number_format($summary['total_tax'], 2) }}</h3>
                             </div>
                             <div class="icon-box bg-info-light">
-                                <i class="fa fa-file-text text-info"></i>
+                                <i class="fa fa-percent text-info"></i>
                             </div>
                         </div>
                     </div>
