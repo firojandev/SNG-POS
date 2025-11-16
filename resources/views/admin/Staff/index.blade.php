@@ -36,6 +36,7 @@
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Designation</th>
+                            <th>Role</th>
                             <th>Store</th>
                             <th class="width-20-percentage text-center">Options</th>
                         </tr>
@@ -102,16 +103,20 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="storeSelect" class="form-label">Store <span class="text-danger">*</span></label>
-                                        <select class="form-select select2-dropdown" id="storeSelect" name="store_id" required>
-                                            <option value="">Select Store</option>
-                                            @foreach($stores as $store)
-                                                <option value="{{ $store->id }}">{{ $store->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="invalid-feedback" id="store_idError"></div>
-                                    </div>
+                                    @can('admin_permission')
+                                        <div class="mb-3">
+                                            <label for="storeSelect" class="form-label">Store <span class="text-danger">*</span></label>
+                                            <select class="form-select select2-dropdown" id="storeSelect" name="store_id" required>
+                                                <option value="">Select Store</option>
+                                                @foreach($stores as $store)
+                                                    <option value="{{ $store->id }}">{{ $store->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="invalid-feedback" id="store_idError"></div>
+                                        </div>
+                                    @else
+                                        <input type="hidden" name="store_id" value="{{\Illuminate\Support\Facades\Auth::user()->store_id}}">
+                                    @endcan
                                 </div>
                             </div>
                             <div class="row">
@@ -123,6 +128,20 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="roleSelect" class="form-label">Role <span class="text-danger">*</span></label>
+                                        <select class="form-select select2-dropdown" id="roleSelect" name="role_id" required>
+                                            <option value="">Select Role</option>
+                                            @foreach($roles as $role)
+                                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback" id="role_idError"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="address" class="form-label">Address</label>
                                         <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter staff address (optional)"></textarea>
@@ -170,5 +189,5 @@
 @push('js')
     <script type="text/javascript" src="{{asset('admin/plugin/datatable/js/jquery.dataTables.js')}}"></script>
     <script type="text/javascript" src="{{asset('admin/plugin/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('admin/partial/js/staff.js')}}"></script>
+    <script type="text/javascript" src="{{asset('admin/partial/js/staff.js')}}?v={{time()}}"></script>
 @endpush

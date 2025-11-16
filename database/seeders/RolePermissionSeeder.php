@@ -72,6 +72,13 @@ class RolePermissionSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
         $adminRole->syncPermissions(Permission::all());
 
+        // Assign Admin role to first user if exists
+        $firstUser = \App\Models\User::first();
+        if ($firstUser) {
+            $firstUser->syncRoles(['Admin']); // Use syncRoles to avoid duplicate role assignments
+            $this->command->info('Admin role assigned to user: ' . $firstUser->name . ' (ID: ' . $firstUser->id . ')');
+        }
+
         $this->command->info('Roles and Permissions created successfully!');
         $this->command->info('Total Permissions: ' . count($permissions));
         $this->command->info('Admin role created with all permissions.');

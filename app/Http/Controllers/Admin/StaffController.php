@@ -12,9 +12,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class StaffController extends Controller
 {
+    /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_staff');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,6 +34,7 @@ class StaffController extends Controller
         $data['title'] = 'Staff List';
         $data['menu'] = 'staff';
         $data['stores'] = Store::active()->select('id', 'name')->get();
+        $data['roles'] = Role::all();
         return view('admin.Staff.index', $data);
     }
 
@@ -36,7 +46,7 @@ class StaffController extends Controller
     public function getData(): JsonResponse
     {
         try {
-            $staff = User::with('store')->latest()->get();
+            $staff = User::with(['store', 'roles'])->latest()->get();
 
             return response()->json([
                 'success' => true,
@@ -82,7 +92,7 @@ class StaffController extends Controller
     {
         try {
             $avatarPath = null;
-            
+
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
                 $avatarPath = $request->file('avatar')->store('avatars', 'public');
@@ -99,8 +109,14 @@ class StaffController extends Controller
                 'avatar' => $avatarPath
             ]);
 
-            // Load the store relationship for response
-            $staff->load('store');
+            // Assign role to staff
+            $role = Role::find($request->validated()['role_id']);
+            if ($role) {
+                $staff->assignRole($role);
+            }
+
+            // Load the store and roles relationships for response
+            $staff->load(['store', 'roles']);
 
             return response()->json([
                 'success' => true,
@@ -110,7 +126,7 @@ class StaffController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create staff'
+                'message' => 'Failed to create staff: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -124,8 +140,8 @@ class StaffController extends Controller
     public function edit(User $staff): JsonResponse
     {
         try {
-            $staff->load('store');
-            
+            $staff->load(['store', 'roles']);
+
             return response()->json([
                 'success' => true,
                 'data' => $staff
@@ -168,25 +184,31 @@ class StaffController extends Controller
                 if ($staff->avatar && Storage::disk('public')->exists($staff->avatar)) {
                     Storage::disk('public')->delete($staff->avatar);
                 }
-                
+
                 // Store new avatar
                 $updateData['avatar'] = $request->file('avatar')->store('avatars', 'public');
             }
 
             $staff->update($updateData);
 
-            // Load the store relationship for response
-            $staff->load('store');
+            // Update role
+            $role = Role::find($request->validated()['role_id']);
+            if ($role) {
+                $staff->syncRoles([$role]);
+            }
+
+            // Load the store and roles relationships for response
+            $staff->load(['store', 'roles']);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Staff updated successfully',
-                'data' => $staff->fresh(['store'])
+                'data' => $staff->fresh(['store', 'roles'])
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update staff'
+                'message' => 'Failed to update staff: ' . $e->getMessage()
             ], 500);
         }
     }

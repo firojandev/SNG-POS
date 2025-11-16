@@ -37,7 +37,10 @@ $(document).ready(function() {
             if ($('#storeSelect').hasClass('select2-hidden-accessible')) {
                 $('#storeSelect').select2('destroy');
             }
-            
+            if ($('#roleSelect').hasClass('select2-hidden-accessible')) {
+                $('#roleSelect').select2('destroy');
+            }
+
             // Reinitialize Select2 for elements in the modal
             if (typeof window.reinitializeSelect2 === 'function') {
                 window.reinitializeSelect2('#staffModal');
@@ -48,6 +51,22 @@ $(document).ready(function() {
                     allowClear: false,
                     minimumResultsForSearch: 0,
                     placeholder: 'Select Store',
+                    dropdownParent: $('#staffModal'), // Important: attach to modal
+                    language: {
+                        noResults: function() {
+                            return "No results found";
+                        },
+                        searching: function() {
+                            return "Searching...";
+                        }
+                    }
+                });
+
+                $('#roleSelect').select2({
+                    width: '100%',
+                    allowClear: false,
+                    minimumResultsForSearch: 0,
+                    placeholder: 'Select Role',
                     dropdownParent: $('#staffModal'), // Important: attach to modal
                     language: {
                         noResults: function() {
@@ -82,6 +101,9 @@ $(document).ready(function() {
         if ($('#storeSelect').hasClass('select2-hidden-accessible')) {
             $('#storeSelect').select2('destroy');
         }
+        if ($('#roleSelect').hasClass('select2-hidden-accessible')) {
+            $('#roleSelect').select2('destroy');
+        }
         resetForm();
     });
 
@@ -109,11 +131,12 @@ function initializeDataTable() {
             { "title": "Email" },
             { "title": "Phone" },
             { "title": "Designation" },
+            { "title": "Role" },
             { "title": "Store" },
             { "title": "Options", "orderable": false }
         ],
         "columnDefs": [
-            { "orderable": false, "targets": [0, 6] } // Avatar and Options columns
+            { "orderable": false, "targets": [0, 7] } // Avatar and Options columns
         ],
         "language": {
             "emptyTable": "No staff found",
@@ -241,6 +264,9 @@ function populateTable(staff) {
         const storeName = member.store ? member.store.name : 'No Store';
         const phone = member.phone || 'N/A';
         const designation = member.designation || 'N/A';
+        const roleName = member.roles && member.roles.length > 0
+            ? member.roles[0].name
+            : '<span class="badge bg-secondary">No Role</span>';
 
         // Avatar display
         let avatarHtml = '<div class="text-center">';
@@ -268,6 +294,7 @@ function populateTable(staff) {
             member.email,
             phone,
             designation,
+            roleName,
             storeName,
             actions
         ]);
@@ -322,6 +349,7 @@ function openEditModal(staffId) {
                 $('#designation').val(staff.designation || '');
                 $('#address').val(staff.address || '');
                 $('#storeSelect').val(staff.store_id || '');
+                $('#roleSelect').val(staff.roles && staff.roles.length > 0 ? staff.roles[0].id : '');
                 $('#formMethod').val('PUT');
 
                 // Handle current avatar display

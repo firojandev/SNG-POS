@@ -62,6 +62,10 @@ class StaffUpdateRequest extends FormRequest
                 'required',
                 'exists:stores,id'
             ],
+            'role_id' => [
+                'required',
+                'exists:roles,id'
+            ],
             'avatar' => [
                 'nullable',
                 'image',
@@ -98,6 +102,8 @@ class StaffUpdateRequest extends FormRequest
             'address.max' => 'Address cannot exceed 1000 characters.',
             'store_id.required' => 'Store selection is required.',
             'store_id.exists' => 'Selected store does not exist.',
+            'role_id.required' => 'Role selection is required.',
+            'role_id.exists' => 'Selected role does not exist.',
             'avatar.image' => 'Avatar must be an image file.',
             'avatar.mimes' => 'Avatar must be a JPEG, PNG, JPG, or GIF file.',
             'avatar.max' => 'Avatar file size cannot exceed 2MB.'
@@ -119,6 +125,7 @@ class StaffUpdateRequest extends FormRequest
             'designation' => 'designation',
             'address' => 'address',
             'store_id' => 'store',
+            'role_id' => 'role',
             'avatar' => 'profile image'
         ];
     }
