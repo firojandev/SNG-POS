@@ -19,6 +19,7 @@ class PurchaseReportController extends Controller
     public function __construct(SalesReportService $reportService)
     {
         $this->reportService = $reportService;
+        $this->middleware('permission:view_purchase_reports');
     }
 
     /**

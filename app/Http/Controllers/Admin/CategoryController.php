@@ -13,6 +13,14 @@ use Illuminate\View\View;
 class CategoryController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_category');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return View

@@ -14,6 +14,14 @@ use Illuminate\View\View;
 class SecurityMoneyController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_security_money');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return View

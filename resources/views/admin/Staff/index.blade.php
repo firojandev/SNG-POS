@@ -115,7 +115,7 @@
                                             <div class="invalid-feedback" id="store_idError"></div>
                                         </div>
                                     @else
-                                        <input type="hidden" name="store_id" value="{{\Illuminate\Support\Facades\Auth::user()->store_id}}">
+                                        <input type="hidden" name="store_id" value="{{auth()->user()->store_id}}">
                                     @endcan
                                 </div>
                             </div>

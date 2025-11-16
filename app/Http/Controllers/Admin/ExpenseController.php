@@ -15,6 +15,14 @@ use Illuminate\Http\Request;
 class ExpenseController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_expense');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(): View

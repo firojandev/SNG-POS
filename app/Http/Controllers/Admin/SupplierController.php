@@ -13,6 +13,14 @@ use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
+    /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_supplier');
+    }
+
     public function index(): View
     {
         $data['title'] = 'Suppliers';

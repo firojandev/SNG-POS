@@ -23,6 +23,14 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 class ProductController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_product');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request): View

@@ -26,6 +26,14 @@ class DashboardController extends Controller
         $data['title'] = 'Dashboard';
         $data['menu'] = 'dashboard';
 
+        // Check if user has view_dashboard permission
+        if (!auth()->user()->can('view_dashboard')) {
+            // User doesn't have permission - show welcome page
+            $data['user'] = auth()->user();
+            return view('admin.welcome', $data);
+        }
+
+        // User has permission - show full dashboard
         // Get current user's store_id
         $storeId = auth()->user()->store_id;
 

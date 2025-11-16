@@ -10,6 +10,14 @@ use App\Models\Option;
 
 class CurrencyController extends Controller
 {
+    /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:admin_permission');
+    }
+
     public function index()
     {
         $data['title'] = 'Currencies';

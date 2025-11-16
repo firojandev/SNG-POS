@@ -12,6 +12,14 @@ use Spatie\Permission\Models\Role;
 class RolePermissionController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:admin_permission');
+    }
+
+    /**
      * Display a listing of roles.
      *
      * @return View

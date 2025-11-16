@@ -15,6 +15,14 @@ use Illuminate\Support\Facades\Validator;
 class PaymentFromCustomerController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_payment');
+    }
+
+    /**
      * Display a listing of payments from customers
      */
     public function index()

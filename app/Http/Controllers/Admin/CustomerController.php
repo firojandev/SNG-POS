@@ -16,6 +16,14 @@ use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_customer');
+    }
+
     public function index(): View
     {
         $data['title'] = 'Customers';

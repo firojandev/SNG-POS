@@ -8,6 +8,14 @@ use App\Models\Option;
 
 class SettingsController extends Controller
 {
+    /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:admin_permission');
+    }
+
     public function index()
     {
         $data['title'] = 'General Settings';

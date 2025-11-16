@@ -15,6 +15,14 @@ use Illuminate\Http\Request;
 class IncomeController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_income');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(): View

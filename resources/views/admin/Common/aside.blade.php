@@ -1,14 +1,12 @@
 <aside class="wrapping-aside" id="wrappingAside">
 
     <div class="aside-content">
-        @can('view_dashboard')
         <div>
             <a href="{{route('admin.dashboard')}}" class="aside-nav-link {{@$menu == 'dashboard' ? 'active' : ''}}">
                 <span class="aside-nav-icon"><i class="icon-home"></i></span>
                 <span class="aside-nav-text shrink-text-toggleable">Dashboard</span>
             </a>
         </div>
-        @endcan
 
         <ul class="list-unstyled aside-nav-list toggleable-group aside-nav-list-slim">
 

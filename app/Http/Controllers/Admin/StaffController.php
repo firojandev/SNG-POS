@@ -226,7 +226,7 @@ class StaffController extends Controller
             if ($staff->avatar && Storage::disk('public')->exists($staff->avatar)) {
                 Storage::disk('public')->delete($staff->avatar);
             }
-            
+
             $staff->delete();
 
             return response()->json([

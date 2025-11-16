@@ -19,6 +19,7 @@ class SalesReportController extends Controller
     public function __construct(SalesReportService $salesReportService)
     {
         $this->salesReportService = $salesReportService;
+        $this->middleware('permission:view_sale_reports');
     }
     /**
      * Display sales summary report

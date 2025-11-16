@@ -13,6 +13,14 @@ use Illuminate\View\View;
 class AssetController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_asset');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return View

@@ -13,6 +13,14 @@ use Illuminate\View\View;
 class StoreController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:admin_permission');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return View

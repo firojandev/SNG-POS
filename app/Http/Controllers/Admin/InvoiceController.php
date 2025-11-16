@@ -19,6 +19,7 @@ class InvoiceController extends Controller
     public function __construct(InvoiceService $invoiceService)
     {
         $this->invoiceService = $invoiceService;
+        $this->middleware('permission:manage_sale');
     }
 
     public function index(): View

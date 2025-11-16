@@ -16,6 +16,7 @@ class StockReportController extends Controller
     public function __construct(SalesReportService $reportService)
     {
         $this->reportService = $reportService;
+        $this->middleware('permission:view_stock_reports');
     }
 
     /**

@@ -13,6 +13,14 @@ use Illuminate\View\View;
 class VatController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_vat');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return View

@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\DB;
 class PaymentToSupplierController extends Controller
 {
     /**
+     * Apply permission middleware
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:manage_payment');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(): View
