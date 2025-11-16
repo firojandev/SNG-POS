@@ -285,12 +285,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Manage Suppliers</span>
                 </a>
             </li>
-            <li class="aside-nav-item">
-                <a href="{{route('customers.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'customers' ? 'active' : ''}}">
-                    <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Customers</span>
-                </a>
-            </li>
+
 
 
             <li class="aside-nav-item toggle-item">
@@ -299,7 +294,7 @@
                     <span class="aside-nav-text shrink-text-toggleable">Application Settings</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'settings' || @$menu == 'currency' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'settings' || @$menu == 'currency' || @$menu == 'roles' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         <li class="aside-nav-item">
                             <a href="{{route('admin.settings.index')}}" class="aside-nav-sublink {{@$menu == 'settings' ? 'active' : ''}}">
@@ -314,13 +309,20 @@
                             </a>
                         </li>
                         <li class="aside-nav-item">
-                            <a href="#" class="aside-nav-sublink">
+                            <a href="{{route('admin.roles.index')}}" class="aside-nav-sublink {{@$menu == 'roles' ? 'active' : ''}}">
                                 <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
                                 <span class="aside-nav-text shrink-text-toggleable">Roles & Permissions</span>
                             </a>
                         </li>
                     </ul>
                 </div>
+            </li>
+
+            <li class="aside-nav-item">
+                <a href="{{route('customers.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'customers' ? 'active' : ''}}">
+                    <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
+                    <span class="aside-nav-text shrink-text-toggleable">Manage Customers</span>
+                </a>
             </li>
 
 

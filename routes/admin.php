@@ -293,6 +293,17 @@ Route::prefix('reports/stock')->name('stock-report.')->group(function () {
     Route::get('/export-csv', [StockReportController::class, 'exportCsv'])->name('export-csv');
 });
 
+// Role & Permission Routes
+Route::prefix('roles')->name('admin.roles.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\RolePermissionController::class, 'index'])->name('index');
+    Route::get('/get-data', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getData'])->name('getData');
+    Route::get('/create', [\App\Http\Controllers\Admin\RolePermissionController::class, 'create'])->name('create');
+    Route::post('/', [\App\Http\Controllers\Admin\RolePermissionController::class, 'store'])->name('store');
+    Route::get('/{role}/edit', [\App\Http\Controllers\Admin\RolePermissionController::class, 'edit'])->name('edit');
+    Route::put('/{role}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'update'])->name('update');
+    Route::delete('/{role}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'destroy'])->name('destroy');
+});
+
 // Profile Routes
 Route::prefix('profile')->name('admin.profile.')->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('index');
