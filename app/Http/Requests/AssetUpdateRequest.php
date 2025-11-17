@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class AssetUpdateRequest extends FormRequest
 {
@@ -32,6 +33,7 @@ class AssetUpdateRequest extends FormRequest
                 'min:2',
                 Rule::unique('assets', 'name')
                     ->ignore($assetId)
+                    ->where('store_id', Auth::user()->store_id)
                     ->whereNull('deleted_at')
             ],
             'amount' => [

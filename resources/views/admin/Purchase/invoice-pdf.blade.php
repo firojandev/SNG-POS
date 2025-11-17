@@ -37,16 +37,16 @@
         }
         .logo-section {
             display: table-cell;
-            width: 20%;
+            width: 10%;
             vertical-align: middle;
         }
         .logo {
-            max-width: 150px;
+            max-width: 100px;
             max-height: 80px;
         }
         .store-info {
             display: table-cell;
-            width: 80%;
+            width: 90%;
             text-align: center;
             vertical-align: middle;
         }
@@ -170,20 +170,35 @@
 <body>
     <div class="header">
         <div class="header-top">
+                        <div class="logo-section">
+                            @if(get_option('app_logo'))
+                                @php
+                                    $logoPath = public_path('storage/' . get_option('app_logo'));
+                                    if(file_exists($logoPath)) {
+                                        $logoData = base64_encode(file_get_contents($logoPath));
+                                        $logoExtension = pathinfo($logoPath, PATHINFO_EXTENSION);
+                                        $logoMimeType = $logoExtension === 'png' ? 'image/png' : ($logoExtension === 'jpg' || $logoExtension === 'jpeg' ? 'image/jpeg' : 'image/' . $logoExtension);
+                                    }
+                                @endphp
+                                @if(isset($logoData))
+                                    <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo">
+                                @endif
+                            @endif
+                        </div>
             <div class="store-info">
-                @if(get_option('app_logo'))
-                    @php
-                        $logoPath = public_path('storage/' . get_option('app_logo'));
-                        if(file_exists($logoPath)) {
-                            $logoData = base64_encode(file_get_contents($logoPath));
-                            $logoExtension = pathinfo($logoPath, PATHINFO_EXTENSION);
-                            $logoMimeType = $logoExtension === 'png' ? 'image/png' : ($logoExtension === 'jpg' || $logoExtension === 'jpeg' ? 'image/jpeg' : 'image/' . $logoExtension);
-                        }
-                    @endphp
-                    @if(isset($logoData))
-                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo" height="80">
-                    @endif
-                @endif
+{{--                @if(get_option('app_logo'))--}}
+{{--                    @php--}}
+{{--                        $logoPath = public_path('storage/' . get_option('app_logo'));--}}
+{{--                        if(file_exists($logoPath)) {--}}
+{{--                            $logoData = base64_encode(file_get_contents($logoPath));--}}
+{{--                            $logoExtension = pathinfo($logoPath, PATHINFO_EXTENSION);--}}
+{{--                            $logoMimeType = $logoExtension === 'png' ? 'image/png' : ($logoExtension === 'jpg' || $logoExtension === 'jpeg' ? 'image/jpeg' : 'image/' . $logoExtension);--}}
+{{--                        }--}}
+{{--                    @endphp--}}
+{{--                    @if(isset($logoData))--}}
+{{--                        <img src="data:{{ $logoMimeType }};base64,{{ $logoData }}" alt="Logo" class="logo" height="80">--}}
+{{--                    @endif--}}
+{{--                @endif--}}
                 <div class="store-name">{{ $purchase->store->name ?? get_option('app_name', 'SNG POS') }}</div>
                 <div class="store-details">
                     @if(isset($purchase->store))
