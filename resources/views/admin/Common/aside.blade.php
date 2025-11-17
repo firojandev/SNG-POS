@@ -239,14 +239,14 @@
             </li>
             @endcanany
 
-            @canany(['view_sale_reports', 'view_revenue_reports'])
+            @canany(['view_sale_reports', 'view_revenue_reports', 'view_balance_sheet'])
             <li class="aside-nav-item toggle-item">
                 <a href="#" class="aside-nav-link toggler toggle-icon">
                     <span class="aside-nav-icon"><i class="fa fa-line-chart"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Sales Reports</span>
+                    <span class="aside-nav-text shrink-text-toggleable">Reports</span>
                 </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' || @$menu == 'sales-report-product-wise' || @$menu == 'sales-report-revenue' ? 'show' : ''}}">
+                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'sales-report-summary' || @$menu == 'sales-report-product-wise' || @$menu == 'sales-report-revenue' || @$menu == 'balance-sheet' ? 'show' : ''}}">
                     <ul class="list-unstyled aside-nav-list">
                         @can('view_sale_reports')
                         <li class="aside-nav-item">
@@ -270,6 +270,16 @@
                             </a>
                         </li>
                         @endcan
+
+                            @can('view_balance_sheet')
+                                <li class="aside-nav-item">
+                                    <a href="{{route('balance-sheet.index')}}" class="aside-nav-sublink {{@$menu == 'balance-sheet' ? 'active' : ''}}">
+                                        <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                        <span class="aside-nav-text shrink-text-toggleable">Balance Sheet</span>
+                                    </a>
+                                </li>
+                            @endcan
+
                     </ul>
                 </div>
             </li>
@@ -304,6 +314,7 @@
                 </div>
             </li>
             @endcanany
+
 
             @can('admin_permission')
             <li class="aside-nav-item">

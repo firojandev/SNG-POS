@@ -32,7 +32,10 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="roleName" class="form-label">Role Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="roleName" name="name" value="{{ $role->name }}" required placeholder="Enter role name">
+                            <input type="text" class="form-control" id="roleName" name="name" value="{{ $role->name }}" required placeholder="Enter role name" {{ $role->name === 'Admin' ? 'readonly' : '' }}>
+                            @if($role->name === 'Admin')
+                                <small class="text-muted">The Admin role name cannot be changed.</small>
+                            @endif
                             <div class="invalid-feedback" id="nameError"></div>
                         </div>
                     </div>

@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PaymentToSupplierController;
 use App\Http\Controllers\Admin\SalesReportController;
 use App\Http\Controllers\Admin\PurchaseReportController;
 use App\Http\Controllers\Admin\StockReportController;
+use App\Http\Controllers\Admin\BalanceSheetController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\DebtController;
 use App\Http\Controllers\Admin\LendController;
@@ -291,6 +292,12 @@ Route::prefix('reports/purchase')->name('purchase-report.')->group(function () {
 Route::prefix('reports/stock')->name('stock-report.')->group(function () {
     Route::get('/', [StockReportController::class, 'index'])->name('index');
     Route::get('/export-csv', [StockReportController::class, 'exportCsv'])->name('export-csv');
+});
+
+// Balance Sheet Report Routes
+Route::prefix('reports/balance-sheet')->name('balance-sheet.')->group(function () {
+    Route::get('/', [BalanceSheetController::class, 'index'])->name('index');
+    Route::get('/export-csv', [BalanceSheetController::class, 'exportCsv'])->name('export-csv');
 });
 
 // Role & Permission Routes

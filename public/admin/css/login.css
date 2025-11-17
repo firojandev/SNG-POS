@@ -55,8 +55,8 @@ body {
 }
 
 .form-control:focus {
-    border-color: #f4c430;
-    box-shadow: 0 0 0 0.2rem rgba(244, 196, 48, 0.25);
+    border-color: #4CC9C9;
+    box-shadow: 0 0 0 0.2rem rgba(76, 201, 201, 0.25);
     background-color: white;
 }
 
@@ -66,7 +66,7 @@ body {
 }
 
 .login-btn {
-    background: linear-gradient(135deg, #f4c430 0%, #e6b800 100%);
+    background: linear-gradient(135deg, #5BC5C5 0%, #4CC9C9 100%);
     border: none;
     border-radius: 50px;
     padding: 15px 30px;
@@ -81,9 +81,9 @@ body {
 }
 
 .login-btn:hover {
-    background: linear-gradient(135deg, #e6b800 0%, #d4a500 100%);
+    background: linear-gradient(135deg, #4CC9C9 0%, #3BB8B8 100%);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(244, 196, 48, 0.4);
+    box-shadow: 0 5px 15px rgba(76, 201, 201, 0.4);
 }
 
 .login-btn:active {
