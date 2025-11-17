@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 class StaffController extends Controller
@@ -33,8 +34,19 @@ class StaffController extends Controller
     {
         $data['title'] = 'Staff List';
         $data['menu'] = 'staff';
-        $data['stores'] = Store::active()->select('id', 'name')->get();
-        $data['roles'] = Role::all();
+
+        // If user is Admin, show all stores. Otherwise, show only their store
+        if (Auth::user()->hasRole('Admin')) {
+            $data['stores'] = Store::active()->select('id', 'name')->get();
+            $data['roles'] = Role::all();
+        } else {
+            $data['stores'] = Store::active()
+                ->where('id', Auth::user()->store_id)
+                ->select('id', 'name')
+                ->get();
+            $data['roles'] = Role::where('name', '!=', 'Admin')->get();
+        }
+
         return view('admin.Staff.index', $data);
     }
 
@@ -46,7 +58,15 @@ class StaffController extends Controller
     public function getData(): JsonResponse
     {
         try {
-            $staff = User::with(['store', 'roles'])->latest()->get();
+            // If user is Admin, get all staff. Otherwise, get only staff from their store
+            if (Auth::user()->hasRole('Admin')) {
+                $staff = User::with(['store', 'roles'])->latest()->get();
+            } else {
+                $staff = User::with(['store', 'roles'])
+                    ->where('store_id', Auth::user()->store_id)
+                    ->latest()
+                    ->get();
+            }
 
             return response()->json([
                 'success' => true,
@@ -68,7 +88,15 @@ class StaffController extends Controller
     public function getStores(): JsonResponse
     {
         try {
-            $stores = Store::active()->select('id', 'name')->get();
+            // If user is Admin, get all stores. Otherwise, get only their store
+            if (Auth::user()->hasRole('Admin')) {
+                $stores = Store::active()->select('id', 'name')->get();
+            } else {
+                $stores = Store::active()
+                    ->where('id', Auth::user()->store_id)
+                    ->select('id', 'name')
+                    ->get();
+            }
 
             return response()->json([
                 'success' => true,

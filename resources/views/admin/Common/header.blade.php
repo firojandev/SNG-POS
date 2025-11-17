@@ -62,6 +62,12 @@
                                     <span class="me-3 text-info"><i class="icon-user"></i></span>
                                     <span class="text-14">Profile</span>
                                 </a>
+                                @if(auth()->user()->store)
+                                <a href="{{ route('store.my-store') }}" class="d-flex align-items-center dropdown-item">
+                                    <span class="me-3 text-info"><i class="fa fa-building-o"></i></span>
+                                    <span class="text-14">{{ auth()->user()->store->name ?? 'My Store' }}</span>
+                                </a>
+                                @endif
                                 <a href="{{ route('admin.profile.change-password') }}" class="d-flex align-items-center dropdown-item">
                                     <span class="me-3 text-info"><i class="fa fa-lock"></i></span>
                                     <span class="text-14">Change Password</span>

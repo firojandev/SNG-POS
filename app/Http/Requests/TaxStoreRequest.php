@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class TaxStoreRequest extends FormRequest
@@ -28,7 +29,9 @@ class TaxStoreRequest extends FormRequest
                 'string',
                 'max:255',
                 'min:2',
-                Rule::unique('taxes', 'name')->whereNull('deleted_at')
+                Rule::unique('taxes', 'name')
+                    ->where('store_id', Auth::user()->store_id)
+                    ->whereNull('deleted_at')
             ],
             'value' => [
                 'required',

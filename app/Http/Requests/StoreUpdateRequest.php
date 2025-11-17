@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class StoreUpdateRequest extends FormRequest
 {
@@ -22,8 +23,11 @@ class StoreUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $storeId = $this->route('store')->id ?? $this->route('store');
-        
+        // Get store ID from route parameter or from authenticated user (for my-store route)
+        $storeId = $this->route('store')
+            ? ($this->route('store')->id ?? $this->route('store'))
+            : Auth::user()->store_id;
+
         return [
             'name' => [
                 'required',

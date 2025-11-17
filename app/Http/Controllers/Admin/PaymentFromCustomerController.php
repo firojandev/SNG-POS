@@ -42,7 +42,7 @@ class PaymentFromCustomerController extends Controller
             $startDate = $request->input('start_date', now()->subDays(15)->format('Y-m-d'));
             $endDate = $request->input('end_date', now()->format('Y-m-d'));
 
-            // Query payments with date range filter
+            // Query payments with date range filter (store filter applied via global scope)
             $query = PaymentFromCustomer::with(['customer', 'invoice'])
                 ->whereBetween('payment_date', [$startDate, $endDate]);
 
@@ -61,7 +61,7 @@ class PaymentFromCustomerController extends Controller
                 });
             }
 
-            // Get total and filtered counts
+            // Get total and filtered counts (store filter applied via global scope)
             $totalRecords = PaymentFromCustomer::count();
             $filteredRecords = $query->count();
 
@@ -139,7 +139,7 @@ class PaymentFromCustomerController extends Controller
             $startDate = $request->input('start_date', now()->subDays(15)->format('Y-m-d'));
             $endDate = $request->input('end_date', now()->format('Y-m-d'));
 
-            // Query payments
+            // Query payments (store filter applied via global scope)
             $payments = PaymentFromCustomer::with(['customer', 'invoice'])
                 ->whereBetween('payment_date', [$startDate, $endDate])
                 ->orderBy('payment_date', 'desc')

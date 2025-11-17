@@ -67,6 +67,10 @@ Route::prefix('vat')->group(function () {
     Route::delete('/{vat}', [VatController::class, 'destroy'])->name('vat.destroy');
 });
 
+// My Store Routes (accessible to all authenticated users, no admin permission required)
+Route::get('/my-store', [StoreController::class, 'myStore'])->name('store.my-store');
+Route::put('/my-store', [StoreController::class, 'updateMyStore'])->name('store.update-my-store');
+
 Route::prefix('store')->group(function () {
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
     Route::get('/get-data', [StoreController::class, 'getData'])->name('store.getData');

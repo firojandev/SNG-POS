@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Services\SalesReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class SalesReportController extends Controller
@@ -539,6 +540,7 @@ class SalesReportController extends Controller
                 DB::raw('SUM(invoice_items.revenue) as total_revenue')
             )
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->where('invoices.store_id', Auth::user()->store_id)
             ->whereBetween('invoices.date', [$start, $end])
             ->where('invoices.status', 'active')
             ->groupBy(DB::raw('DATE(invoices.date)'))
@@ -568,6 +570,7 @@ class SalesReportController extends Controller
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->join('products', 'invoice_items.product_id', '=', 'products.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('invoices.store_id', Auth::user()->store_id)
             ->whereBetween('invoices.date', [$start, $end])
             ->where('invoices.status', 'active')
             ->groupBy('categories.id', 'categories.name')
@@ -605,6 +608,7 @@ class SalesReportController extends Controller
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->join('products', 'invoice_items.product_id', '=', 'products.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('invoices.store_id', Auth::user()->store_id)
             ->whereBetween('invoices.date', [$start, $end])
             ->where('invoices.status', 'active')
             ->groupBy('products.id', 'products.name', 'products.sku', 'categories.name')
@@ -633,6 +637,7 @@ class SalesReportController extends Controller
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->join('products', 'invoice_items.product_id', '=', 'products.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('invoices.store_id', Auth::user()->store_id)
             ->whereBetween('invoices.date', [$start, $end])
             ->where('invoices.status', 'active')
             ->groupBy('products.id', 'products.name', 'products.sku', 'products.stock_quantity', 'categories.name')

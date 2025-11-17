@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseCategoryStoreRequest extends FormRequest
 {
@@ -28,7 +29,9 @@ class ExpenseCategoryStoreRequest extends FormRequest
                 'string',
                 'max:255',
                 'min:2',
-                Rule::unique('expense_categories', 'name')->whereNull('deleted_at')
+                Rule::unique('expense_categories', 'name')
+                    ->where('store_id', Auth::user()->store_id)
+                    ->whereNull('deleted_at')
             ]
         ];
     }

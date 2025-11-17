@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UnitUpdateRequest extends FormRequest
 {
@@ -32,6 +33,7 @@ class UnitUpdateRequest extends FormRequest
                 'min:2',
                 Rule::unique('units', 'name')
                     ->ignore($unitId)
+                    ->where('store_id', Auth::user()->store_id)
                     ->whereNull('deleted_at')
             ]
         ];

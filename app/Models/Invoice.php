@@ -84,7 +84,7 @@ class Invoice extends Model
         // Global scope to filter by store_id
         static::addGlobalScope('store', function (Builder $builder) {
             if (Auth::check() && Auth::user()->store_id) {
-                $builder->where('store_id', Auth::user()->store_id);
+                $builder->where('invoices.store_id', Auth::user()->store_id);
             }
         });
     }

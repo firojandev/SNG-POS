@@ -9,15 +9,16 @@ use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
     /**
-     * Apply permission middleware
+     * Apply permission middleware (except for myStore method)
      */
     public function __construct()
     {
-        $this->middleware('permission:admin_permission');
+        $this->middleware('permission:admin_permission')->except(['myStore', 'updateMyStore']);
     }
 
     /**
@@ -159,6 +160,73 @@ class StoreController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete store'
+            ], 500);
+        }
+    }
+
+    /**
+     * Show and edit the current user's store (bypasses admin permission)
+     *
+     * @return View|\Illuminate\Http\RedirectResponse
+     */
+    public function myStore()
+    {
+        try {
+            $store = Store::find(Auth::user()->store_id);
+
+            if (!$store) {
+                return redirect()->route('admin.dashboard')
+                    ->with('error', 'Store not found');
+            }
+
+            $data['title'] = 'My Store';
+            $data['menu'] = 'my-store';
+            $data['store'] = $store;
+
+            return view('admin.Store.my-store', $data);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Unable to access store information');
+        }
+    }
+
+    /**
+     * Update the current user's store (bypasses admin permission)
+     *
+     * @param StoreUpdateRequest $request
+     * @return JsonResponse
+     */
+    public function updateMyStore(StoreUpdateRequest $request): JsonResponse
+    {
+        try {
+            $store = Store::find(Auth::user()->store_id);
+
+            if (!$store) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Store not found'
+                ], 404);
+            }
+
+            $store->update([
+                'name' => $request->validated()['name'],
+                'contact_person' => $request->validated()['contact_person'],
+                'phone_number' => $request->validated()['phone_number'],
+                'address' => $request->validated()['address'],
+                'email' => $request->validated()['email'],
+                'details' => $request->validated()['details'] ?? null,
+                'is_active' => $request->validated()['is_active'] ?? $store->is_active
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Store updated successfully',
+                'data' => $store->fresh()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update store'
             ], 500);
         }
     }

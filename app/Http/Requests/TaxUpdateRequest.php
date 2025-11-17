@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class TaxUpdateRequest extends FormRequest
@@ -23,7 +24,7 @@ class TaxUpdateRequest extends FormRequest
     public function rules(): array
     {
         $taxId = $this->route('tax')->id ?? $this->route('tax');
-        
+
         return [
             'name' => [
                 'required',
@@ -31,6 +32,7 @@ class TaxUpdateRequest extends FormRequest
                 'max:255',
                 'min:2',
                 Rule::unique('taxes', 'name')
+                    ->where('store_id', Auth::user()->store_id)
                     ->ignore($taxId)
                     ->whereNull('deleted_at')
             ],

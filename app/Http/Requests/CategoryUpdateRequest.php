@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryUpdateRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class CategoryUpdateRequest extends FormRequest
     public function rules(): array
     {
         $categoryId = $this->route('category')->id ?? $this->route('category');
-        
+
         return [
             'name' => [
                 'required',
@@ -32,6 +33,7 @@ class CategoryUpdateRequest extends FormRequest
                 'min:2',
                 Rule::unique('categories', 'name')
                     ->ignore($categoryId)
+                    ->where('store_id', Auth::user()->store_id)
                     ->whereNull('deleted_at')
             ]
         ];

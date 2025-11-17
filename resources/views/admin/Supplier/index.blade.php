@@ -89,18 +89,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="supplierAddress" class="form-label">Address</label>
                                         <input type="text" class="form-control" id="supplierAddress" name="address" placeholder="Enter supplier address">
                                         <div class="invalid-feedback" id="addressError"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="balance" class="form-label">Balance</label>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="balance" name="balance" value="0" placeholder="Enter balance amount">
-                                        <div class="invalid-feedback" id="balanceError"></div>
                                     </div>
                                 </div>
                             </div>
