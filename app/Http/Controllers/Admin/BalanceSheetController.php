@@ -12,6 +12,7 @@ use App\Models\PaymentFromCustomer;
 use App\Models\PaymentToSupplier;
 use App\Models\Expense;
 use App\Models\Income;
+use App\Models\Product;
 use App\Services\SalesReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -89,19 +90,15 @@ class BalanceSheetController extends Controller
             'note' => 'Fixed assets and security deposits'
         ];
 
-        // 2. Inventory Value (from all purchases up to the date)
-        $inventoryValue = DB::table('purchase_items')
-            ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
-            ->where('purchases.store_id', $storeId)
-            ->whereDate('purchases.date', '<=', $asOfDate)
-            ->whereNull('purchases.deleted_at')
-            ->whereNull('purchase_items.deleted_at')
-            ->sum(DB::raw('purchase_items.quantity * purchase_items.unit_price'));
+        // 2. Inventory Value (from products table)
+        $inventoryValue = Product::where('store_id', $storeId)
+            ->whereDate('created_at', '<=', $asOfDate)
+            ->sum(DB::raw('stock_quantity * purchase_price'));
 
         $assets[] = [
             'name' => 'Inventory Value',
             'amount' => $inventoryValue,
-            'note' => 'Total value of all purchased items'
+            'note' => 'Total value of current inventory'
         ];
 
         // 3. Client's Dues (Accounts Receivable)

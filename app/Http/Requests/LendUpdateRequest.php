@@ -50,6 +50,20 @@ class LendUpdateRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $date = $this->input('date');
+        if ($date) {
+            $phpFormat = get_option('date_format', 'Y-m-d');
+            try {
+                $normalized = \Carbon\Carbon::createFromFormat($phpFormat, $date)->format('Y-m-d');
+                $this->merge(['date' => $normalized]);
+            } catch (\Exception $e) {
+                // leave as is; validation will catch invalid date
+            }
+        }
+    }
+
     /**
      * Get custom error messages for validation rules.
      *
