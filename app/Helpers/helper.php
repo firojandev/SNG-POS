@@ -50,3 +50,29 @@ if (!function_exists('format_currency_for_pdf')) {
         return $currencyMap[$currency] ?? $currency;
     }
 }
+
+if (!function_exists('update_mail_config')) {
+    /**
+     * Update mail configuration from database SMTP settings
+     * Loads active SMTP settings and applies them to Laravel's mail config
+     *
+     * @return void
+     */
+    function update_mail_config()
+    {
+        $smtpSetting = \App\Models\SmtpSetting::where('is_active', true)->first();
+
+        if ($smtpSetting) {
+            config([
+                'mail.default' => $smtpSetting->mail_driver,
+                'mail.mailers.smtp.host' => $smtpSetting->mail_host,
+                'mail.mailers.smtp.port' => $smtpSetting->mail_port,
+                'mail.mailers.smtp.username' => $smtpSetting->mail_username,
+                'mail.mailers.smtp.password' => $smtpSetting->mail_password,
+                'mail.mailers.smtp.encryption' => $smtpSetting->mail_encryption,
+                'mail.from.address' => $smtpSetting->mail_from_address,
+                'mail.from.name' => $smtpSetting->mail_from_name,
+            ]);
+        }
+    }
+}

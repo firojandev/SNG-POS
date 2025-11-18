@@ -325,14 +325,54 @@
             </li>
             @endcan
 
-            @can('manage_staff')
-            <li class="aside-nav-item">
-                <a href="{{route('staff.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'staff' ? 'active' : ''}}">
-                    <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Manage Staffs</span>
-                </a>
-            </li>
-            @endcan
+
+
+                @can('admin_permission')
+                    <li class="aside-nav-item toggle-item">
+                        <a href="#" class="aside-nav-link toggler toggle-icon">
+                            <span class="aside-nav-icon"><i class="fa fa-cog"></i></span>
+                            <span class="aside-nav-text shrink-text-toggleable">Application Settings</span>
+                        </a>
+
+                        <div class="aside-nav-dropdown toggleable-content {{@$menu == 'settings' || @$menu == 'currency' || @$menu == 'roles' || @$menu == 'smtp-setting' ? 'show' : ''}}">
+                            <ul class="list-unstyled aside-nav-list">
+                                <li class="aside-nav-item">
+                                    <a href="{{route('admin.settings.index')}}" class="aside-nav-sublink {{@$menu == 'settings' ? 'active' : ''}}">
+                                        <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                        <span class="aside-nav-text shrink-text-toggleable">General Settings</span>
+                                    </a>
+                                </li>
+                                <li class="aside-nav-item">
+                                    <a href="{{route('admin.currency.index')}}" class="aside-nav-sublink {{@$menu == 'currency' ? 'active' : ''}}">
+                                        <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                        <span class="aside-nav-text shrink-text-toggleable">Currency</span>
+                                    </a>
+                                </li>
+                                <li class="aside-nav-item">
+                                    <a href="{{route('admin.smtp-setting.index')}}" class="aside-nav-sublink {{@$menu == 'smtp-setting' ? 'active' : ''}}">
+                                        <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                        <span class="aside-nav-text shrink-text-toggleable">SMTP Setting</span>
+                                    </a>
+                                </li>
+                                <li class="aside-nav-item">
+                                    <a href="{{route('admin.roles.index')}}" class="aside-nav-sublink {{@$menu == 'roles' ? 'active' : ''}}">
+                                        <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
+                                        <span class="aside-nav-text shrink-text-toggleable">Roles & Permissions</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endcan
+
+                @can('manage_staff')
+                    <li class="aside-nav-item">
+                        <a href="{{route('staff.index')}}" class="aside-nav-link aside-nav-link-small {{@$menu == 'staff' ? 'active' : ''}}">
+                            <span class="aside-nav-icon"><i class="fa fa-users"></i></span>
+                            <span class="aside-nav-text shrink-text-toggleable">Manage Staffs</span>
+                        </a>
+                    </li>
+                @endcan
 
             @can('manage_supplier')
             <li class="aside-nav-item">
@@ -343,37 +383,7 @@
             </li>
             @endcan
 
-            @can('admin_permission')
-            <li class="aside-nav-item toggle-item">
-                <a href="#" class="aside-nav-link toggler toggle-icon">
-                    <span class="aside-nav-icon"><i class="fa fa-cog"></i></span>
-                    <span class="aside-nav-text shrink-text-toggleable">Application Settings</span>
-                </a>
 
-                <div class="aside-nav-dropdown toggleable-content {{@$menu == 'settings' || @$menu == 'currency' || @$menu == 'roles' ? 'show' : ''}}">
-                    <ul class="list-unstyled aside-nav-list">
-                        <li class="aside-nav-item">
-                            <a href="{{route('admin.settings.index')}}" class="aside-nav-sublink {{@$menu == 'settings' ? 'active' : ''}}">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">General Settings</span>
-                            </a>
-                        </li>
-                        <li class="aside-nav-item">
-                            <a href="{{route('admin.currency.index')}}" class="aside-nav-sublink {{@$menu == 'currency' ? 'active' : ''}}">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Currency</span>
-                            </a>
-                        </li>
-                        <li class="aside-nav-item">
-                            <a href="{{route('admin.roles.index')}}" class="aside-nav-sublink {{@$menu == 'roles' ? 'active' : ''}}">
-                                <span class="aside-nav-icon"><i class="fa fa-circle-o"></i></span>
-                                <span class="aside-nav-text shrink-text-toggleable">Roles & Permissions</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            @endcan
 
             @can('manage_customer')
             <li class="aside-nav-item">

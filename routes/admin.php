@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\Admin\SmtpSettingController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -162,6 +163,13 @@ Route::prefix('currency')->name('admin.currency.')->group(function () {
     Route::post('/', [CurrencyController::class, 'store'])->name('store');
     Route::delete('/{currency}', [CurrencyController::class, 'destroy'])->name('destroy');
     Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set');
+});
+
+// SMTP Setting Routes
+Route::prefix('smtp-setting')->name('admin.smtp-setting.')->group(function () {
+    Route::get('/', [SmtpSettingController::class, 'index'])->name('index');
+    Route::put('/', [SmtpSettingController::class, 'update'])->name('update');
+    Route::post('/test-connection', [SmtpSettingController::class, 'testConnection'])->name('test-connection');
 });
 
 // Supplier Routes
