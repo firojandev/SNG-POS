@@ -13,6 +13,7 @@ use App\Models\PaymentToSupplier;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Models\Product;
+use App\Models\Lend;
 use App\Services\SalesReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -113,7 +114,19 @@ class BalanceSheetController extends Controller
             'note' => 'Outstanding receivables from customers'
         ];
 
-        // 4. Bank Balance (Cash in hand)
+        // 4. Lend (Money lent out - Due)
+        $lendAmount = Lend::where('store_id', $storeId)
+            ->where('status', 'Due')
+            ->whereDate('date', '<=', $asOfDate)
+            ->sum('amount');
+
+        $assets[] = [
+            'name' => 'Lend',
+            'amount' => $lendAmount,
+            'note' => 'Money lent out to others (due)'
+        ];
+
+        // 5. Bank Balance (Cash in hand)
         $bankBalance = $this->calculateBankBalance($storeId, $asOfDate);
 
         $assets[] = [
