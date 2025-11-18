@@ -43,6 +43,9 @@
                         <a href="{{ route('purchase.show', $purchase->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
                             <i class="fa fa-file-pdf-o"></i> Download PDF
                         </a>
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="openSendPurchaseModal('{{ $purchase->uuid }}')">
+                            <i class="fa fa-envelope"></i> Send Mail
+                        </button>
                         <a href="{{ route('purchase.create') }}" class="btn btn-sm btn-brand-secondary">
                             <i class="fa fa-plus"></i> Add Purchase
                         </a>
@@ -217,10 +220,15 @@
         {{-- Include Payment to Supplier Modal Component --}}
         @include('admin.components.payment-to-supplier-modal')
 
+        {{-- Include Send Purchase Email Modal Component --}}
+        @include('admin.components.send-purchase-email-modal')
+
     </main>
 @endsection
 
 @push('css')
+<!-- Summernote CSS -->
+<link href="{{ asset('admin/plugin/summernote/summernote-bs4.min.css') }}" rel="stylesheet">
 <style>
     .card {
         border: none;
@@ -240,6 +248,22 @@
 @endpush
 
 @push('js')
+    <!-- Summernote JS -->
+    <script src="{{ asset('admin/plugin/summernote/summernote-bs4.js') }}"></script>
+
+    <script>
+        "use strict";
+
+        /**
+         * Purchase Show Page Configuration
+         */
+        window.purchaseShowConfig = {
+            csrfToken: '{{ csrf_token() }}',
+            currency: '{{ get_option('app_currency', '$') }}',
+            baseUrl: '/admin/purchase'
+        };
+    </script>
+
     <!--============== Purchase Payment Modal JS =================-->
     <script type="text/javascript" src="{{asset('admin/partial/js/purchase-payment-modal.js')}}"></script>
     <script>
@@ -258,4 +282,8 @@
         });
     </script>
     <!--============== End Purchase Payment Modal JS =================-->
+
+    <!--============== Send Purchase Email Modal JS =================-->
+    <script type="text/javascript" src="{{asset('admin/partial/js/send-purchase-email-modal.js')}}"></script>
+    <!--============== End Send Purchase Email Modal JS =================-->
 @endpush

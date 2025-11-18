@@ -116,6 +116,9 @@ Route::prefix('purchase')->group(function () {
     Route::delete('{purchase:uuid}', [PurchaseController::class, 'destroy'])->name('purchase.destroy');
     Route::post('{purchase:uuid}/make-payment', [PurchaseController::class, 'makePayment'])->name('purchase.makePayment');
 
+    // Send Purchase Email route
+    Route::post('{purchase:uuid}/send-email', [PurchaseController::class, 'sendPurchaseEmail'])->name('purchase.sendEmail');
+
     // API routes for AJAX requests
     Route::get('api/products', [PurchaseController::class, 'getProducts'])->name('purchase.api.products');
     Route::post('api/calculate-unit-total', [PurchaseController::class, 'calculateUnitTotal'])->name('purchase.api.calculate-unit-total');
@@ -138,6 +141,9 @@ Route::prefix('invoice')->group(function () {
 
     // Payment from Customer route
     Route::post('{invoice:uuid}/receive-payment', [\App\Http\Controllers\Admin\PaymentFromCustomerController::class, 'storeInvoicePayment'])->name('invoice.receivePayment');
+
+    // Send Invoice Email route
+    Route::post('{invoice:uuid}/send-email', [\App\Http\Controllers\Admin\InvoiceController::class, 'sendInvoiceEmail'])->name('invoice.sendEmail');
 
     // API routes for AJAX requests
     Route::get('api/products', [\App\Http\Controllers\Admin\InvoiceController::class, 'getProducts'])->name('invoice.api.products');

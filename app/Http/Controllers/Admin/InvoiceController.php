@@ -11,6 +11,7 @@ use App\Services\InvoiceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 
 class InvoiceController extends Controller
 {
@@ -316,6 +317,59 @@ class InvoiceController extends Controller
                 'success' => false,
                 'message' => 'Something went wrong while calculating unit total.',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Send invoice via email
+     */
+    public function sendInvoiceEmail(Request $request, Invoice $invoice)
+    {
+        $validated = $request->validate([
+            'email_subject' => 'required|string|max:255',
+            'email_body' => 'required|string',
+            'customer_email' => 'required|email'
+        ]);
+
+        try {
+            // Update mail configuration
+            update_mail_config();
+
+            // Load invoice relationships
+            $invoice->load(['customer', 'store', 'items.product.category', 'items.product.unit']);
+
+            // Generate PDF
+            $pdf = \PDF::loadView('admin.Invoice.invoice-pdf', ['invoice' => $invoice])
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true)
+                ->setOption('defaultFont', 'DejaVu Sans');
+
+            // Render email body with template
+            $emailBody = view('admin.emails.template', [
+                'subject' => $validated['email_subject'],
+                'body' => $validated['email_body']
+            ])->render();
+
+            // Send email with PDF attachment
+            Mail::send([], [], function ($message) use ($validated, $emailBody, $pdf, $invoice) {
+                $message->to($validated['customer_email'])
+                    ->subject($validated['email_subject'])
+                    ->html($emailBody)
+                    ->attachData($pdf->output(), 'Invoice_' . $invoice->invoice_number . '.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoice sent successfully to ' . $validated['customer_email']
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send email: ' . $e->getMessage()
             ], 500);
         }
     }

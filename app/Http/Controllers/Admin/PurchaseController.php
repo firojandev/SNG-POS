@@ -12,6 +12,7 @@ use App\Services\PurchaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
@@ -286,6 +287,56 @@ class PurchaseController extends Controller
         }
     }
 
+    /**
+     * Send purchase via email
+     */
+    public function sendPurchaseEmail(Request $request, Purchase $purchase)
+    {
+        $validated = $request->validate([
+            'email_subject' => 'required|string|max:255',
+            'email_body' => 'required|string',
+            'supplier_email' => 'required|email'
+        ]);
 
+        try {
+            // Update mail configuration
+            update_mail_config();
 
+            // Load purchase relationships
+            $purchase->load(['supplier', 'store', 'items.product.category', 'items.product.unit']);
+
+            // Generate PDF
+            $pdf = \PDF::loadView('admin.Purchase.invoice-pdf', ['purchase' => $purchase])
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true)
+                ->setOption('defaultFont', 'DejaVu Sans');
+
+            // Render email body with template
+            $emailBody = view('admin.emails.template', [
+                'subject' => $validated['email_subject'],
+                'body' => $validated['email_body']
+            ])->render();
+
+            // Send email with PDF attachment
+            Mail::send([], [], function ($message) use ($validated, $emailBody, $pdf, $purchase) {
+                $message->to($validated['supplier_email'])
+                    ->subject($validated['email_subject'])
+                    ->html($emailBody)
+                    ->attachData($pdf->output(), 'Purchase_' . $purchase->invoice_number . '.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Purchase order sent successfully to ' . $validated['supplier_email']
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send email: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

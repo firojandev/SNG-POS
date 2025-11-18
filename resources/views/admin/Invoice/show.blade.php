@@ -35,6 +35,9 @@
                         <a href="{{ route('invoice.show', $invoice->uuid) }}?download=pdf" class="btn btn-sm btn-danger me-2">
                             <i class="fa fa-download"></i> PDF
                         </a>
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="openSendInvoiceModal('{{ $invoice->uuid }}')">
+                            <i class="fa fa-envelope"></i> Send Mail
+                        </button>
                         @if($invoice->status === 'active')
                             <a href="{{ route('invoice.edit', $invoice->uuid) }}" class="btn btn-sm btn-info me-2">
                                 <i class="fa fa-edit"></i> Edit
@@ -268,10 +271,15 @@
         {{-- Include Payment from Customer Modal Component --}}
         @include('admin.components.payment-from-customer-modal')
 
+        {{-- Include Send Invoice Email Modal Component --}}
+        @include('admin.components.send-invoice-email-modal')
+
     </main>
 @endsection
 
 @push('css')
+<!-- Summernote CSS -->
+<link href="{{ asset('admin/plugin/summernote/summernote-bs4.min.css') }}" rel="stylesheet">
 <style>
     .card {
         border: none;
@@ -291,6 +299,9 @@
 @endpush
 
 @push('js')
+<!-- Summernote JS -->
+<script src="{{ asset('admin/plugin/summernote/summernote-bs4.js') }}"></script>
+
 <script>
     "use strict";
 
@@ -307,6 +318,10 @@
 <!--============== Payment from Customer Modal JS =================-->
 <script type="text/javascript" src="{{asset('admin/partial/js/payment-from-customer-modal.js')}}"></script>
 <!--============== End Payment from Customer Modal JS =================-->
+
+<!--============== Send Invoice Email Modal JS =================-->
+<script type="text/javascript" src="{{asset('admin/partial/js/send-invoice-email-modal.js')}}"></script>
+<!--============== End Send Invoice Email Modal JS =================-->
 
 <!--============== Invoice Show JS =================-->
 <script type="text/javascript" src="{{asset('admin/partial/js/invoice-show.js')}}"></script>
