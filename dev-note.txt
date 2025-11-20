@@ -1,3 +1,4 @@
-=========== 15/10/2025=============
-1. Import sng_pos_2025-10-14.sql from database directory
+=========== 20/11/2025=============
+1. composer update
 2. php artisan migrate
+3. php artisan db:seed --class=RolePermissionSeeder

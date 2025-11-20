@@ -82,7 +82,6 @@
                                 <select class="form-select" id="mail_encryption" name="mail_encryption" required>
                                     <option value="tls" {{ ($smtpSetting->mail_encryption ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
                                     <option value="ssl" {{ ($smtpSetting->mail_encryption ?? '') == 'ssl' ? 'selected' : '' }}>SSL</option>
-                                    <option value="null" {{ ($smtpSetting->mail_encryption ?? '') === null ? 'selected' : '' }}>None</option>
                                 </select>
                                 <small class="form-text text-muted">Recommended: TLS</small>
                             </div>
